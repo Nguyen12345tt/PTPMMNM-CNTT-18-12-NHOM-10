@@ -1,0 +1,14 @@
+# Tệp cấu hình môi trường cục bộ và mật khẩu (An toàn thông tin)
+.env
+.env.local
+*.local
+
+# Dữ liệu runtime tạm thời
+/storage/logs/*.log
+/tmp/
+
+# Thư mục IDE / Hệ điều hành
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
