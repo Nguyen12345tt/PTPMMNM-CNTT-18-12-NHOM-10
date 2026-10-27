@@ -129,8 +129,23 @@ class Database
 
     private static function ensureSchemaInitialized(PDO $pdo, string $rootDir): void
     {
-        $stmt = $pdo->query("SHOW COLUMNS FROM `classes` LIKE 'cohort'");
-        if ($stmt === false || $stmt->fetch() === false) {
+        $needsInit = false;
+        try {
+            $tableCheck = $pdo->query("SHOW TABLES LIKE 'classes'");
+            if ($tableCheck === false || $tableCheck->fetch() === false) {
+                $needsInit = true;
+            } else {
+                $colCheck = $pdo->query("SHOW COLUMNS FROM `classes` LIKE 'cohort'");
+                $facCheck = $pdo->query("SHOW TABLES LIKE 'faculties'");
+                if ($colCheck === false || $colCheck->fetch() === false || $facCheck === false || $facCheck->fetch() === false) {
+                    $needsInit = true;
+                }
+            }
+        } catch (PDOException) {
+            $needsInit = true;
+        }
+
+        if ($needsInit) {
             self::executeSqlFile($pdo, $rootDir . '/database/schema.sql');
             self::executeSqlFile($pdo, $rootDir . '/database/seed.sql');
         }
