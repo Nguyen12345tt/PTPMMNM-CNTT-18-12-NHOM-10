@@ -1,6 +1,6 @@
 # Hướng dẫn Đóng góp & Cộng tác (CONTRIBUTING.md)
 
-Tài liệu này quy định quy trình làm việc nhóm, quản lý mã nguồn, tạo Issue, gửi Pull Request (PR) và rà soát mã (Code Review) cho dự án **Đề tài 18: Xây dựng hệ thống xếp thời khóa biểu theo ràng buộc giảng viên, phòng học và lớp học (Nhóm 11)**.
+Tài liệu này quy định quy trình làm việc nhóm, quản lý mã nguồn, tạo Issue, gửi Pull Request (PR) và rà soát mã (Code Review) cho dự án **Đề tài 18: Xây dựng hệ thống xếp thời khóa biểu theo ràng buộc giảng viên, phòng học và lớp học (Nhóm 10)**.
 
 ---
 

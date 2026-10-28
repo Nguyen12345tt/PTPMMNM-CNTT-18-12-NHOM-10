@@ -1,7 +1,7 @@
 -- ============================================================================
 -- ĐỀ TÀI 18: HỆ THỐNG XẾP THỜI KHÓA BIỂU THEO RÀNG BUỘC
 -- GIẢNG VIÊN, PHÒNG HỌC VÀ LỚP HỌC
--- Học phần: Phát triển phần mềm mã nguồn mở - Nhóm 11
+-- Học phần: Phát triển phần mềm mã nguồn mở - Nhóm 10
 -- CSDL: MySQL 8.0+ / 9.x (UTF8MB4)
 -- ============================================================================
 

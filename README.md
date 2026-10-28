@@ -1,13 +1,13 @@
 # Đề tài 18: Hệ thống Xếp Thời Khóa Biểu Theo Ràng Buộc Giảng Viên, Phòng Học và Lớp Học
 
 **Học phần:** Phát triển phần mềm mã nguồn mở  
-**Nhóm thực hiện:** Nhóm 11 (`PTPMMNM-CNTT-18-12-NHOM-11`)  
+**Nhóm thực hiện:** Nhóm 10 (`PTPMMNM-CNTT-18-12-NHOM-10`)  
 **Công nghệ:** PHP 8.x & MySQL 8.x/9.x (PDO)  
 **Giấy phép:** [MIT License](LICENSE)
 
 ---
 
-## 1. Thành viên Nhóm 11 và Phân công Chức năng
+## 1. Thành viên Nhóm 10 và Phân công Chức năng
 
 Dự án được phân chia đều các nhóm chức năng và tầng kỹ thuật cho 3 thành viên:
 

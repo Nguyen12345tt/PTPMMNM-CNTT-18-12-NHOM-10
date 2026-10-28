@@ -75,7 +75,7 @@ function h(mixed $val): string
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= !$isAuthenticated ? 'Đăng nhập hệ thống' : 'Đề tài 18 - Hệ thống Xếp Thời Khóa Biểu Theo Ràng Buộc (Nhóm 11)' ?></title>
+    <title><?= !$isAuthenticated ? 'Đăng nhập hệ thống' : 'Đề tài 18 - Hệ thống Xếp Thời Khóa Biểu Theo Ràng Buộc (Nhóm 10)' ?></title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body class="<?= !$isAuthenticated ? 'login-page-body' : '' ?>">

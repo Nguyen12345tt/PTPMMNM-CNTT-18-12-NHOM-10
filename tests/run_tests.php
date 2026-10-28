@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * BỘ KIỂM THỬ TỰ ĐỘNG & TÍCH HỢP (ĐỀ TÀI 18 - NHÓM 11)
+ * BỘ KIỂM THỬ TỰ ĐỘNG & TÍCH HỢP (ĐỀ TÀI 18 - NHÓM 10)
  * Đối chiếu đầy đủ 5 phép thử bắt buộc tại Mục 6 của đề tài + Kiểm thử dữ liệu, an toàn & hồi quy.
  *
  * Cách chạy:
