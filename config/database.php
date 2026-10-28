@@ -61,7 +61,7 @@ class Database
 
         $candidates = [
             ['host' => $host, 'port' => $port, 'user' => $user, 'pass' => $pass, 'socket' => $socket, 'label' => "MySQL ($host:$port)"],
-            ['host' => '127.0.0.1', 'port' => '3307', 'user' => 'root', 'pass' => '', 'socket' => '/tmp/mysql_btl18/run/mysqld.sock', 'label' => 'MySQL Local Instance (127.0.0.1:3307)'],
+            ['host' => '127.0.0.1', 'port' => '3307', 'user' => 'root', 'pass' => '', 'socket' => '', 'label' => 'MySQL Local Instance (127.0.0.1:3307)'],
         ];
 
         $lastError = null;
