@@ -55,8 +55,8 @@ INSERT INTO rooms (id, code, name, capacity, room_type, building) VALUES
 (4, 'LAB01', 'Phòng máy Thực hành 01', 40, 'TH', 'Tòa B1'),
 (5, 'LAB02', 'Phòng máy Thực hành 02', 55, 'TH', 'Tòa B1');
 
--- 4. 20 Khung giờ (slots) - Mỗi ngày CHỈ CÓ 2 CA: Ca 1 (Buổi Sáng) và Ca 2 (Buổi Chiều)
--- 20 khung giờ trải trên 2 tuần học (Tuần 1 & Tuần 2, Thứ 2 -> Thứ 6, 2 ca/ngày)
+-- 4. 28 Khung giờ (slots) - Mỗi ngày CHỈ CÓ 2 CA: Ca 1 (Buổi Sáng) và Ca 2 (Buổi Chiều)
+-- 28 khung giờ trải trên 2 tuần học (Tuần 1 & Tuần 2, Thứ 2 -> Thứ 7 & Chủ nhật, 2 ca/ngày)
 INSERT INTO slots (id, code, week_no, day_of_week, period_of_day, start_time, end_time, label) VALUES
 (1,  'T1-T2-S', 1, 2, 1, '07:20 / 07:10', '11:20 / 11:10', 'Tuần 1 - Thứ 2 - Ca Sáng'),
 (2,  'T1-T2-C', 1, 2, 2, '13:20 / 13:10', '17:20 / 17:10', 'Tuần 1 - Thứ 2 - Ca Chiều'),
@@ -77,7 +77,15 @@ INSERT INTO slots (id, code, week_no, day_of_week, period_of_day, start_time, en
 (17, 'T2-T5-S', 2, 5, 1, '07:20 / 07:10', '11:20 / 11:10', 'Tuần 2 - Thứ 5 - Ca Sáng'),
 (18, 'T2-T5-C', 2, 5, 2, '13:20 / 13:10', '17:20 / 17:10', 'Tuần 2 - Thứ 5 - Ca Chiều'),
 (19, 'T2-T6-S', 2, 6, 1, '07:20 / 07:10', '11:20 / 11:10', 'Tuần 2 - Thứ 6 - Ca Sáng'),
-(20, 'T2-T6-C', 2, 6, 2, '13:20 / 13:10', '17:20 / 17:10', 'Tuần 2 - Thứ 6 - Ca Chiều');
+(20, 'T2-T6-C', 2, 6, 2, '13:20 / 13:10', '17:20 / 17:10', 'Tuần 2 - Thứ 6 - Ca Chiều'),
+(21, 'T1-T7-S', 1, 7, 1, '07:20 / 07:10', '11:20 / 11:10', 'Tuần 1 - Thứ 7 - Ca Sáng'),
+(22, 'T1-T7-C', 1, 7, 2, '13:20 / 13:10', '17:20 / 17:10', 'Tuần 1 - Thứ 7 - Ca Chiều'),
+(23, 'T1-CN-S', 1, 8, 1, '07:20 / 07:10', '11:20 / 11:10', 'Tuần 1 - Chủ nhật - Ca Sáng'),
+(24, 'T1-CN-C', 1, 8, 2, '13:20 / 13:10', '17:20 / 17:10', 'Tuần 1 - Chủ nhật - Ca Chiều'),
+(25, 'T2-T7-S', 2, 7, 1, '07:20 / 07:10', '11:20 / 11:10', 'Tuần 2 - Thứ 7 - Ca Sáng'),
+(26, 'T2-T7-C', 2, 7, 2, '13:20 / 13:10', '17:20 / 17:10', 'Tuần 2 - Thứ 7 - Ca Chiều'),
+(27, 'T2-CN-S', 2, 8, 1, '07:20 / 07:10', '11:20 / 11:10', 'Tuần 2 - Chủ nhật - Ca Sáng'),
+(28, 'T2-CN-C', 2, 8, 2, '13:20 / 13:10', '17:20 / 17:10', 'Tuần 2 - Chủ nhật - Ca Chiều');
 
 -- 5. Lịch bận bắt buộc (HARD_BUSY) và Mong muốn ưu tiên (SOFT_AVOID, SOFT_PREFER)
 INSERT INTO unavailability (teacher_id, slot_id, constraint_type, reason) VALUES
@@ -153,7 +161,31 @@ INSERT INTO unavailability (teacher_id, slot_id, constraint_type, reason) VALUES
 (6, 17, 'HARD_BUSY',   'Lịch công tác doanh nghiệp'),
 (6, 18, 'HARD_BUSY',   'Lịch công tác doanh nghiệp'),
 (6, 19, 'HARD_BUSY',   'Lịch công tác doanh nghiệp'),
-(6, 20, 'HARD_BUSY',   'Lịch công tác doanh nghiệp');
+(6, 20, 'HARD_BUSY',   'Lịch công tác doanh nghiệp'),
+(2, 21, 'HARD_BUSY',   'Lịch chấm khóa luận cuối tuần'),
+(2, 22, 'HARD_BUSY',   'Lịch chấm khóa luận cuối tuần'),
+(2, 23, 'HARD_BUSY',   'Lịch chấm khóa luận cuối tuần'),
+(2, 24, 'HARD_BUSY',   'Lịch chấm khóa luận cuối tuần'),
+(2, 25, 'HARD_BUSY',   'Lịch chấm khóa luận cuối tuần'),
+(2, 26, 'HARD_BUSY',   'Lịch chấm khóa luận cuối tuần'),
+(2, 27, 'HARD_BUSY',   'Lịch chấm khóa luận cuối tuần'),
+(2, 28, 'HARD_BUSY',   'Lịch chấm khóa luận cuối tuần'),
+(3, 21, 'HARD_BUSY',   'Lịch nghiên cứu khoa học cuối tuần'),
+(3, 22, 'HARD_BUSY',   'Lịch nghiên cứu khoa học cuối tuần'),
+(3, 23, 'HARD_BUSY',   'Lịch nghiên cứu khoa học cuối tuần'),
+(3, 24, 'HARD_BUSY',   'Lịch nghiên cứu khoa học cuối tuần'),
+(3, 25, 'HARD_BUSY',   'Lịch nghiên cứu khoa học cuối tuần'),
+(3, 26, 'HARD_BUSY',   'Lịch nghiên cứu khoa học cuối tuần'),
+(3, 27, 'HARD_BUSY',   'Lịch nghiên cứu khoa học cuối tuần'),
+(3, 28, 'HARD_BUSY',   'Lịch nghiên cứu khoa học cuối tuần'),
+(6, 21, 'HARD_BUSY',   'Lịch công tác doanh nghiệp cuối tuần'),
+(6, 22, 'HARD_BUSY',   'Lịch công tác doanh nghiệp cuối tuần'),
+(6, 23, 'HARD_BUSY',   'Lịch công tác doanh nghiệp cuối tuần'),
+(6, 24, 'HARD_BUSY',   'Lịch công tác doanh nghiệp cuối tuần'),
+(6, 25, 'HARD_BUSY',   'Lịch công tác doanh nghiệp cuối tuần'),
+(6, 26, 'HARD_BUSY',   'Lịch công tác doanh nghiệp cuối tuần'),
+(6, 27, 'HARD_BUSY',   'Lịch công tác doanh nghiệp cuối tuần'),
+(6, 28, 'HARD_BUSY',   'Lịch công tác doanh nghiệp cuối tuần');
 
 -- 6. 20 Buổi học (lessons)
 -- + BH01, BH02, BH03 là 3 buổi ĐÃ KHÓA CỐ ĐỊNH (is_locked = 1).
@@ -200,18 +232,18 @@ INSERT INTO lessons (id, code, subject_name, teacher_id, class_id, student_count
 -- 7. Tài khoản người dùng do Nhà trường cấp sẵn theo 3 nhóm phân quyền (Mật khẩu mặc định: 123456)
 -- Hash Bcrypt của '123456': $2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG
 INSERT INTO users (id, username, password_hash, full_name, email, role, teacher_id, class_id) VALUES
-(1,  'admin', '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'Phòng Đào tạo (Người xếp lịch)', 'daotao@dainam.edu.vn', 'scheduler', NULL, NULL),
+(1,  'admin', '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'Phòng Đào tạo (Người xếp lịch)', 'daotao@uni.edu.vn', 'scheduler', NULL, NULL),
 (2,  'gv01',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'TS. Nguyễn Văn An',              'annv@cntt.edu.vn',     'teacher',   1,    NULL),
 (3,  'gv02',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'ThS. Trần Thị Bình',             'binhtt@cntt.edu.vn',   'teacher',   2,    NULL),
 (4,  'gv03',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'PGS.TS. Lê Hoàng Cường',         'cuonglh@cntt.edu.vn',  'teacher',   3,    NULL),
 (5,  'gv04',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'ThS. Phạm Minh Dũng',            'dungpm@cntt.edu.vn',   'teacher',   4,    NULL),
 (6,  'gv05',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'TS. Hoàng Thu Hà',               'haht@cntt.edu.vn',     'teacher',   5,    NULL),
 (7,  'gv06',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'ThS. Vũ Quốc Khánh',             'khanhvq@cntt.edu.vn',  'teacher',   6,    NULL),
-(8,  'sv01',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'Sinh viên Lớp CNTT 18-12',   '1812@sv.dainam.edu.vn','student',  NULL, 1),
-(9,  'sv02',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'Sinh viên Lớp CNTT 18-09',   '1809@sv.dainam.edu.vn','student',  NULL, 2),
-(10, 'sv03',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'Sinh viên Lớp CNTT 19-09',   '1909@sv.dainam.edu.vn','student',  NULL, 3),
-(11, 'sv04',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'Sinh viên Lớp KT 18-10',     '1810@sv.dainam.edu.vn','student',  NULL, 4),
-(12, 'sv05',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'Sinh viên Lớp CNTT 19-10',   '1910@sv.dainam.edu.vn','student',  NULL, 5),
-(13, 'sv06',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'Sinh viên Lớp TCNH 18-11',   '1811@sv.dainam.edu.vn','student',  NULL, 6);
+(8,  'sv01',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'Sinh viên Lớp CNTT 18-12',   '1812@sv.uni.edu.vn','student',  NULL, 1),
+(9,  'sv02',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'Sinh viên Lớp CNTT 18-09',   '1809@sv.uni.edu.vn','student',  NULL, 2),
+(10, 'sv03',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'Sinh viên Lớp CNTT 19-09',   '1909@sv.uni.edu.vn','student',  NULL, 3),
+(11, 'sv04',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'Sinh viên Lớp KT 18-10',     '1810@sv.uni.edu.vn','student',  NULL, 4),
+(12, 'sv05',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'Sinh viên Lớp CNTT 19-10',   '1910@sv.uni.edu.vn','student',  NULL, 5),
+(13, 'sv06',  '$2y$12$FgZyAFRtM.Bjseurz7n/Y.YB2zZYhDW01vt4K9MZgiRFyK2wZgfFG', 'Sinh viên Lớp TCNH 18-11',   '1811@sv.uni.edu.vn','student',  NULL, 6);
 
 SET FOREIGN_KEY_CHECKS = 1;
