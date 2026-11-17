@@ -46,7 +46,7 @@ $activeAssignments = $activeVersion ? $repo->getAssignmentsByVersion((int)$activ
 $activeAudit = $checker->auditScheduleAssignments($activeAssignments, $dataset);
 
 $activeTab = $isStudent ? 'schedule' : (string)($_GET['tab'] ?? 'schedule');
-if (!in_array($activeTab, ['data', 'validate', 'schedule', 'adjust', 'compare'], true)) {
+if (!in_array($activeTab, ['data', 'validate', 'schedule', 'adjust', 'compare', 'requests', 'analytics'], true)) {
     $activeTab = 'schedule';
 }
 
@@ -81,119 +81,138 @@ function h(mixed $val): string
 <body class="<?= !$isAuthenticated ? 'login-page-body' : '' ?>">
 
 <?php if (!$isAuthenticated): ?>
-    <!-- ==================== GIAO DIỆN ĐĂNG NHẬP CHUẨN CỔNG ĐẠI NAM UNIVERSITY ==================== -->
+    <!-- ==================== GIAO DIỆN ĐĂNG NHẬP HIỆN ĐẠI (SMART TIMETABLE PORTAL) ==================== -->
     <?php
     $selectedLoginRole = (string)($_POST['login_role'] ?? 'student');
     ?>
-    <div class="dnu-login-card">
-        <!-- Logo Đại Nam University -->
-        <div class="dnu-logo-wrap">
-            <svg width="56" height="56" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="display:block; margin:0 auto;">
-                <g fill="#f37021">
-                    <?php for ($deg = 0; $deg < 360; $deg += 22.5): ?>
-                        <g transform="rotate(<?= $deg ?> 50 50)">
-                            <polygon points="48.2,34 51.8,34 50.6,12 49.4,12" />
-                            <circle cx="50" cy="9" r="2.2" />
-                        </g>
-                    <?php endfor; ?>
-                    <circle cx="50" cy="50" r="16" />
-                    <path d="M40,53 Q45,49 50,53 Q55,49 60,53 L60,47 Q55,43 50,47 Q45,43 40,47 Z" fill="#ffffff"/>
-                </g>
-            </svg>
-            <div class="dnu-logo-title">ĐẠI NAM</div>
-            <div class="dnu-logo-sub">U N I V E R S I T Y</div>
-        </div>
-
-        <?php if ($flash['message'] !== ''): ?>
-            <div class="alert alert-<?= h($flash['type'] ?: 'error') ?>" style="text-align:left; padding:9px 12px; font-size:12.5px; margin-bottom:14px;">
-                <strong><?= h($flash['message']) ?></strong>
-                <?php if (!empty($flash['details'])): ?>
-                    <ul style="margin:4px 0 0 16px; padding:0;">
-                        <?php foreach ($flash['details'] as $err): ?>
-                            <li><?= h($err) ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php endif; ?>
+    <div class="auth-shell">
+        <div class="dnu-login-card">
+            <!-- Brand Header -->
+            <div class="dnu-logo-wrap">
+                <div class="modern-brand-badge">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="3" ry="3"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                        <path d="M8 14h.01"></path>
+                        <path d="M12 14h.01"></path>
+                        <path d="M16 14h.01"></path>
+                        <path d="M8 18h.01"></path>
+                        <path d="M12 18h.01"></path>
+                    </svg>
+                </div>
+                <div class="dnu-logo-title">CỔNG THÔNG TIN ĐÀO TẠO</div>
+                <div class="dnu-logo-sub">Hệ thống Quản lý &amp; Xếp Thời Khóa Biểu Học Kỳ</div>
             </div>
-        <?php endif; ?>
 
-        <div id="dnu_login_panel">
-            <h1 class="dnu-heading">Đăng nhập tài khoản</h1>
-
-            <form method="post" action="index.php" id="dnu_login_form">
-                <input type="hidden" name="action" value="login">
-
-                <!-- 1. Chọn nhóm phân quyền (Sinh Viên / Giảng Viên / Phụ trách Đào tạo) -->
-                <div class="dnu-input-group">
-                    <span class="dnu-input-addon" title="Phân quyền người dùng">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="#f37021" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146z"/>
-                        </svg>
-                    </span>
-                    <select name="login_role" id="login_role" class="dnu-form-control" onchange="updateForgotLabel()">
-                        <option value="student" <?= $selectedLoginRole === 'student' ? 'selected' : '' ?>>Sinh Viên</option>
-                        <option value="teacher" <?= $selectedLoginRole === 'teacher' ? 'selected' : '' ?>>Giảng Viên</option>
-                        <option value="scheduler" <?= $selectedLoginRole === 'scheduler' ? 'selected' : '' ?>>Phụ trách Đào tạo (Người xếp lịch)</option>
-                    </select>
+            <?php if ($flash['message'] !== ''): ?>
+                <div class="alert alert-<?= h($flash['type'] ?: 'error') ?>" style="text-align:left; padding:10px 14px; font-size:13px; margin-bottom:16px;">
+                    <strong><?= h($flash['message']) ?></strong>
+                    <?php if (!empty($flash['details'])): ?>
+                        <ul style="margin:4px 0 0 16px; padding:0;">
+                            <?php foreach ($flash['details'] as $err): ?>
+                                <li><?= h($err) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
                 </div>
+            <?php endif; ?>
 
-                <!-- 2. Tài khoản -->
-                <div class="dnu-input-group">
-                    <span class="dnu-input-addon" title="Tài khoản">
-                        <svg width="15" height="15" viewBox="0 0 16 16" fill="#007bff" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                        </svg>
-                    </span>
-                    <input type="text" name="username" id="login_username" class="dnu-form-control"
-                           placeholder="Tài khoản" value="<?= h($_POST['username'] ?? '') ?>" required>
-                </div>
+            <div id="dnu_login_panel">
+                <h1 class="dnu-heading">Đăng nhập hệ thống</h1>
 
-                <!-- 3. Mật khẩu + Nút con mắt ẩn/hiện -->
-                <div class="dnu-input-group has-right-addon">
-                    <span class="dnu-input-addon" title="Mật khẩu">
-                        <svg width="15" height="15" viewBox="0 0 16 16" fill="#6c757d" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-                        </svg>
-                    </span>
-                    <input type="password" name="password" id="login_password" class="dnu-form-control"
-                           placeholder="Mật khẩu" required>
-                    <button type="button" class="dnu-input-addon-right" onclick="togglePasswordVisibility()" title="Hiện/Ẩn mật khẩu">
-                        <svg id="eye_icon" width="15" height="15" viewBox="0 0 16 16" fill="#495057" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-                        </svg>
-                    </button>
-                </div>
+                <form method="post" action="index.php" id="dnu_login_form">
+                    <input type="hidden" name="action" value="login">
 
-                <div class="dnu-links-row">
-                    <a href="javascript:void(0)" id="forgot_pw_link" onclick="toggleDemoHint()">[ Quên mật khẩu sinh viên ]</a>
-                </div>
+                    <!-- 1. Chọn nhóm phân quyền (Sinh Viên / Giảng Viên / Phụ trách Đào tạo) -->
+                    <div class="modern-field">
+                        <label for="login_role" class="modern-field-label">Vai trò truy cập</label>
+                        <div class="dnu-input-group">
+                            <span class="dnu-input-addon" title="Phân quyền người dùng">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                            </span>
+                            <select name="login_role" id="login_role" class="dnu-form-control" onchange="updateForgotLabel()">
+                                <option value="student" <?= $selectedLoginRole === 'student' ? 'selected' : '' ?>>Sinh viên (Tra cứu lịch học)</option>
+                                <option value="teacher" <?= $selectedLoginRole === 'teacher' ? 'selected' : '' ?>>Giảng viên (Lịch dạy &amp; Lịch bận)</option>
+                                <option value="scheduler" <?= $selectedLoginRole === 'scheduler' ? 'selected' : '' ?>>Quản trị Đào tạo (Xếp thời khóa biểu)</option>
+                            </select>
+                        </div>
+                    </div>
 
-                <div class="dnu-btn-row">
-                    <button type="submit" class="dnu-btn dnu-btn-login">
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                            <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z"/>
-                            <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                        </svg>
-                        Đăng nhập
-                    </button>
-                    <a href="index.php" class="dnu-btn dnu-btn-home" onclick="toggleDemoHint(); return false;">
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146z"/>
-                        </svg>
-                        Trang chủ
-                    </a>
-                </div>
-            </form>
+                    <!-- 2. Tài khoản -->
+                    <div class="modern-field">
+                        <label for="login_username" class="modern-field-label">Tài khoản / Mã định danh</label>
+                        <div class="dnu-input-group">
+                            <span class="dnu-input-addon" title="Tài khoản">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            </span>
+                            <input type="text" name="username" id="login_username" class="dnu-form-control"
+                                   placeholder="Nhập mã SV, mã GV hoặc tài khoản..." value="<?= h($_POST['username'] ?? '') ?>" required>
+                        </div>
+                    </div>
 
-            <!-- Gợi ý điền nhanh tài khoản nhà trường cấp sẵn (ẩn/hiện khi bấm Quên mật khẩu hoặc Trang chủ) -->
-            <div class="dnu-demo-hint" id="demo_hint_box" style="display:none;">
-                <div><strong>Tài khoản do Nhà trường cấp sẵn (Mật khẩu: <code>123456</code>):</strong></div>
-                <div style="margin-top:4px;">
-                    <span class="dnu-demo-chip" onclick="fillDemoLogin('student', 'sv01', '123456')">🎓 SV Lớp 18-12 (sv01)</span>
-                    <span class="dnu-demo-chip" onclick="fillDemoLogin('student', 'sv03', '123456')">🎓 SV Lớp 19-09 (sv03)</span>
-                    <span class="dnu-demo-chip" onclick="fillDemoLogin('teacher', 'gv01', '123456')">👨‍🏫 Giảng viên 01 (gv01)</span>
-                    <span class="dnu-demo-chip" onclick="fillDemoLogin('scheduler', 'admin', '123456')">⚙️ Đào tạo / Xếp lịch (admin)</span>
+                    <!-- 3. Mật khẩu + Nút con mắt ẩn/hiện -->
+                    <div class="modern-field">
+                        <label for="login_password" class="modern-field-label">Mật khẩu</label>
+                        <div class="dnu-input-group has-right-addon">
+                            <span class="dnu-input-addon" title="Mật khẩu">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                            </span>
+                            <input type="password" name="password" id="login_password" class="dnu-form-control"
+                                   placeholder="Nhập mật khẩu..." required>
+                            <button type="button" class="dnu-input-addon-right" onclick="togglePasswordVisibility()" title="Hiện/Ẩn mật khẩu">
+                                <svg id="eye_icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="dnu-btn-row">
+                        <button type="submit" class="dnu-btn dnu-btn-login">
+                            <span>Đăng nhập vào hệ thống</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                                <polyline points="12 5 19 12 12 19"/>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Gợi ý điền nhanh tài khoản mẫu để kiểm thử -->
+                <div class="dnu-demo-hint" id="demo_hint_box">
+                    <div class="demo-hint-header">
+                        <span>⚡ <strong>Tài khoản trải nghiệm nhanh</strong> (Mật khẩu: <code>123456</code>)</span>
+                        <span id="forgot_pw_link" style="font-size:11px; color:#64748b;">Chạm để điền</span>
+                    </div>
+                    <div class="demo-chip-grid">
+                        <button type="button" class="dnu-demo-chip" onclick="fillDemoLogin('scheduler', 'admin', '123456')">
+                            <span class="chip-role">⚙️ Quản trị</span>
+                            <span class="chip-code">admin</span>
+                        </button>
+                        <button type="button" class="dnu-demo-chip" onclick="fillDemoLogin('teacher', 'gv01', '123456')">
+                            <span class="chip-role">👨‍🏫 Giảng viên</span>
+                            <span class="chip-code">gv01</span>
+                        </button>
+                        <button type="button" class="dnu-demo-chip" onclick="fillDemoLogin('student', 'sv01', '123456')">
+                            <span class="chip-role">🎓 SV 18-12</span>
+                            <span class="chip-code">sv01</span>
+                        </button>
+                        <button type="button" class="dnu-demo-chip" onclick="fillDemoLogin('student', 'sv03', '123456')">
+                            <span class="chip-role">🎓 SV 19-09</span>
+                            <span class="chip-code">sv03</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -204,28 +223,12 @@ function h(mixed $val): string
         const pwInput = document.getElementById('login_password');
         pwInput.type = (pwInput.type === 'password') ? 'text' : 'password';
     }
-    function updateForgotLabel() {
-        const role = document.getElementById('login_role').value;
-        const link = document.getElementById('forgot_pw_link');
-        if (role === 'student') {
-            link.textContent = '[ Quên mật khẩu sinh viên ]';
-        } else if (role === 'teacher') {
-            link.textContent = '[ Quên mật khẩu giảng viên ]';
-        } else {
-            link.textContent = '[ Quên mật khẩu cán bộ ]';
-        }
-    }
+    function updateForgotLabel() {}
     function fillDemoLogin(role, username, password) {
         document.getElementById('login_role').value = role;
         document.getElementById('login_username').value = username;
         document.getElementById('login_password').value = password;
-        updateForgotLabel();
     }
-    function toggleDemoHint() {
-        const box = document.getElementById('demo_hint_box');
-        box.style.display = (box.style.display === 'none') ? 'block' : 'none';
-    }
-    updateForgotLabel();
     </script>
 
 <?php else: ?>
@@ -236,119 +239,194 @@ $activeSec = (string)($_GET['sec'] ?? '');
 ?>
 
 <?php if ($isScheduler): ?>
-<!-- ==================== BỐ CỤC BANNER DỌC QUẢN TRỊ ĐÀO TẠO (ADMIN VERTICAL BANNER) ==================== -->
+<!-- ==================== BỐ CỤC QUẢN TRỊ VỚI BANNER DỌC BÊN TRÁI CÙNG (LEFT-MOST VERTICAL SIDEBAR) ==================== -->
+<?php
+$schedPct = $activeAudit['total_lessons'] > 0
+    ? round(($activeAudit['scheduled_count'] * 100) / $activeAudit['total_lessons'], 1)
+    : 0;
+$allRescheduleRequests = $dataset['reschedule_requests'] ?? [];
+$pendingReqCount = count(array_filter(
+    $allRescheduleRequests,
+    static fn(array $r): bool => ($r['status'] ?? '') === 'PENDING'
+));
+?>
 <div class="admin-layout-wrapper">
+    <!-- Banner dọc cố định bên trái cùng -->
     <aside class="admin-vertical-banner">
-        <div>
-            <div class="admin-vbanner-brand">
-                <div class="admin-vbanner-logo">🏛️</div>
-                <div class="admin-vbanner-title">QUẢN TRỊ ĐÀO TẠO</div>
+        <div class="admin-vbanner-brand">
+            <div class="admin-brand-icon">🏛️</div>
+            <div>
+                <div class="admin-vbanner-logo">PHÒNG ĐÀO TẠO</div>
+                <div class="admin-vbanner-sub">HỆ THỐNG XẾP THỜI KHÓA BIỂU</div>
             </div>
-
-            <nav class="admin-vbanner-list">
-                <a href="index.php?tab=schedule"
-                   class="admin-vbanner-item <?= $activeTab === 'schedule' ? 'active' : '' ?>">
-                    <span class="admin-vbanner-icon">📅</span>
-                    <span>Thời khóa biểu</span>
-                </a>
-                <a href="index.php?tab=data&sec=classes"
-                   class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'classes') ? 'active' : '' ?>">
-                    <span class="admin-vbanner-icon">🏫</span>
-                    <span>Lớp học</span>
-                </a>
-                <a href="index.php?tab=data&sec=siso"
-                   class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'siso') ? 'active' : '' ?>">
-                    <span class="admin-vbanner-icon">👥</span>
-                    <span>Sĩ số</span>
-                </a>
-                <a href="index.php?tab=data&sec=faculties"
-                   class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'faculties') ? 'active' : '' ?>">
-                    <span class="admin-vbanner-icon">🏛️</span>
-                    <span>Khoa</span>
-                </a>
-                <a href="index.php?tab=data&sec=lessons"
-                   class="admin-vbanner-item <?= ($activeTab === 'data' && ($activeSec === 'lessons' || $activeSec === '')) ? 'active' : '' ?>">
-                    <span class="admin-vbanner-icon">📚</span>
-                    <span>Môn học</span>
-                </a>
-                <a href="index.php?tab=data&sec=students"
-                   class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'students') ? 'active' : '' ?>">
-                    <span class="admin-vbanner-icon">🎓</span>
-                    <span>Mã sinh viên</span>
-                </a>
-                <a href="index.php?tab=data&sec=teachers"
-                   class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'teachers') ? 'active' : '' ?>">
-                    <span class="admin-vbanner-icon">👨‍🏫</span>
-                    <span>Giảng viên</span>
-                </a>
-                <a href="index.php?tab=data&sec=unavailability"
-                   class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'unavailability') ? 'active' : '' ?>">
-                    <span class="admin-vbanner-icon">🗓️</span>
-                    <span>Lịch bận</span>
-                </a>
-                <a href="index.php?tab=data&sec=rooms"
-                   class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'rooms') ? 'active' : '' ?>">
-                    <span class="admin-vbanner-icon">🏢</span>
-                    <span>Phòng học</span>
-                </a>
-                <a href="index.php?tab=data&sec=slots"
-                   class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'slots') ? 'active' : '' ?>">
-                    <span class="admin-vbanner-icon">🕒</span>
-                    <span>Khung giờ</span>
-                </a>
-                <a href="index.php?tab=validate"
-                   class="admin-vbanner-item <?= $activeTab === 'validate' ? 'active' : '' ?>">
-                    <span class="admin-vbanner-icon">🛡️</span>
-                    <span>Ràng buộc</span>
-                </a>
-                <a href="index.php?tab=adjust"
-                   class="admin-vbanner-item <?= $activeTab === 'adjust' ? 'active' : '' ?>">
-                    <span class="admin-vbanner-icon">🔧</span>
-                    <span>Đổi lịch</span>
-                </a>
-                <a href="index.php?tab=compare"
-                   class="admin-vbanner-item <?= $activeTab === 'compare' ? 'active' : '' ?>">
-                    <span class="admin-vbanner-icon">📊</span>
-                    <span>So sánh &amp; Xuất lịch</span>
-                </a>
-            </nav>
         </div>
 
+        <nav class="admin-vbanner-list">
+            <div class="vbanner-group-label">DANH MỤC QUẢN LÝ ĐÀO TẠO</div>
+            <a href="index.php?tab=schedule"
+               class="admin-vbanner-item <?= $activeTab === 'schedule' ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">📅</span> Thời khóa biểu</span>
+            </a>
+            <a href="index.php?tab=data&sec=classes"
+               class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'classes') ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">🏫</span> Lớp học</span>
+                <span class="vbanner-badge"><?= count($dataset['classes'] ?? []) ?></span>
+            </a>
+            <a href="index.php?tab=data&sec=siso"
+               class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'siso') ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">👥</span> Sĩ số</span>
+            </a>
+            <a href="index.php?tab=data&sec=faculties"
+               class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'faculties') ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">🏛️</span> Khoa đào tạo</span>
+                <span class="vbanner-badge"><?= count($dataset['faculties'] ?? []) ?></span>
+            </a>
+            <a href="index.php?tab=data&sec=lessons"
+               class="admin-vbanner-item <?= ($activeTab === 'data' && ($activeSec === 'lessons' || $activeSec === '')) ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">📚</span> Học phần / Môn học</span>
+                <span class="vbanner-badge"><?= count($dataset['lessons'] ?? []) ?></span>
+            </a>
+            <a href="index.php?tab=data&sec=students"
+               class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'students') ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">🎓</span> Danh sách Sinh viên</span>
+                <span class="vbanner-badge"><?= count($allUsers) ?></span>
+            </a>
+            <a href="index.php?tab=data&sec=teachers"
+               class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'teachers') ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">👨‍🏫</span> Giảng viên</span>
+                <span class="vbanner-badge"><?= count($dataset['teachers'] ?? []) ?></span>
+            </a>
+            <a href="index.php?tab=data&sec=unavailability"
+               class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'unavailability') ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">🗓️</span> Lịch bận GV</span>
+                <span class="vbanner-badge"><?= count($dataset['unavailability'] ?? []) ?></span>
+            </a>
+            <a href="index.php?tab=data&sec=rooms"
+               class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'rooms') ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">🏢</span> Phòng học</span>
+                <span class="vbanner-badge"><?= count($dataset['rooms'] ?? []) ?></span>
+            </a>
+            <a href="index.php?tab=data&sec=slots"
+               class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'slots') ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">🕒</span> Khung giờ học</span>
+                <span class="vbanner-badge"><?= count($dataset['slots'] ?? []) ?></span>
+            </a>
+
+            <div class="vbanner-group-label" style="margin-top:10px;">NGHIỆP VỤ XẾP LỊCH HỌC KỲ</div>
+            <a href="index.php?tab=requests"
+               class="admin-vbanner-item <?= $activeTab === 'requests' ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">📩</span> Duyệt đổi lịch GV</span>
+                <span class="vbanner-badge" style="<?= $pendingReqCount > 0 ? 'background:#c92a2a; color:#fff;' : '' ?>"><?= $pendingReqCount ?></span>
+            </a>
+            <a href="index.php?tab=analytics"
+               class="admin-vbanner-item <?= $activeTab === 'analytics' ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">📈</span> Thống kê &amp; Nhập CSV</span>
+            </a>
+            <a href="index.php?tab=validate"
+               class="admin-vbanner-item <?= $activeTab === 'validate' ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">🛡️</span> Kiểm tra Ràng buộc</span>
+            </a>
+            <a href="index.php?tab=adjust"
+               class="admin-vbanner-item <?= $activeTab === 'adjust' ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">🔧</span> Điều chỉnh lịch học</span>
+            </a>
+            <a href="index.php?tab=compare"
+               class="admin-vbanner-item <?= $activeTab === 'compare' ? 'active' : '' ?>">
+                <span class="vbanner-item-left"><span class="vbanner-icon">📊</span> Đối sánh &amp; Xuất biểu</span>
+            </a>
+        </nav>
+
         <div class="admin-vbanner-footer">
-            <div class="admin-vbanner-user">
-                👤 <strong><?= h($currentUser['full_name']) ?></strong>
+            <div class="vbanner-quick-scenarios">
+                <form method="post" action="index.php?tab=schedule" style="margin:0;">
+                    <input type="hidden" name="action" value="reset_seed">
+                    <button type="submit" class="vbanner-btn" title="Khôi phục dữ liệu chuẩn & tạo lại 2 phương án">🔄 Kịch bản 1</button>
+                </form>
+                <form method="post" action="index.php?tab=compare" style="margin:0;">
+                    <input type="hidden" name="action" value="scenario2_quick_adjust">
+                    <button type="submit" class="vbanner-btn vbanner-btn-accent" title="Khóa thêm BH04, đổi sĩ số BH20 & chạy so sánh">⚡ Kịch bản 2</button>
+                </form>
             </div>
-            <a href="index.php?action=logout" class="btn btn-danger btn-sm" style="width:100%;">🚪 Đăng xuất</a>
+            <div class="admin-vbanner-user">
+                <span>👤 <?= h($currentUser['full_name']) ?></span>
+                <span class="vbanner-role-tag">GIÁO VỤ</span>
+            </div>
+            <a href="index.php?action=logout" class="vbanner-btn vbanner-logout">🚪 Đăng xuất hệ thống</a>
         </div>
     </aside>
 
+    <!-- Khung nội dung chính bên phải -->
     <main class="admin-main-content">
-<?php else: ?>
-<header class="topbar">
-    <div class="topbar-brand">
-        <h1><?= $isStudent ? 'CỔNG THÔNG TIN ĐÀO TẠO — TRA CỨU THỜI KHÓA BIỂU SINH VIÊN' : 'HỆ THỐNG TRA CỨU LỊCH GIẢNG DẠY & ĐĂNG KÝ LỊCH BẬN GIẢNG VIÊN' ?></h1>
-        <p>
-            <?php if ($isStudent): ?>
-                Lớp hành chính: <strong><?= h($currentUser['class_code'] ?? '') ?></strong> • Mã sinh viên: <strong><?= h($currentUser['username'] ?? '') ?></strong>
-            <?php else: ?>
-                Giảng viên: <strong><?= h($currentUser['full_name'] ?? '') ?></strong> (Mã GV: <strong><?= h($currentUser['teacher_code'] ?? '') ?></strong>)
-            <?php endif; ?>
-        </p>
-    </div>
-
-    <div class="topbar-controls">
-        <div class="role-badge">
-            <span>👤 <strong><?= h($currentUser['full_name']) ?></strong> (<code><?= h($currentUser['username']) ?></code>)</span>
-            <span class="badge <?= $isTeacher ? 'badge-th' : 'badge-lt' ?>">
-                <?= h($controller->getRoleLabel((string)$currentUser['role'])) ?>
-                <?php if ($isTeacher && !empty($currentUser['teacher_code'])): ?>
-                    — <?= h($currentUser['teacher_code']) ?>
-                <?php elseif ($isStudent && !empty($currentUser['class_code'])): ?>
-                    — <?= h($currentUser['class_code']) ?>
-                <?php endif; ?>
-            </span>
+        <div class="edu-admin-topbar">
+            <div class="edu-topbar-left">
+                <div class="edu-topbar-title">CỔNG QUẢN LÝ ĐÀO TẠO &amp; XẾP THỜI KHÓA BIỂU TỰ ĐỘNG</div>
+                <div class="edu-topbar-sub">Học kỳ I — Năm học 2026–2027 • Phương án đang hiển thị: <strong><?= h($activeVersion['version_name'] ?? 'Chưa chọn') ?></strong></div>
+            </div>
+            <div class="edu-topbar-right">
+                <span class="edu-status-item">Đã xếp: <strong><?= (int)$activeAudit['scheduled_count'] ?>/<?= (int)$activeAudit['total_lessons'] ?> học phần (<?= $schedPct ?>%)</strong></span>
+                <span class="edu-status-item">Vi phạm cứng: <strong style="color:<?= $activeAudit['hard_violations'] === 0 ? '#15803d' : '#b91c1c' ?>;"><?= (int)$activeAudit['hard_violations'] ?></strong></span>
+                <span class="edu-status-item">Điểm phạt mềm: <strong><?= (int)$activeAudit['soft_penalty_score'] ?>đ</strong></span>
+            </div>
         </div>
-        <a href="index.php?action=logout" class="btn btn-danger btn-sm">🚪 Đăng xuất</a>
+<?php else: ?>
+<?php
+$studentCohortTimeS = ConstraintChecker::formatCohortTime((string)($currentUser['class_code'] ?? '18-12'), 1);
+$studentCohortTimeC = ConstraintChecker::formatCohortTime((string)($currentUser['class_code'] ?? '18-12'), 2);
+$avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name'] ?? 'U')), 0, 1, 'UTF-8'), 'UTF-8');
+?>
+<header class="portal-header <?= $isStudent ? 'student-theme' : 'teacher-theme' ?>">
+    <div class="portal-header-inner">
+        <div class="portal-identity">
+            <div class="portal-avatar"><?= h($avatarInitial) ?></div>
+            <div>
+                <div class="portal-eyebrow">
+                    <?= $isStudent ? 'CỔNG THÔNG TIN ĐÀO TẠO • TRA CỨU THỜI KHÓA BIỂU SINH VIÊN' : 'CỔNG THÔNG TIN GIẢNG VIÊN • QUẢN LÝ LỊCH GIẢNG DẠY HỌC KỲ' ?>
+                </div>
+                <h1 class="portal-title"><?= h($currentUser['full_name'] ?? '') ?></h1>
+                <div class="portal-meta-pills">
+                    <?php if ($isStudent): ?>
+                        <span class="portal-pill">Mã SV: <strong><?= h($currentUser['username'] ?? '') ?></strong></span>
+                        <span class="portal-pill">Lớp hành chính: <strong><?= h($currentUser['class_code'] ?? '') ?></strong></span>
+                        <?php if (!empty($currentUser['class_major'])): ?>
+                            <span class="portal-pill"><?= h($currentUser['class_major']) ?></span>
+                        <?php endif; ?>
+                        <span class="portal-pill">Khung giờ: Sáng <?= h($studentCohortTimeS) ?> | Chiều <?= h($studentCohortTimeC) ?></span>
+                    <?php else: ?>
+                        <span class="portal-pill">Mã GV: <strong><?= h($currentUser['teacher_code'] ?? $currentUser['username']) ?></strong></span>
+                        <?php
+                        $myTeacherObj = null;
+                        foreach ($dataset['teachers'] as $tObj) {
+                            if ((int)$tObj['id'] === (int)($currentUser['teacher_id'] ?? 0)) {
+                                $myTeacherObj = $tObj;
+                                break;
+                            }
+                        }
+                        ?>
+                        <?php if ($myTeacherObj): ?>
+                            <span class="portal-pill"><?= h($myTeacherObj['department']) ?></span>
+                            <span class="portal-pill">Định mức: <strong><?= (int)$myTeacherObj['max_lessons_per_day'] ?> ca/ngày</strong></span>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="portal-actions">
+            <?php if ($isTeacher): ?>
+                <nav class="portal-nav-pills">
+                    <a href="index.php?tab=schedule" class="portal-nav-link <?= $activeTab === 'schedule' ? 'active' : '' ?>">
+                        📅 Lịch giảng dạy
+                    </a>
+                    <a href="index.php?tab=data" class="portal-nav-link <?= $activeTab === 'data' ? 'active' : '' ?>">
+                        🗓️ Đăng ký Lịch bận &amp; Nguyện vọng
+                    </a>
+                    <a href="index.php?tab=compare" class="portal-nav-link <?= $activeTab === 'compare' ? 'active' : '' ?>">
+                        📤 In / Xuất lịch dạy
+                    </a>
+                </nav>
+            <?php endif; ?>
+            <a href="index.php?action=logout" class="portal-logout-btn">Đăng xuất</a>
+        </div>
     </div>
 </header>
 
@@ -367,22 +445,204 @@ $activeSec = (string)($_GET['sec'] ?? '');
         </div>
     <?php endif; ?>
         <!-- ==================== ĐÃ ĐĂNG NHẬP: HIỂN THỊ HỆ THỐNG THEO PHÂN QUYỀN ==================== -->
-        <?php if ($isTeacher): ?>
-        <!-- Thanh điều hướng gọn cho Giảng viên (Admin dùng Banner tổng ở trên; Sinh viên chỉ xem Thời Khóa Biểu) -->
-        <nav class="nav-tabs" style="margin-bottom: 14px;">
-            <a href="index.php?tab=schedule" class="nav-tab <?= $activeTab === 'schedule' ? 'active' : '' ?>">
-                📅 1. Xem Thời Khóa Biểu Giảng Dạy
-            </a>
-            <a href="index.php?tab=data#sec-teachers" class="nav-tab <?= $activeTab === 'data' ? 'active' : '' ?>">
-                🗓️ 2. Đăng ký Lịch bận &amp; Mong muốn ưu tiên cá nhân
-            </a>
-            <a href="index.php?tab=compare" class="nav-tab <?= $activeTab === 'compare' ? 'active' : '' ?>">
-                📤 3. Xuất Lịch Giảng Dạy
-            </a>
-        </nav>
-        <?php endif; ?>
 
-        <?php if ($activeTab === 'data'): ?>
+        <?php if ($activeTab === 'data' && $isTeacher): ?>
+            <!-- ==================== GIAO DIỆN QUẢN LÝ LỊCH BẬN & NGUYỆN VỌNG RIÊNG CHO GIẢNG VIÊN ==================== -->
+            <?php
+            $myTid = (int)($currentUser['teacher_id'] ?? 0);
+            $myUnavailBySlot = [];
+            $myUnavailList = [];
+            foreach ($dataset['unavailability'] as $uItem) {
+                if ((int)$uItem['teacher_id'] === $myTid) {
+                    $myUnavailBySlot[(int)$uItem['slot_id']] = $uItem;
+                    $myUnavailList[] = $uItem;
+                }
+            }
+            $myTeachingBySlot = [];
+            foreach ($activeAssignments as $aItem) {
+                if ((int)$aItem['teacher_id'] === $myTid) {
+                    $myTeachingBySlot[(int)$aItem['slot_id']] = $aItem;
+                }
+            }
+            $slotMatrix = [];
+            foreach ($dataset['slots'] as $sItem) {
+                $wNo = (int)($sItem['week_no'] ?? 1);
+                $pNo = (int)$sItem['period_of_day'];
+                $dNo = (int)$sItem['day_of_week'];
+                $slotMatrix[$wNo][$pNo][$dNo] = $sItem;
+            }
+            ?>
+            <div class="teacher-studio-grid">
+                <!-- Cột trái: Ma trận 28 khung giờ trực quan của Giảng viên (Thứ 2 -> Chủ nhật) -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2>🗓️ Ma trận Trạng thái 28 Khung giờ Cá nhân (Thứ 2 – Chủ nhật)</h2>
+                            <p style="margin:4px 0 0; font-size:12.5px; color:#64748b;">
+                                Bấm vào bất kỳ ô khung giờ nào bên dưới để chọn nhanh vào biểu mẫu đăng ký bên phải.
+                            </p>
+                        </div>
+                        <div class="matrix-legend">
+                            <span class="legend-dot dot-teaching">📚 Đang có lịch dạy</span>
+                            <span class="legend-dot dot-busy">🔴 Bận cứng</span>
+                            <span class="legend-dot dot-prefer">🟢 Ưu tiên</span>
+                            <span class="legend-dot dot-avoid">🟡 Hạn chế</span>
+                        </div>
+                    </div>
+
+                    <?php foreach ([1 => 'Tuần 1 (19/10 - 25/10/2026)', 2 => 'Tuần 2 (26/10 - 01/11/2026)'] as $wNo => $wTitle): ?>
+                        <div style="font-weight:700; font-size:13px; color:#1e293b; margin: <?= $wNo > 1 ? '16px' : '0' ?> 0 8px;">
+                            <?= h($wTitle) ?>
+                        </div>
+                        <div class="avail-matrix-wrap" style="overflow-x:auto;">
+                            <table class="avail-matrix-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ca</th>
+                                        <th>Thứ 2</th>
+                                        <th>Thứ 3</th>
+                                        <th>Thứ 4</th>
+                                        <th>Thứ 5</th>
+                                        <th>Thứ 6</th>
+                                        <th>Thứ 7</th>
+                                        <th>Chủ nhật</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ([1 => '☀️ Sáng', 2 => '🌤️ Chiều'] as $pNo => $pLabel): ?>
+                                    <tr>
+                                        <td style="font-weight:700; text-align:center; background:#f8fafc; width:82px;"><?= $pLabel ?></td>
+                                        <?php for ($dNo = 2; $dNo <= 8; $dNo++):
+                                            $sCell = $slotMatrix[$wNo][$pNo][$dNo] ?? null;
+                                            $sId = $sCell ? (int)$sCell['id'] : 0;
+                                            $uCell = $myUnavailBySlot[$sId] ?? null;
+                                            $tCell = $myTeachingBySlot[$sId] ?? null;
+                                            $cellClass = 'slot-free';
+                                            $statusText = '⚪ Trống';
+                                            if ($uCell) {
+                                                if ($uCell['constraint_type'] === 'HARD_BUSY') {
+                                                    $cellClass = 'slot-busy';
+                                                    $statusText = '🔴 Bận cứng';
+                                                } elseif ($uCell['constraint_type'] === 'SOFT_PREFER') {
+                                                    $cellClass = 'slot-prefer';
+                                                    $statusText = '🟢 Ưu tiên (-4đ)';
+                                                } else {
+                                                    $cellClass = 'slot-avoid';
+                                                    $statusText = '🟡 Hạn chế (+15đ)';
+                                                }
+                                            }
+                                        ?>
+                                        <td class="avail-cell <?= $cellClass ?>"
+                                            onclick="pickTeacherSlot(<?= $sId ?>, '<?= h($uCell['constraint_type'] ?? 'HARD_BUSY') ?>', '<?= h($uCell['reason'] ?? '') ?>')">
+                                            <div class="avail-slot-code"><?= h($sCell['code'] ?? '') ?></div>
+                                            <div class="avail-slot-status"><?= $statusText ?></div>
+                                            <?php if ($tCell): ?>
+                                                <div class="avail-teaching-pill">
+                                                    📚 <?= h($tCell['class_code']) ?> (P.<?= h($tCell['room_code']) ?>)
+                                                </div>
+                                            <?php elseif ($uCell): ?>
+                                                <div class="avail-reason-text"><?= h($uCell['reason']) ?></div>
+                                            <?php endif; ?>
+                                        </td>
+                                        <?php endfor; ?>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <!-- Cột phải: Form đăng ký & Danh sách lịch bận của riêng Giảng viên -->
+                <div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>✍️ Đăng ký / Cập nhật Lịch bận &amp; Nguyện vọng</h2>
+                        </div>
+                        <form method="post" action="index.php?tab=data">
+                            <input type="hidden" name="action" value="save_unavailability">
+                            <input type="hidden" name="teacher_id" value="<?= $myTid ?>">
+                            <div class="form-group" style="margin-bottom:12px;">
+                                <label>1. Chọn Khung giờ (hoặc chạm vào ô trên ma trận)</label>
+                                <select name="slot_id" id="teacher_slot_select">
+                                    <?php foreach ($dataset['slots'] as $s): ?>
+                                        <option value="<?= (int)$s['id'] ?>"><?= h($s['code'] . ' — ' . $s['label']) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom:12px;">
+                                <label>2. Loại đăng ký</label>
+                                <select name="constraint_type" id="teacher_type_select">
+                                    <option value="HARD_BUSY">🔴 HARD_BUSY — Bận bắt buộc (Tuyệt đối không xếp lịch)</option>
+                                    <option value="SOFT_PREFER">🟢 SOFT_PREFER — Khung giờ mong muốn dạy (Được ưu tiên -4đ)</option>
+                                    <option value="SOFT_AVOID">🟡 SOFT_AVOID — Mong muốn hạn chế dạy (Cộng phạt mềm +15đ)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom:14px;">
+                                <label>3. Lý do / Ghi chú công tác</label>
+                                <input type="text" name="reason" id="teacher_reason_input" placeholder="VD: Họp Hội đồng Khoa, Hướng dẫn NCS, Lịch cá nhân..." required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">💾 Lưu đăng ký vào hệ thống</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>📋 Danh sách đã đăng ký của tôi (<?= count($myUnavailList) ?> khung giờ)</h3>
+                        </div>
+                        <div style="max-height:330px; overflow-y:auto;">
+                            <table>
+                                <thead>
+                                    <tr><th>Khung giờ</th><th>Phân loại</th><th>Lý do</th><th>Xóa</th></tr>
+                                </thead>
+                                <tbody>
+                                    <?php if (empty($myUnavailList)): ?>
+                                        <tr><td colspan="4" style="text-align:center; color:#64748b;">Chưa có đăng ký lịch bận nào.</td></tr>
+                                    <?php else: ?>
+                                        <?php foreach ($myUnavailList as $u): ?>
+                                        <tr>
+                                            <td><strong><?= h($u['slot_code']) ?></strong></td>
+                                            <td>
+                                                <?php if ($u['constraint_type'] === 'HARD_BUSY'): ?>
+                                                    <span class="badge badge-hard">🔴 Bận cứng</span>
+                                                <?php elseif ($u['constraint_type'] === 'SOFT_AVOID'): ?>
+                                                    <span class="badge badge-soft-avoid">🟡 Hạn chế</span>
+                                                <?php else: ?>
+                                                    <span class="badge badge-soft-prefer">🟢 Ưu tiên</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?= h($u['reason']) ?></td>
+                                            <td>
+                                                <form method="post" action="index.php?tab=data" style="display:inline;">
+                                                    <input type="hidden" name="action" value="delete_unavailability">
+                                                    <input type="hidden" name="unavailability_id" value="<?= (int)$u['id'] ?>">
+                                                    <button type="submit" class="btn btn-outline btn-sm">✕</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+            function pickTeacherSlot(slotId, cType, reason) {
+                const sEl = document.getElementById('teacher_slot_select');
+                const tEl = document.getElementById('teacher_type_select');
+                const rEl = document.getElementById('teacher_reason_input');
+                if (sEl && slotId) sEl.value = slotId;
+                if (tEl && cType) tEl.value = cType;
+                if (rEl) {
+                    rEl.value = reason || '';
+                    rEl.focus();
+                }
+            }
+            </script>
+
+        <?php elseif ($activeTab === 'data'): ?>
             <!-- ==================== QUẢN LÝ DỮ LIỆU THEO TỪNG DANH MỤC TRÊN BANNER DỌC ==================== -->
             <datalist id="faculty_datalist">
                 <?php foreach ($dataset['faculties'] ?? [] as $f): ?>
@@ -871,7 +1131,7 @@ $activeSec = (string)($_GET['sec'] ?? '');
                                     <td><?= (int)$s['id'] ?></td>
                                     <td><strong><?= h($s['code']) ?></strong></td>
                                     <td><span class="badge badge-lt">Tuần <?= $wNo ?></span></td>
-                                    <td>Thứ <?= (int)$s['day_of_week'] ?></td>
+                                    <td><?= (int)$s['day_of_week'] === 8 ? 'Chủ nhật' : ('Thứ ' . (int)$s['day_of_week']) ?></td>
                                     <td>
                                         <?php if ($pDay === 1): ?>
                                             <span class="badge badge-soft-prefer">☀️ Ca 1 (Buổi Sáng)</span>
@@ -947,7 +1207,7 @@ $activeSec = (string)($_GET['sec'] ?? '');
                         </div>
                         <div class="form-group">
                             <label>Email</label>
-                            <input type="email" name="email" id="uf_email" placeholder="sv@dainam.edu.vn">
+                            <input type="email" name="email" id="uf_email" placeholder="sv@uni.edu.vn">
                         </div>
                         <div class="form-group">
                             <label>Mật khẩu (Mặc định: 123456)</label>
@@ -1333,7 +1593,7 @@ $activeSec = (string)($_GET['sec'] ?? '');
             </div>
 
         <?php elseif ($activeTab === 'schedule'): ?>
-            <!-- ==================== GIAO DIỆN LỊCH HỌC CHUẨN CỔNG SINH VIÊN ĐẠI NAM ==================== -->
+            <!-- ==================== GIAO DIỆN THỜI KHÓA BIỂU THEO VAI TRÒ ==================== -->
             <?php
             $selectedClassCode = (string)($currentUser['class_code'] ?? '');
             if ($viewFilterType === 'class' && $viewFilterId > 0) {
@@ -1349,8 +1609,6 @@ $activeSec = (string)($_GET['sec'] ?? '');
                 $selectedWeekNo = 1;
             }
             $scheduleSubView = (string)($_GET['subview'] ?? 'week'); // week | list
-            $hocKy = (string)($_GET['hoc_ky'] ?? '1');
-            $namHoc = (string)($_GET['nam_hoc'] ?? '2026-2027');
 
             $grid = [];
             $filteredList = [];
@@ -1375,344 +1633,1764 @@ $activeSec = (string)($_GET['sec'] ?? '');
                 2 => '26/10/2026 - 01/11/2026',
             ];
             $weekSelectLabels = [
-                1 => 'Tuần 12 [Từ 19/10/2026 -- Đến 25/10/2026]',
-                2 => 'Tuần 13 [Từ 26/10/2026 -- Đến 01/11/2026]',
+                1 => 'Tuần 1 (19/10 - 25/10/2026)',
+                2 => 'Tuần 2 (26/10 - 01/11/2026)',
             ];
+            $dayNames = [
+                2 => 'Thứ Hai',
+                3 => 'Thứ Ba',
+                4 => 'Thứ Tư',
+                5 => 'Thứ Năm',
+                6 => 'Thứ Sáu',
+                7 => 'Thứ Bảy',
+                8 => 'Chủ Nhật',
+            ];
+            $slotLookup = [];
+            foreach ($dataset['slots'] as $sItem) {
+                $slotLookup[(int)($sItem['week_no'] ?? 1)][(int)$sItem['period_of_day']][(int)$sItem['day_of_week']] = $sItem;
+            }
             ?>
-            <div class="dnu-schedule-box">
-                <!-- 1. Thanh Breadcrumb: Trang chủ / Lịch học -->
-                <div class="dnu-breadcrumb">
-                    <div>
-                        <a href="index.php">Trang chủ</a>
-                        <span style="color:#ccc; margin:0 6px;">/</span>
-                        <span style="color:#777;">Lịch học</span>
+
+            <?php if ($isStudent): ?>
+                <!-- ==================== 1. GIAO DIỆN SINH VIÊN MỚI (BENTO + KANBAN 5 CỘT NGÀY + THẺ HỌC PHẦN) ==================== -->
+                <?php
+                $ltCount = 0;
+                $thCount = 0;
+                $roomSet = [];
+                foreach ($filteredList as $fItem) {
+                    if (($fItem['room_type'] ?? 'LT') === 'TH') {
+                        $thCount++;
+                    } else {
+                        $ltCount++;
+                    }
+                    $roomSet[$fItem['room_code']] = $fItem['room_code'];
+                }
+                $firstCourse = $filteredList[0] ?? null;
+                $studentClassObj = null;
+                foreach ($dataset['classes'] as $cObj) {
+                    if ((int)$cObj['id'] === $viewFilterId) {
+                        $studentClassObj = $cObj;
+                        break;
+                    }
+                }
+                ?>
+                <!-- 3 Thẻ Bento Tổng quan Sinh viên -->
+                <div class="bento-student-grid">
+                    <div class="bento-card bento-accent-indigo">
+                        <div class="bento-eyebrow">🏫 LỚP HÀNH CHÍNH ĐANG THEO HỌC</div>
+                        <div class="bento-main-val"><?= h($selectedClassCode ?: 'CNTT 18-12') ?></div>
+                        <div class="bento-sub-text">
+                            <?= h($studentClassObj['major'] ?? 'Khoa Công nghệ thông tin') ?> •
+                            Sĩ số: <strong><?= (int)($studentClassObj['student_count'] ?? 35) ?> sinh viên</strong>
+                        </div>
+                        <div class="bento-chips">
+                            <span class="bento-chip">☀️ Sáng: <?= h($studentCohortTimeS) ?></span>
+                            <span class="bento-chip">🌤️ Chiều: <?= h($studentCohortTimeC) ?></span>
+                        </div>
                     </div>
-                    <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
-                        <?php if (!$isStudent): ?>
-                            <form method="get" action="index.php" style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:0;">
-                                <input type="hidden" name="tab" value="schedule">
-                                <input type="hidden" name="subview" value="<?= h($scheduleSubView) ?>">
-                                <input type="hidden" name="week_no" value="<?= (int)$selectedWeekNo ?>">
-                                <select name="version_id" onchange="this.form.submit()" style="height:30px; padding:2px 8px; border-radius:4px; border:1px solid #ccc; font-size:12px;">
+
+                    <div class="bento-card bento-accent-emerald">
+                        <div class="bento-eyebrow">📚 TỔNG QUAN LỊCH HỌC TRONG KỲ</div>
+                        <div class="bento-main-val"><?= count($filteredList) ?> <span style="font-size:15px; font-weight:600; color:#475569;">buổi học</span></div>
+                        <div class="bento-sub-text">
+                            Gồm <strong><?= $ltCount ?> buổi Lý thuyết</strong> &amp; <strong><?= $thCount ?> buổi Thực hành</strong>
+                        </div>
+                        <div class="bento-chips">
+                            <span class="bento-chip">📍 Phòng học: <?= !empty($roomSet) ? h(implode(', ', $roomSet)) : 'Đang cập nhật' ?></span>
+                        </div>
+                    </div>
+
+                    <div class="bento-card bento-accent-violet">
+                        <div class="bento-eyebrow">⚡ TIÊU ĐIỂM HỌC PHẦN ĐẦU TUẦN</div>
+                        <?php if ($firstCourse): ?>
+                            <div class="bento-main-val" style="font-size:17px; line-height:1.3;">
+                                <?= h($firstCourse['subject_name']) ?>
+                            </div>
+                            <div class="bento-sub-text">
+                                GV: <strong><?= h($firstCourse['teacher_name']) ?></strong>
+                            </div>
+                            <div class="bento-chips">
+                                <span class="bento-chip">📍 Phòng <?= h($firstCourse['room_code']) ?></span>
+                                <span class="bento-chip">🗓️ <?= (int)$firstCourse['day_of_week'] === 8 ? 'Chủ nhật' : ('Thứ ' . (int)$firstCourse['day_of_week']) ?> (<?= (int)$firstCourse['period_of_day'] === 1 ? 'Sáng' : 'Chiều' ?>)</span>
+                            </div>
+                        <?php else: ?>
+                            <div class="bento-main-val" style="font-size:16px;">Chưa có buổi học</div>
+                            <div class="bento-sub-text">Hiện chưa có lịch phân công cho lớp.</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Thanh công cụ chọn Tuần & Tìm kiếm nhanh của Sinh viên -->
+                <div class="portal-control-bar">
+                    <div class="week-pill-group">
+                        <a href="index.php?tab=schedule&subview=<?= h($scheduleSubView) ?>&week_no=1"
+                           class="week-pill <?= $selectedWeekNo === 1 ? 'active' : '' ?>">
+                            🗓️ Tuần hiện tại — Tuần 1 (19/10 – 25/10)
+                        </a>
+                        <a href="index.php?tab=schedule&subview=<?= h($scheduleSubView) ?>&week_no=2"
+                           class="week-pill <?= $selectedWeekNo === 2 ? 'active' : '' ?>">
+                            🗓️ Tuần kế tiếp — Tuần 2 (26/10 – 01/11)
+                        </a>
+                        <a href="index.php?tab=schedule&subview=<?= h($scheduleSubView) ?>&week_no=0"
+                           class="week-pill <?= $selectedWeekNo === 0 ? 'active' : '' ?>">
+                            📑 Xem cả 2 tuần
+                        </a>
+                    </div>
+
+                    <div class="portal-control-right">
+                        <input type="search" id="student_quick_search" class="portal-search-input"
+                               placeholder="🔍 Tìm môn học, phòng, giảng viên..." oninput="filterKanbanCards(this.value)">
+                        <div class="dnu-subtabs">
+                            <a href="index.php?tab=schedule&subview=week&week_no=<?= (int)$selectedWeekNo ?>"
+                               class="dnu-subtab <?= $scheduleSubView !== 'list' ? 'active' : '' ?>">
+                                🗓️ Thời khóa biểu tuần
+                            </a>
+                            <a href="index.php?tab=schedule&subview=list&week_no=<?= (int)$selectedWeekNo ?>"
+                               class="dnu-subtab <?= $scheduleSubView === 'list' ? 'active' : '' ?>">
+                                📋 Danh sách học phần
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <?php if ($scheduleSubView !== 'list'): ?>
+                    <!-- Bảng Kanban 5 cột ngày (Thứ 2 -> Thứ 6) dành cho Sinh viên -->
+                    <?php
+                    $weeksToRender = $selectedWeekNo === 0 ? [1, 2] : [$selectedWeekNo];
+                    foreach ($weeksToRender as $idxW => $w):
+                    ?>
+                        <div class="kanban-week-section" style="margin-top: <?= $idxW > 0 ? '24px' : '0' ?>;">
+                            <div class="kanban-week-banner">
+                                <span>🗓️ <strong><?= h($weekSelectLabels[$w]) ?></strong></span>
+                                <span class="kanban-week-tag">Lớp <?= h($selectedClassCode) ?></span>
+                            </div>
+
+                            <div class="kanban-board-5col">
+                                <?php foreach ($dayNames as $dNum => $dLabel): ?>
+                                    <div class="kanban-day-col">
+                                        <div class="kanban-day-header">
+                                            <span class="day-title"><?= h($dLabel) ?></span>
+                                            <span class="day-badge"><?= $dNum === 8 ? 'CN' : ('T' . $dNum) ?></span>
+                                        </div>
+
+                                        <div class="kanban-day-body">
+                                            <?php foreach ([1 => '☀️ CA SÁNG (Tiết 1–5)', 2 => '🌤️ CA CHIỀU (Tiết 6–10)'] as $pNum => $pTitle):
+                                                $slotItems = $grid[$w][$pNum][$dNum] ?? [];
+                                            ?>
+                                                <div class="kanban-session-slot">
+                                                    <div class="kanban-session-title"><?= $pTitle ?></div>
+                                                    <?php if (empty($slotItems)): ?>
+                                                        <div class="kanban-empty-slot">Trống lịch — Tự học</div>
+                                                    <?php else: ?>
+                                                        <?php foreach ($slotItems as $item):
+                                                            $exactTime = ConstraintChecker::formatCohortTime((string)$item['class_code'], (int)$item['period_of_day']);
+                                                            $rType = strtolower((string)($item['room_type'] ?? 'lt'));
+                                                        ?>
+                                                            <div class="kanban-course-card type-<?= h($rType) ?> searchable-card"
+                                                                 onclick="openLessonModal(<?= (int)$item['lesson_id'] ?>)"
+                                                                 title="Bấm để xem chi tiết học phần & danh sách sinh viên lớp">
+                                                                <div class="kcard-top">
+                                                                    <span class="kcard-type-badge badge-<?= h($rType) ?>">
+                                                                        <?= $rType === 'th' ? '💻 Thực hành' : '📖 Lý thuyết' ?>
+                                                                    </span>
+                                                                    <span class="kcard-room">📍 P.<?= h($item['room_code']) ?></span>
+                                                                </div>
+                                                                <div class="kcard-subject"><?= h($item['subject_name']) ?></div>
+                                                                <div class="kcard-time">🕒 <?= h($exactTime) ?></div>
+                                                                <div class="kcard-teacher">👨‍🏫 <?= h($item['teacher_name']) ?></div>
+                                                            </div>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <!-- Chế độ Timeline Danh sách cho Sinh viên -->
+                    <div class="timeline-list-wrap">
+                        <?php
+                        $timelineRows = array_values(array_filter(
+                            $filteredList,
+                            static fn(array $r): bool => $selectedWeekNo === 0 || (int)($r['week_no'] ?? 1) === $selectedWeekNo
+                        ));
+                        ?>
+                        <?php if (empty($timelineRows)): ?>
+                            <div class="card" style="text-align:center; color:#64748b; padding:24px;">
+                                Không có buổi học nào trong tuần đã chọn.
+                            </div>
+                        <?php else: ?>
+                            <?php foreach ($timelineRows as $idx => $row):
+                                $wRow = (int)($row['week_no'] ?? 1);
+                                $pRow = (int)$row['period_of_day'];
+                                $exactTime = ConstraintChecker::formatCohortTime((string)$row['class_code'], $pRow);
+                                $rType = strtolower((string)($row['room_type'] ?? 'lt'));
+                            ?>
+                                <div class="timeline-item-card searchable-card">
+                                    <div class="timeline-left-badge">
+                                        <div class="tl-day"><?= (int)$row['day_of_week'] === 8 ? 'Chủ nhật' : ('Thứ ' . (int)$row['day_of_week']) ?></div>
+                                        <div class="tl-session"><?= $pRow === 1 ? '☀️ Sáng' : '🌤️ Chiều' ?></div>
+                                        <div class="tl-week">Tuần <?= $wRow ?></div>
+                                    </div>
+                                    <div class="timeline-main-info">
+                                        <div class="tl-subject">
+                                            <?= h($row['subject_name']) ?>
+                                            <span class="badge badge-<?= h($rType) ?>"><?= h($row['room_type']) ?></span>
+                                        </div>
+                                        <div class="tl-meta">
+                                            <span>🕒 <strong><?= h($exactTime) ?></strong></span>
+                                            <span>📍 Phòng <strong><?= h($row['room_code']) ?></strong> (<?= h($row['room_name'] ?? '') ?>)</span>
+                                            <span>👨‍🏫 GV: <strong><?= h($row['teacher_name']) ?></strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Danh mục Học phần & Giảng viên giảng dạy Lớp -->
+                <div class="card" style="margin-top:24px;">
+                    <div class="card-header">
+                        <h2>📖 Danh mục Học phần &amp; Giảng viên giảng dạy lớp <?= h($selectedClassCode) ?></h2>
+                    </div>
+                    <div class="course-directory-grid">
+                        <?php foreach ($filteredList as $cItem):
+                            $cTime = ConstraintChecker::formatCohortTime((string)$cItem['class_code'], (int)$cItem['period_of_day']);
+                        ?>
+                            <div class="course-dir-card searchable-card">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                    <span class="badge badge-<?= strtolower(h($cItem['room_type'])) ?>"><?= h($cItem['lesson_code']) ?> • <?= h($cItem['room_type']) ?></span>
+                                    <span style="font-size:12px; font-weight:700; color:#4f46e5;">P.<?= h($cItem['room_code']) ?></span>
+                                </div>
+                                <div style="font-weight:700; font-size:14px; color:#0f172a; margin-bottom:6px;">
+                                    <?= h($cItem['subject_name']) ?>
+                                </div>
+                                <div style="font-size:12.5px; color:#475569;">
+                                    <div>👨‍🏫 Giảng viên: <strong><?= h($cItem['teacher_name']) ?></strong></div>
+                                    <div style="margin-top:3px;">🗓️ Tuần <?= (int)($cItem['week_no'] ?? 1) ?> • <?= (int)$cItem['day_of_week'] === 8 ? 'Chủ nhật' : ('Thứ ' . (int)$cItem['day_of_week']) ?> (<?= h($cTime) ?>)</div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+            <?php elseif ($isTeacher): ?>
+                <!-- ==================== 2. GIAO DIỆN GIẢNG VIÊN MỚI (KPI BENTO + KANBAN LỊCH DẠY & TRẠNG THÁI CÁ NHÂN) ==================== -->
+                <?php
+                $myTid = (int)($currentUser['teacher_id'] ?? 0);
+                $myUnavailBySlot = [];
+                $busyCount = 0;
+                $preferCount = 0;
+                $avoidCount = 0;
+                foreach ($dataset['unavailability'] as $uItem) {
+                    if ((int)$uItem['teacher_id'] === $myTid) {
+                        $myUnavailBySlot[(int)$uItem['slot_id']] = $uItem;
+                        if ($uItem['constraint_type'] === 'HARD_BUSY') {
+                            $busyCount++;
+                        } elseif ($uItem['constraint_type'] === 'SOFT_PREFER') {
+                            $preferCount++;
+                        } else {
+                            $avoidCount++;
+                        }
+                    }
+                }
+                $slotLookup = [];
+                foreach ($dataset['slots'] as $sItem) {
+                    $slotLookup[(int)($sItem['week_no'] ?? 1)][(int)$sItem['period_of_day']][(int)$sItem['day_of_week']] = $sItem;
+                }
+                $morningTeach = 0;
+                $afternoonTeach = 0;
+                $mySoftPenalty = 0;
+                $taughtClasses = [];
+                foreach ($filteredList as $fItem) {
+                    if ((int)$fItem['period_of_day'] === 1) {
+                        $morningTeach++;
+                    } else {
+                        $afternoonTeach++;
+                    }
+                    $mySoftPenalty += (int)($fItem['soft_penalty'] ?? 0);
+                    $taughtClasses[$fItem['class_code']] = $fItem['class_code'];
+                }
+                ?>
+                <!-- 4 Thẻ KPI Giảng dạy của Giảng viên -->
+                <div class="stats-grid">
+                    <div class="stat-card" style="border-top: 3px solid #0d9488;">
+                        <div class="stat-label">📚 Khối lượng giảng dạy</div>
+                        <div class="stat-value"><?= count($filteredList) ?> ca</div>
+                        <div class="stat-sub">☀️ <?= $morningTeach ?> ca sáng • 🌤️ <?= $afternoonTeach ?> ca chiều</div>
+                    </div>
+                    <div class="stat-card" style="border-top: 3px solid #2563eb;">
+                        <div class="stat-label">🏫 Lớp phụ trách</div>
+                        <div class="stat-value"><?= count($taughtClasses) ?> lớp</div>
+                        <div class="stat-sub"><?= !empty($taughtClasses) ? h(implode(', ', $taughtClasses)) : 'Chưa phân công' ?></div>
+                    </div>
+                    <div class="stat-card" style="border-top: 3px solid #e11d48;">
+                        <div class="stat-label">🔴 Lịch bận cứng đã khóa</div>
+                        <div class="stat-value"><?= $busyCount ?> ca</div>
+                        <div class="stat-sub">Được bảo vệ 100% không xếp trùng</div>
+                    </div>
+                    <div class="stat-card" style="border-top: 3px solid #10b981;">
+                        <div class="stat-label">✨ Đáp ứng nguyện vọng</div>
+                        <div class="stat-value" style="color: <?= $mySoftPenalty === 0 ? '#059669' : '#d97706' ?>;">
+                            <?= $mySoftPenalty === 0 ? 'Tối ưu (0đ phạt)' : ($mySoftPenalty . 'đ phạt') ?>
+                        </div>
+                        <div class="stat-sub">🟢 <?= $preferCount ?> ca ưu tiên • 🟡 <?= $avoidCount ?> ca hạn chế</div>
+                    </div>
+                </div>
+
+                <!-- Thanh điều khiển Lịch giảng dạy của Giảng viên -->
+                <div class="portal-control-bar">
+                    <div class="week-pill-group">
+                        <a href="index.php?tab=schedule&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&week_no=1"
+                           class="week-pill <?= $selectedWeekNo === 1 ? 'active' : '' ?>">
+                            🗓️ Tuần hiện tại — Tuần 1 (19/10 – 25/10)
+                        </a>
+                        <a href="index.php?tab=schedule&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&week_no=2"
+                           class="week-pill <?= $selectedWeekNo === 2 ? 'active' : '' ?>">
+                            🗓️ Tuần kế tiếp — Tuần 2 (26/10 – 01/11)
+                        </a>
+                        <a href="index.php?tab=schedule&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&week_no=0"
+                           class="week-pill <?= $selectedWeekNo === 0 ? 'active' : '' ?>">
+                            📑 Xem cả 2 tuần
+                        </a>
+                    </div>
+
+                    <div class="portal-control-right">
+                        <form method="get" action="index.php" style="display:flex; gap:8px; align-items:center; margin:0;">
+                            <input type="hidden" name="tab" value="schedule">
+                            <input type="hidden" name="week_no" value="<?= (int)$selectedWeekNo ?>">
+                            <select name="version_id" onchange="this.form.submit()" class="toolbar-select">
+                                <?php foreach ($versions as $v): ?>
+                                    <option value="<?= (int)$v['id'] ?>" <?= ($activeVersion && (int)$activeVersion['id'] === (int)$v['id']) ? 'selected' : '' ?>>
+                                        #<?= (int)$v['id'] ?>: <?= h($v['version_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </form>
+                        <?php if ($activeVersion): ?>
+                            <a class="btn btn-outline btn-sm" target="_blank"
+                               href="index.php?action=export&format=print&version_id=<?= (int)$activeVersion['id'] ?>&filter_type=teacher&filter_id=<?= $myTid ?>">
+                               🖨️ Bản in
+                            </a>
+                            <a class="btn btn-outline btn-sm"
+                               href="index.php?action=export&format=csv&version_id=<?= (int)$activeVersion['id'] ?>&filter_type=teacher&filter_id=<?= $myTid ?>">
+                               📥 Xuất CSV
+                            </a>
+                        <?php endif; ?>
+                        <a href="index.php?tab=data" class="btn btn-primary btn-sm">🗓️ Cập nhật lịch bận</a>
+                    </div>
+                </div>
+
+                <!-- Bảng Kanban Lịch Giảng Dạy 5 Ngày kết hợp Trạng thái Lịch bận của Giảng viên -->
+                <?php
+                $weeksToRender = $selectedWeekNo === 0 ? [1, 2] : [$selectedWeekNo];
+                foreach ($weeksToRender as $idxW => $w):
+                ?>
+                    <div class="kanban-week-section" style="margin-top: <?= $idxW > 0 ? '24px' : '0' ?>;">
+                        <div class="kanban-week-banner teacher-banner">
+                            <span>🗓️ <strong><?= h($weekSelectLabels[$w]) ?></strong> — Lịch giảng dạy &amp; Trạng thái cá nhân</span>
+                            <span class="kanban-week-tag"><?= h($currentUser['full_name'] ?? '') ?></span>
+                        </div>
+
+                        <div class="kanban-board-5col">
+                            <?php foreach ($dayNames as $dNum => $dLabel): ?>
+                                <div class="kanban-day-col">
+                                    <div class="kanban-day-header">
+                                        <span class="day-title"><?= h($dLabel) ?></span>
+                                        <span class="day-badge"><?= $dNum === 8 ? 'CN' : ('T' . $dNum) ?></span>
+                                    </div>
+
+                                    <div class="kanban-day-body">
+                                        <?php foreach ([1 => '☀️ CA SÁNG (Tiết 1–5)', 2 => '🌤️ CA CHIỀU (Tiết 6–10)'] as $pNum => $pTitle):
+                                            $slotItems = $grid[$w][$pNum][$dNum] ?? [];
+                                            $sObj = $slotLookup[$w][$pNum][$dNum] ?? null;
+                                            $uObj = $sObj ? ($myUnavailBySlot[(int)$sObj['id']] ?? null) : null;
+                                        ?>
+                                            <div class="kanban-session-slot">
+                                                <div class="kanban-session-title"><?= $pTitle ?></div>
+                                                <?php if (!empty($slotItems)): ?>
+                                                    <?php foreach ($slotItems as $item):
+                                                        $exactTime = ConstraintChecker::formatCohortTime((string)$item['class_code'], (int)$item['period_of_day']);
+                                                        $rType = strtolower((string)($item['room_type'] ?? 'lt'));
+                                                        $isLocked = (int)$item['is_locked'] === 1 || (int)$item['current_lesson_locked'] === 1;
+                                                    ?>
+                                                        <div class="kanban-course-card type-<?= h($rType) ?> <?= $isLocked ? 'is-locked-card' : '' ?>"
+                                                             onclick="openLessonModal(<?= (int)$item['lesson_id'] ?>)"
+                                                             title="Bấm để xem chi tiết hoặc gửi đề xuất xin đổi ca dạy">
+                                                            <div class="kcard-top">
+                                                                <span class="kcard-type-badge badge-<?= h($rType) ?>">
+                                                                    Lớp <?= h($item['class_code']) ?>
+                                                                </span>
+                                                                <span class="kcard-room">📍 P.<?= h($item['room_code']) ?></span>
+                                                            </div>
+                                                            <div class="kcard-subject"><?= h($item['subject_name']) ?></div>
+                                                            <div class="kcard-time">🕒 <?= h($exactTime) ?></div>
+                                                            <div class="kcard-teacher">
+                                                                👥 Sĩ số: <strong><?= (int)$item['student_count'] ?>/<?= (int)$item['room_capacity'] ?> chỗ</strong>
+                                                                <?= $isLocked ? ' • 🔒 Cố định' : '' ?>
+                                                            </div>
+                                                            <div style="margin-top:6px; font-size:11px; font-weight:700; color:#0f766e;">
+                                                                📝 Bấm để xin đổi lịch / dạy bù
+                                                            </div>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                <?php elseif ($uObj): ?>
+                                                    <?php if ($uObj['constraint_type'] === 'HARD_BUSY'): ?>
+                                                        <div class="kanban-status-box status-busy">
+                                                            <strong>🔴 Đã đăng ký Bận cứng</strong>
+                                                            <div><?= h($uObj['reason']) ?></div>
+                                                        </div>
+                                                    <?php elseif ($uObj['constraint_type'] === 'SOFT_PREFER'): ?>
+                                                        <div class="kanban-status-box status-prefer">
+                                                            <strong>🟢 Ca mong muốn dạy</strong>
+                                                            <div><?= h($uObj['reason']) ?></div>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <div class="kanban-status-box status-avoid">
+                                                            <strong>🟡 Hạn chế xếp lịch</strong>
+                                                            <div><?= h($uObj['reason']) ?></div>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                <?php else: ?>
+                                                    <div class="kanban-empty-slot">⚪ Ca trống (Không có lịch dạy)</div>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+
+                <!-- Khu vực Theo dõi Đề xuất Xin đổi lịch / Dạy bù của Giảng viên -->
+                <?php
+                $myRequests = array_values(array_filter(
+                    $dataset['reschedule_requests'] ?? [],
+                    static fn(array $r): bool => (int)($r['teacher_id'] ?? 0) === $myTid
+                ));
+                $myLessons = array_values(array_filter(
+                    $dataset['lessons'] ?? [],
+                    static fn(array $l): bool => (int)($l['teacher_id'] ?? 0) === $myTid
+                ));
+                ?>
+                <div class="grid-2" style="margin-top:22px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>📝 Gửi Đề xuất Xin đổi lịch / Dạy bù tới Phòng Đào tạo</h3>
+                            <span class="badge badge-th">Workflow 2 chiều</span>
+                        </div>
+                        <form method="post" action="index.php?tab=schedule">
+                            <input type="hidden" name="action" value="submit_reschedule_request">
+                            <input type="hidden" name="version_id" value="<?= (int)($activeVersion['id'] ?? 2) ?>">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>1. Chọn học phần của tôi cần xin đổi ca</label>
+                                    <select name="lesson_id" required>
+                                        <?php foreach ($myLessons as $ml): ?>
+                                            <option value="<?= (int)$ml['id'] ?>">
+                                                <?= h($ml['code'] . ' — ' . $ml['subject_name'] . ' (' . $ml['class_code'] . ', ' . $ml['student_count'] . ' SV)') ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>2. Khung giờ mong muốn chuyển sang</label>
+                                    <select name="target_slot_id" required>
+                                        <?php foreach ($dataset['slots'] as $s): ?>
+                                            <option value="<?= (int)$s['id'] ?>"><?= h($s['code'] . ' — ' . $s['label']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>3. Phòng học đề xuất</label>
+                                    <select name="target_room_id" required>
+                                        <?php foreach ($dataset['rooms'] as $r): ?>
+                                            <option value="<?= (int)$r['id'] ?>"><?= h($r['code'] . ' — ' . $r['name'] . ' (' . $r['room_type'] . ', ' . $r['capacity'] . ' chỗ)') ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>4. Lý do xin đổi lịch / dạy bù</label>
+                                    <input type="text" name="reason" placeholder="VD: Trùng lịch công tác đột xuất, xin dạy bù vào Thứ 7..." required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">📨 Gửi yêu cầu phê duyệt</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>📬 Trạng thái các yêu cầu đổi lịch đã gửi (<?= count($myRequests) ?>)</h3>
+                        </div>
+                        <div style="max-height:260px; overflow-y:auto;">
+                            <table>
+                                <thead>
+                                    <tr><th>Buổi học</th><th>Ca &amp; Phòng xin chuyển</th><th>Lý do</th><th>Trạng thái</th></tr>
+                                </thead>
+                                <tbody>
+                                    <?php if (empty($myRequests)): ?>
+                                        <tr><td colspan="4" style="text-align:center; color:#64748b;">Chưa có yêu cầu đổi lịch nào.</td></tr>
+                                    <?php else: ?>
+                                        <?php foreach ($myRequests as $mr): ?>
+                                            <tr>
+                                                <td><strong><?= h($mr['lesson_code']) ?></strong><br><small><?= h($mr['subject_name']) ?></small></td>
+                                                <td><strong><?= h($mr['target_slot_code']) ?></strong><br>P.<?= h($mr['target_room_code']) ?></td>
+                                                <td><?= h($mr['reason']) ?><?php if (!empty($mr['admin_note'])): ?><br><small style="color:#4f46e5;">💬 ĐT: <?= h($mr['admin_note']) ?></small><?php endif; ?></td>
+                                                <td>
+                                                    <?php if ($mr['status'] === 'PENDING'): ?>
+                                                        <span class="badge badge-soft-avoid">⏳ Chờ duyệt</span>
+                                                    <?php elseif ($mr['status'] === 'APPROVED'): ?>
+                                                        <span class="badge badge-soft-prefer">✅ Đã duyệt</span>
+                                                    <?php else: ?>
+                                                        <span class="badge badge-hard">❌ Từ chối</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            <?php else: ?>
+                <!-- ==================== 3. GIAO DIỆN XEM THỜI KHÓA BIỂU CỦA ADMIN (THỜI KHÓA BIỂU Ở TRÊN — CÁC CHỨC NĂNG KHÁC Ở DƯỚI) ==================== -->
+                <!-- PHẦN TRÊN: THỜI KHÓA BIỂU TOÀN MÀN HÌNH TƯƠNG TÁC TRỰC TIẾP (DRAG & DROP + LIVE CONSTRAINT HIGHLIGHT) -->
+                <section class="admin-main-stage">
+                    <div class="portal-control-bar">
+                        <div class="week-pill-group">
+                            <a href="index.php?tab=schedule&subview=<?= h($scheduleSubView) ?>&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>&week_no=1"
+                               class="week-pill <?= $selectedWeekNo === 1 ? 'active' : '' ?>">
+                                🗓️ Tuần 1 (19/10 – 25/10)
+                            </a>
+                            <a href="index.php?tab=schedule&subview=<?= h($scheduleSubView) ?>&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>&week_no=2"
+                               class="week-pill <?= $selectedWeekNo === 2 ? 'active' : '' ?>">
+                                🗓️ Tuần 2 (26/10 – 01/11)
+                            </a>
+                            <a href="index.php?tab=schedule&subview=<?= h($scheduleSubView) ?>&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>&week_no=0"
+                               class="week-pill <?= $selectedWeekNo === 0 ? 'active' : '' ?>">
+                                📑 Cả 2 tuần
+                            </a>
+                        </div>
+
+                        <div class="portal-control-right">
+                            <input type="search" class="portal-search-input"
+                                   placeholder="🔍 Lọc nhanh môn, lớp, GV, phòng..." oninput="filterKanbanCards(this.value)">
+                            <div class="dnu-subtabs">
+                                <a href="index.php?tab=schedule&subview=week&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>&week_no=<?= (int)$selectedWeekNo ?>"
+                                   class="dnu-subtab <?= $scheduleSubView !== 'list' ? 'active' : '' ?>">
+                                    🗓️ Lưới TKB 7 Ngày (Thứ 2 – CN)
+                                </a>
+                                <a href="index.php?tab=schedule&subview=list&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>&week_no=<?= (int)$selectedWeekNo ?>"
+                                   class="dnu-subtab <?= $scheduleSubView === 'list' ? 'active' : '' ?>">
+                                    📋 Danh sách chi tiết (<?= count($filteredList) ?>)
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thanh chỉ dẫn tương tác Kéo-Thả & Kiểm tra Ràng buộc trực tiếp trên lưới -->
+                    <div class="interactive-guide-bar" id="dnd_status_banner">
+                        <div>
+                            <strong>Hướng dẫn Điều phối Trực tiếp trên Lưới TKB:</strong>
+                            Giữ chuột <strong>Kéo - Thả</strong> học phần sang ô Thứ/Ca khác để hệ thống kiểm tra tự động 7 ràng buộc cứng và đánh dấu
+                            <span class="guide-pill-valid">🟢 Hợp lệ (Gợi ý phòng trống)</span> hoặc
+                            <span class="guide-pill-invalid">🔴 Trùng lịch / Vi phạm cứng</span>.
+                            Nhấn vào ô học phần bất kỳ để xem chi tiết hoặc đổi phòng nhanh.
+                        </div>
+                    </div>
+
+                    <!-- Form ẩn phục vụ Kéo - Thả (Drag & Drop) tự động cập nhật lịch -->
+                    <form method="post" action="index.php?tab=schedule&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&week_no=<?= (int)$selectedWeekNo ?>" id="drag_drop_move_form" style="display:none;">
+                        <input type="hidden" name="action" value="apply_manual_move">
+                        <input type="hidden" name="version_id" value="<?= (int)($activeVersion['id'] ?? 0) ?>">
+                        <input type="hidden" name="lesson_id" id="dnd_lesson_id" value="">
+                        <input type="hidden" name="target_slot_id" id="dnd_slot_id" value="">
+                        <input type="hidden" name="target_room_id" id="dnd_room_id" value="">
+                    </form>
+
+                    <?php if ($scheduleSubView !== 'list'): ?>
+                        <?php
+                        $weeksToRender = $selectedWeekNo === 0 ? [1, 2] : [$selectedWeekNo];
+                        foreach ($weeksToRender as $idxW => $w):
+                        ?>
+                            <div class="kanban-week-section" style="margin-top: <?= $idxW > 0 ? '24px' : '0' ?>;">
+                                <div class="kanban-week-banner">
+                                    <span>🗓️ <strong><?= h($weekSelectLabels[$w]) ?></strong> — Phương án: <?= h($activeVersion['version_name'] ?? '') ?></span>
+                                    <span class="kanban-week-tag"><?= count($filteredList) ?> buổi hiển thị</span>
+                                </div>
+
+                                <div class="kanban-board-5col">
+                                    <?php foreach ($dayNames as $dNum => $dLabel): ?>
+                                        <div class="kanban-day-col">
+                                            <div class="kanban-day-header">
+                                                <span class="day-title"><?= h($dLabel) ?></span>
+                                                <span class="day-badge"><?= $dNum === 8 ? 'CN' : ('Thứ ' . $dNum) ?></span>
+                                            </div>
+
+                                            <div class="kanban-day-body">
+                                                <?php foreach ([1 => '☀️ CA SÁNG (Tiết 1–5)', 2 => '🌤️ CA CHIỀU (Tiết 6–10)'] as $pNum => $pTitle):
+                                                    $slotItems = $grid[$w][$pNum][$dNum] ?? [];
+                                                    $slotCellObj = $slotLookup[$w][$pNum][$dNum] ?? null;
+                                                    $slotCellId = $slotCellObj ? (int)$slotCellObj['id'] : 0;
+                                                ?>
+                                                    <div class="kanban-session-slot"
+                                                         data-slot-id="<?= $slotCellId ?>"
+                                                         ondragover="handleSlotDragOver(event, <?= $slotCellId ?>)"
+                                                         ondragleave="handleSlotDragLeave(event)"
+                                                         ondrop="handleSlotDrop(event, <?= $slotCellId ?>)">
+                                                        <div class="kanban-session-title">
+                                                            <span><?= $pTitle ?></span>
+                                                            <?php if ($slotCellObj): ?>
+                                                                <span style="float:right; font-weight:600; color:#94a3b8;"><?= h($slotCellObj['code']) ?></span>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                        <div class="slot-drop-indicator" id="slot_drop_ind_<?= $slotCellId ?>"></div>
+                                                        <?php if (empty($slotItems)): ?>
+                                                            <div class="kanban-empty-slot">Kéo thả môn học vào ca này</div>
+                                                        <?php else: ?>
+                                                            <?php foreach ($slotItems as $item):
+                                                                $isLocked = (int)$item['is_locked'] === 1 || (int)$item['current_lesson_locked'] === 1;
+                                                                $exactCohortTime = ConstraintChecker::formatCohortTime((string)$item['class_code'], (int)$item['period_of_day']);
+                                                                $rTypeClass = strtolower((string)($item['room_type'] ?? 'lt'));
+                                                            ?>
+                                                                <div class="kanban-course-card type-<?= h($rTypeClass) ?> <?= $isLocked ? 'is-locked-card' : 'is-draggable-card' ?> searchable-card"
+                                                                     draggable="<?= $isLocked ? 'false' : 'true' ?>"
+                                                                     ondragstart="handleLessonDragStart(event, <?= (int)$item['lesson_id'] ?>)"
+                                                                     ondragend="handleLessonDragEnd(event)"
+                                                                     onclick="openLessonModal(<?= (int)$item['lesson_id'] ?>)"
+                                                                     title="<?= $isLocked ? 'Buổi học đã khóa cố định (Bấm để xem/mở khóa)' : 'Giữ chuột kéo sang ô khác để đổi lịch, hoặc bấm để điều chỉnh phòng nhanh' ?>">
+                                                                    <div class="kcard-top">
+                                                                        <span class="kcard-type-badge badge-<?= h($rTypeClass) ?>">
+                                                                            <?= h($item['lesson_code']) ?> • <?= h($item['class_code']) ?>
+                                                                        </span>
+                                                                        <span class="kcard-room">📍 P.<?= h($item['room_code']) ?></span>
+                                                                    </div>
+                                                                    <div class="kcard-subject"><?= h($item['subject_name']) ?></div>
+                                                                    <div class="kcard-time">🕒 <?= h($exactCohortTime) ?></div>
+                                                                    <div class="kcard-teacher">
+                                                                        👨‍🏫 <?= h($item['teacher_name']) ?><br>
+                                                                        👥 Sĩ số: <strong><?= (int)$item['student_count'] ?>/<?= (int)$item['room_capacity'] ?> chỗ</strong>
+                                                                        <?php if ($isLocked): ?>
+                                                                            <span class="locked-mini-tag">🔒 Đã khóa</span>
+                                                                        <?php else: ?>
+                                                                            <span class="drag-mini-tag">✥ Kéo thả / Chi tiết</span>
+                                                                        <?php endif; ?>
+                                                                    </div>
+                                                                    <?php if (!$isLocked): ?>
+                                                                        <div class="event-actions" onclick="event.stopPropagation();">
+                                                                            <form method="post" action="index.php?tab=schedule&version_id=<?= (int)$activeVersion['id'] ?>&week_no=<?= (int)$selectedWeekNo ?>" style="display:inline;">
+                                                                                <input type="hidden" name="action" value="lock_from_version">
+                                                                                <input type="hidden" name="lesson_id" value="<?= (int)$item['lesson_id'] ?>">
+                                                                                <input type="hidden" name="slot_id" value="<?= (int)$item['slot_id'] ?>">
+                                                                                <input type="hidden" name="room_id" value="<?= (int)$item['room_id'] ?>">
+                                                                                <button type="submit" class="btn btn-outline btn-sm event-lock-btn">🔒 Ghim cố định</button>
+                                                                            </form>
+                                                                        </div>
+                                                                    <?php endif; ?>
+                                                                </div>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="card">
+                            <div class="tt-table-scroll">
+                                <table class="dnu-tt-table list-mode-table">
+                                    <thead>
+                                        <tr>
+                                            <th>MÃ BUỔI</th>
+                                            <th>MÔN HỌC / HỌC PHẦN</th>
+                                            <th>LỚP HỌC</th>
+                                            <th>THỨ &amp; CA</th>
+                                            <th>GIỜ HỌC</th>
+                                            <th>PHÒNG HỌC</th>
+                                            <th>GIẢNG VIÊN</th>
+                                            <th>TRẠNG THÁI</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (empty($filteredList)): ?>
+                                            <tr><td colspan="8" style="padding:24px; color:#64748b; text-align:center;">Chưa có buổi học nào trong phạm vi lọc này.</td></tr>
+                                        <?php else: ?>
+                                            <?php foreach ($filteredList as $row):
+                                                $wRow = (int)($row['week_no'] ?? 1);
+                                                $pRow = (int)$row['period_of_day'];
+                                                $exactTime = ConstraintChecker::formatCohortTime((string)$row['class_code'], $pRow);
+                                                $buoiStr = ($pRow === 1) ? '☀️ Sáng' : '🌤️ Chiều';
+                                                $isLocked = (int)$row['is_locked'] === 1 || (int)$row['current_lesson_locked'] === 1;
+                                            ?>
+                                            <tr class="searchable-card" style="cursor:pointer;" onclick="openLessonModal(<?= (int)$row['lesson_id'] ?>)">
+                                                <td><strong><?= h($row['lesson_code']) ?></strong></td>
+                                                <td style="text-align:left;"><strong><?= h($row['subject_name']) ?></strong></td>
+                                                <td><span class="badge badge-lt"><?= h($row['class_code']) ?> (<?= (int)$row['student_count'] ?> SV)</span></td>
+                                                <td>Tuần <?= $wRow ?> • <?= (int)$row['day_of_week'] === 8 ? 'Chủ nhật' : ('Thứ ' . (int)$row['day_of_week']) ?> (<?= $buoiStr ?>)</td>
+                                                <td><strong><?= h($exactTime) ?></strong></td>
+                                                <td><strong>P.<?= h($row['room_code']) ?></strong> (<?= (int)$row['room_capacity'] ?> chỗ)</td>
+                                                <td><?= h($row['teacher_name']) ?></td>
+                                                <td><?= $isLocked ? '<span class="badge badge-locked">🔒 Đã khóa</span>' : '<span class="badge badge-soft-prefer">Tự động</span>' ?></td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </section>
+
+                <!-- PHẦN DƯỚI: THỐNG KÊ KPI PHƯƠNG ÁN & CÁC CHỨC NĂNG ĐIỀU PHỐI (CHẠY THUẬT TOÁN, BỘ LỌC, RADAR BUỔI CHƯA XẾP) -->
+                <div class="admin-kpi-ribbon" style="margin-top: 24px;">
+                    <div class="kpi-tile kpi-tile-primary">
+                        <div class="kpi-tile-label">PHƯƠNG ÁN ĐANG XÉT</div>
+                        <div class="kpi-tile-title"><?= h($activeVersion['version_name'] ?? 'Chưa có phương án') ?></div>
+                        <div class="kpi-tile-foot">
+                            <span class="badge badge-lt"><?= h($activeVersion['algorithm_type'] ?? 'IMPROVED') ?></span>
+                            <span>Tổng <?= count($versions) ?> phương án đã lưu</span>
+                        </div>
+                    </div>
+
+                    <div class="kpi-tile">
+                        <div class="kpi-tile-label">TIẾN ĐỘ XẾP LỊCH</div>
+                        <div class="kpi-tile-big">
+                            <?= (int)$activeAudit['scheduled_count'] ?><span>/<?= (int)$activeAudit['total_lessons'] ?> buổi (<?= $schedPct ?>%)</span>
+                        </div>
+                        <div class="kpi-progress-bar">
+                            <div class="kpi-progress-fill" style="width: <?= $schedPct ?>%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-tile">
+                        <div class="kpi-tile-label">TRẠNG THÁI RÀNG BUỘC CỨNG</div>
+                        <div class="kpi-tile-big" style="color: <?= $activeAudit['hard_violations'] === 0 ? '#059669' : '#dc2626' ?>;">
+                            <?= (int)$activeAudit['hard_violations'] ?> vi phạm
+                        </div>
+                        <div class="kpi-tile-foot">
+                            🔒 Đã ghim cố định <?= (int)($validation['stats']['locked_lessons'] ?? 3) ?> buổi khóa
+                        </div>
+                    </div>
+
+                    <div class="kpi-tile">
+                        <div class="kpi-tile-label">ĐIỂM PHẠT ƯU TIÊN (SOFT SCORE)</div>
+                        <div class="kpi-tile-big" style="color:#4f46e5;">
+                            <?= (int)$activeAudit['soft_penalty_score'] ?> <span>điểm phạt</span>
+                        </div>
+                        <div class="kpi-tile-foot">
+                            <?= (int)$activeAudit['unscheduled_count'] > 0
+                                ? ('⚠️ Còn ' . (int)$activeAudit['unscheduled_count'] . ' buổi chưa xếp')
+                                : '✅ Đã xếp kín 100% số buổi' ?>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-bottom-tools-grid">
+                    <!-- Khối 1: Chạy Thuật toán -->
+                    <div class="studio-side-card">
+                        <div class="studio-side-header">
+                            <span>🚀 Chạy Thuật toán Xếp lịch</span>
+                            <span class="badge badge-lt">Chức năng 3</span>
+                        </div>
+                        <form method="post" action="index.php?tab=schedule">
+                            <input type="hidden" name="action" value="run_schedule">
+                            <div class="form-group" style="margin-bottom:10px;">
+                                <label>Phương pháp xếp lịch</label>
+                                <select name="algorithm_type">
+                                    <option value="BOTH">⚡ Chạy đồng thời cả 2 cách xếp</option>
+                                    <option value="IMPROVED">2. Cách xếp Cải thiện (MRV + Best-Fit)</option>
+                                    <option value="BASIC">1. Cách xếp Cơ bản (First-Fit)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom:12px;">
+                                <label>Đặt tên phương án (Tùy chọn)</label>
+                                <input type="text" name="version_name" placeholder="Tự động đặt tên nếu để trống...">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">🚀 Thực thi xếp thời khóa biểu</button>
+                        </form>
+                    </div>
+
+                    <!-- Khối 2: Chọn Phương án & Bộ lọc đa chiều -->
+                    <div class="studio-side-card">
+                        <div class="studio-side-header">
+                            <span>🎛️ Bộ lọc &amp; Phương án</span>
+                        </div>
+                        <form method="get" action="index.php">
+                            <input type="hidden" name="tab" value="schedule">
+                            <input type="hidden" name="subview" value="<?= h($scheduleSubView) ?>">
+
+                            <div class="form-group" style="margin-bottom:10px;">
+                                <label>Phương án đang xem</label>
+                                <select name="version_id" onchange="this.form.submit()">
                                     <?php foreach ($versions as $v): ?>
                                         <option value="<?= (int)$v['id'] ?>" <?= ($activeVersion && (int)$activeVersion['id'] === (int)$v['id']) ? 'selected' : '' ?>>
-                                            #<?= (int)$v['id'] ?>: <?= h($v['version_name']) ?> (<?= (int)$v['scheduled_count'] ?>/<?= (int)$v['total_lessons'] ?> buổi)
+                                            #<?= (int)$v['id'] ?>: <?= h($v['version_name']) ?> (<?= (int)$v['scheduled_count'] ?>/<?= (int)$v['total_lessons'] ?>)
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
-                                <select name="filter_type" onchange="this.form.submit();" style="height:30px; padding:2px 8px; border-radius:4px; border:1px solid #ccc; font-size:12px;">
-                                    <option value="all" <?= $viewFilterType === 'all' ? 'selected' : '' ?>>Toàn trường</option>
-                                    <option value="class" <?= $viewFilterType === 'class' ? 'selected' : '' ?>>Theo Lớp</option>
-                                    <option value="teacher" <?= $viewFilterType === 'teacher' ? 'selected' : '' ?>>Theo Giảng viên</option>
-                                    <option value="room" <?= $viewFilterType === 'room' ? 'selected' : '' ?>>Theo Phòng</option>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom:10px;">
+                                <label>Phạm vi lọc đối tượng</label>
+                                <select name="filter_type" onchange="this.form.submit()">
+                                    <option value="all" <?= $viewFilterType === 'all' ? 'selected' : '' ?>>🌐 Toàn trường (Tất cả các lớp)</option>
+                                    <option value="class" <?= $viewFilterType === 'class' ? 'selected' : '' ?>>🏫 Lọc theo Lớp học</option>
+                                    <option value="teacher" <?= $viewFilterType === 'teacher' ? 'selected' : '' ?>>👨‍🏫 Lọc theo Giảng viên</option>
+                                    <option value="room" <?= $viewFilterType === 'room' ? 'selected' : '' ?>>🏢 Lọc theo Phòng học</option>
                                 </select>
-                                <?php if ($viewFilterType === 'class'): ?>
-                                    <select name="filter_id" onchange="this.form.submit()" style="height:30px; padding:2px 8px; border-radius:4px; border:1px solid #ccc; font-size:12px;">
+                            </div>
+
+                            <?php if ($viewFilterType === 'class'): ?>
+                                <div class="form-group" style="margin-bottom:10px;">
+                                    <label>Chọn Lớp học</label>
+                                    <select name="filter_id" onchange="this.form.submit()">
                                         <option value="0">-- Tất cả lớp --</option>
                                         <?php foreach ($dataset['classes'] as $c): ?>
-                                            <option value="<?= (int)$c['id'] ?>" <?= $viewFilterId === (int)$c['id'] ? 'selected' : '' ?>><?= h($c['code']) ?></option>
+                                            <option value="<?= (int)$c['id'] ?>" <?= $viewFilterId === (int)$c['id'] ? 'selected' : '' ?>><?= h($c['code'] . ' (' . $c['student_count'] . ' SV)') ?></option>
                                         <?php endforeach; ?>
                                     </select>
-                                <?php elseif ($viewFilterType === 'teacher'): ?>
-                                    <select name="filter_id" onchange="this.form.submit()" style="height:30px; padding:2px 8px; border-radius:4px; border:1px solid #ccc; font-size:12px;">
-                                        <option value="0">-- Tất cả GV --</option>
+                                </div>
+                            <?php elseif ($viewFilterType === 'teacher'): ?>
+                                <div class="form-group" style="margin-bottom:10px;">
+                                    <label>Chọn Giảng viên</label>
+                                    <select name="filter_id" onchange="this.form.submit()">
+                                        <option value="0">-- Tất cả giảng viên --</option>
                                         <?php foreach ($dataset['teachers'] as $t): ?>
                                             <option value="<?= (int)$t['id'] ?>" <?= $viewFilterId === (int)$t['id'] ? 'selected' : '' ?>><?= h($t['code'] . ' - ' . $t['name']) ?></option>
                                         <?php endforeach; ?>
                                     </select>
-                                <?php elseif ($viewFilterType === 'room'): ?>
-                                    <select name="filter_id" onchange="this.form.submit()" style="height:30px; padding:2px 8px; border-radius:4px; border:1px solid #ccc; font-size:12px;">
-                                        <option value="0">-- Tất cả phòng --</option>
+                                </div>
+                            <?php elseif ($viewFilterType === 'room'): ?>
+                                <div class="form-group" style="margin-bottom:10px;">
+                                    <label>Chọn Phòng học</label>
+                                    <select name="filter_id" onchange="this.form.submit()">
+                                        <option value="0">-- Tất cả phòng học --</option>
                                         <?php foreach ($dataset['rooms'] as $r): ?>
-                                            <option value="<?= (int)$r['id'] ?>" <?= $viewFilterId === (int)$r['id'] ? 'selected' : '' ?>><?= h($r['code']) ?></option>
+                                            <option value="<?= (int)$r['id'] ?>" <?= $viewFilterId === (int)$r['id'] ? 'selected' : '' ?>><?= h($r['code'] . ' (' . $r['room_type'] . ', ' . $r['capacity'] . ' chỗ)') ?></option>
                                         <?php endforeach; ?>
                                     </select>
-                                <?php endif; ?>
-                                <?php if ($activeVersion): ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($activeVersion): ?>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;">
                                     <a class="btn btn-outline btn-sm" target="_blank"
                                        href="index.php?action=export&format=print&version_id=<?= (int)$activeVersion['id'] ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>">
-                                       🖨️ Bản in
+                                       🖨️ Bản in PDF
                                     </a>
                                     <a class="btn btn-outline btn-sm"
                                        href="index.php?action=export&format=csv&version_id=<?= (int)$activeVersion['id'] ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>">
                                        📥 Xuất CSV
                                     </a>
-                                <?php endif; ?>
-                            </form>
+                                </div>
+                            <?php endif; ?>
+                        </form>
+                    </div>
+
+                    <!-- Khối 3: Danh sách Học phần chưa xếp được lịch (Có thể Kéo - Thả trực tiếp lên bảng TKB) -->
+                    <div class="studio-side-card">
+                        <div class="studio-side-header">
+                            <span>⚠️ Học phần chưa xếp được lịch (Kéo thả lên TKB)</span>
+                            <span class="badge <?= $activeAudit['unscheduled_count'] > 0 ? 'badge-soft-avoid' : 'badge-soft-prefer' ?>">
+                                <?= (int)$activeAudit['unscheduled_count'] ?> buổi
+                            </span>
+                        </div>
+                        <?php if (empty($activeAudit['unscheduled_lessons'])): ?>
+                            <div class="alert alert-success" style="margin:0; font-size:12.5px;">
+                                🎉 Đã xếp kín 100% (<?= $activeAudit['total_lessons'] ?>/<?= $activeAudit['total_lessons'] ?> buổi). Không có buổi học nào bị kẹt!
+                            </div>
+                        <?php else: ?>
+                            <div class="radar-unscheduled-list">
+                                <?php foreach ($activeAudit['unscheduled_lessons'] as $uLesson): ?>
+                                    <div class="radar-item is-draggable-card"
+                                         draggable="true"
+                                         ondragstart="handleLessonDragStart(event, <?= (int)$uLesson['lesson_id'] ?>)"
+                                         ondragend="handleLessonDragEnd(event)"
+                                         onclick="openLessonModal(<?= (int)$uLesson['lesson_id'] ?>)"
+                                         title="Giữ chuột kéo buổi học này lên bảng TKB phía trên để kiểm tra ô hợp lệ">
+                                        <div class="radar-item-top">
+                                            <strong><?= h($uLesson['code']) ?> — <?= h($uLesson['subject_name']) ?></strong>
+                                            <span class="badge badge-<?= strtolower(h($uLesson['required_room_type'])) ?>">
+                                                <?= (int)$uLesson['student_count'] ?> SV • <?= h($uLesson['required_room_type']) ?>
+                                            </span>
+                                        </div>
+                                        <div class="radar-item-reason"><?= h($uLesson['reason']) ?></div>
+                                        <div style="display:flex; gap:6px; margin-top:6px;" onclick="event.stopPropagation();">
+                                            <button type="button" class="btn btn-outline btn-sm" style="flex:1;"
+                                                    onclick="openLessonModal(<?= (int)$uLesson['lesson_id'] ?>)">
+                                                🔍 Kiểm tra &amp; Xếp nhanh
+                                            </button>
+                                            <a href="index.php?tab=adjust&version_id=<?= (int)$activeVersion['id'] ?>&pick_lesson_id=<?= (int)$uLesson['lesson_id'] ?>"
+                                               class="btn btn-primary btn-sm" style="flex:1;">
+                                                🔧 Trạm Đổi lịch
+                                            </a>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
-
-                <!-- 2. Hai tab: LỊCH HỌC TUẦN | LỊCH HỌC -->
-                <div class="dnu-subtabs">
-                    <a href="index.php?tab=schedule&subview=week&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>&week_no=<?= (int)$selectedWeekNo ?>"
-                       class="dnu-subtab <?= $scheduleSubView !== 'list' ? 'active' : '' ?>">
-                        LỊCH HỌC TUẦN
-                    </a>
-                    <a href="index.php?tab=schedule&subview=list&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>"
-                       class="dnu-subtab <?= $scheduleSubView === 'list' ? 'active' : '' ?>">
-                        LỊCH HỌC
-                    </a>
-                </div>
-
-                <?php if ($scheduleSubView !== 'list'): ?>
-                    <!-- 3. Hàng 4 ô chọn: Học kỳ | Năm học | Ngành học | Tuần -->
-                    <form method="get" action="index.php">
-                        <input type="hidden" name="tab" value="schedule">
-                        <input type="hidden" name="subview" value="week">
-                        <input type="hidden" name="version_id" value="<?= (int)($activeVersion['id'] ?? 0) ?>">
-                        <input type="hidden" name="filter_type" value="<?= h($viewFilterType) ?>">
-                        <input type="hidden" name="filter_id" value="<?= (int)$viewFilterId ?>">
-
-                        <div class="dnu-filter-row">
-                            <div class="dnu-filter-item">
-                                <label>Học kỳ</label>
-                                <select name="hoc_ky" onchange="this.form.submit()">
-                                    <option value="1" <?= $hocKy === '1' ? 'selected' : '' ?>>Kỳ 1</option>
-                                    <option value="2" <?= $hocKy === '2' ? 'selected' : '' ?>>Kỳ 2</option>
-                                    <option value="3" <?= $hocKy === '3' ? 'selected' : '' ?>>Kỳ Hè</option>
-                                </select>
-                            </div>
-                            <div class="dnu-filter-item">
-                                <label>Năm học</label>
-                                <select name="nam_hoc" onchange="this.form.submit()">
-                                    <option value="2026-2027" <?= $namHoc === '2026-2027' ? 'selected' : '' ?>>2026-2027</option>
-                                    <option value="2025-2026" <?= $namHoc === '2025-2026' ? 'selected' : '' ?>>2025-2026</option>
-                                </select>
-                            </div>
-                            <div class="dnu-filter-item">
-                                <label>Ngành học</label>
-                                <select name="nganh_hoc">
-                                    <option value="main">Chuyên ngành chính</option>
-                                </select>
-                            </div>
-                            <div class="dnu-filter-item">
-                                <label>Tuần</label>
-                                <select name="week_no" onchange="this.form.submit()">
-                                    <option value="1" <?= $selectedWeekNo === 1 ? 'selected' : '' ?>><?= h($weekSelectLabels[1]) ?></option>
-                                    <option value="2" <?= $selectedWeekNo === 2 ? 'selected' : '' ?>><?= h($weekSelectLabels[2]) ?></option>
-                                    <?php if (!$isStudent): ?>
-                                        <option value="0" <?= $selectedWeekNo === 0 ? 'selected' : '' ?>>Hiển thị cả 2 tuần (Tuần 12 & Tuần 13)</option>
-                                    <?php endif; ?>
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-
-                    <!-- 4. Bảng Lịch Học Tuần (BUỔI | Thứ 2 .. Thứ 7) -->
-                    <?php
-                    $weeksToRender = $selectedWeekNo === 0 ? [1, 2] : [$selectedWeekNo];
-                    foreach ($weeksToRender as $idxW => $w):
-                    ?>
-                        <?php if ($selectedWeekNo === 0): ?>
-                            <div style="font-weight:700; font-size:13px; color:#333; margin: <?= $idxW > 0 ? '18px' : '0' ?> 0 6px;">
-                                <?= h($weekSelectLabels[$w]) ?>
-                            </div>
-                        <?php endif; ?>
-                        <div style="overflow-x:auto;">
-                            <table class="dnu-tt-table">
-                                <thead>
-                                    <tr>
-                                        <th>BUỔI</th>
-                                        <th>THỨ 2</th>
-                                        <th>THỨ 3</th>
-                                        <th>THỨ 4</th>
-                                        <th>THỨ 5</th>
-                                        <th>THỨ 6</th>
-                                        <th>THỨ 7</th>
-                                        <th>CHỦ NHẬT(học lại)</th>
-                                        <th>GHI CHÚ</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $buoiLabels = [
-                                        1 => "SÁNG<br>(4 Tiết)",
-                                        2 => "CHIỀU<br>(4 Tiết)",
-                                    ];
-                                    for ($p = 1; $p <= 2; $p++):
-                                    ?>
-                                    <tr>
-                                        <td class="dnu-buoi-col"><?= $buoiLabels[$p] ?></td>
-                                        <?php for ($d = 2; $d <= 8; $d++):
-                                            $cellItems = $grid[$w][$p][$d] ?? [];
-                                        ?>
-                                        <td>
-                                            <?php foreach ($cellItems as $item):
-                                                $isLocked = (int)$item['is_locked'] === 1 || (int)$item['current_lesson_locked'] === 1;
-                                                $exactCohortTime = ConstraintChecker::formatCohortTime((string)$item['class_code'], (int)$item['period_of_day']);
-                                                $tietText = ((int)$item['period_of_day'] === 1) ? '1 - 5' : '6 - 10';
-                                                $dateRangeText = $weekRangeLabels[$w] ?? '19/10/2026 - 25/10/2026';
-                                            ?>
-                                            <div class="dnu-lesson-cell-item">
-                                                <div><?= h($item['subject_name']) ?></div>
-                                                <div>P.<?= h($item['room_code']) ?></div>
-                                                <div>Tiết: <?= $tietText ?> (<?= h($exactCohortTime) ?>)</div>
-                                                <div>(<?= h($dateRangeText) ?>)</div>
-                                                <div>GV: <?= h($item['teacher_name']) ?></div>
-                                                <?php if (!$isStudent): ?>
-                                                    <div style="color:#1e40af; font-size:11.5px; margin-top:2px;">
-                                                        Lớp: <?= h($item['class_code']) ?> (<?= (int)$item['student_count'] ?>/<?= (int)$item['room_capacity'] ?>)
-                                                        <?= $isLocked ? '🔒' : '' ?>
-                                                    </div>
-                                                <?php endif; ?>
-                                                <?php if ($isScheduler && !$isLocked): ?>
-                                                    <div style="margin-top:4px;">
-                                                        <form method="post" action="index.php?tab=schedule&version_id=<?= (int)$activeVersion['id'] ?>&week_no=<?= (int)$selectedWeekNo ?>" style="display:inline;">
-                                                            <input type="hidden" name="action" value="lock_from_version">
-                                                            <input type="hidden" name="lesson_id" value="<?= (int)$item['lesson_id'] ?>">
-                                                            <input type="hidden" name="slot_id" value="<?= (int)$item['slot_id'] ?>">
-                                                            <input type="hidden" name="room_id" value="<?= (int)$item['room_id'] ?>">
-                                                            <button type="submit" class="btn btn-outline btn-sm" style="padding:1px 6px; font-size:11px;">🔒 Khóa</button>
-                                                        </form>
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
-                                            <?php endforeach; ?>
-                                        </td>
-                                        <?php endfor; ?>
-                                        <td class="dnu-note-col"></td>
-                                    </tr>
-                                    <?php endfor; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <!-- Tab 2: LỊCH HỌC (Danh sách tổng hợp các buổi học trong học kỳ) -->
-                    <div style="overflow-x:auto;">
-                        <table class="dnu-tt-table">
-                            <thead>
-                                <tr>
-                                    <th>STT</th>
-                                    <th>MÔN HỌC / HỌC PHẦN</th>
-                                    <th>LỚP HỌC</th>
-                                    <th>THỨ & BUỔI</th>
-                                    <th>TIẾT & GIỜ HỌC</th>
-                                    <th>PHÒNG HỌC</th>
-                                    <th>GIẢNG VIÊN</th>
-                                    <th>THỜI GIAN</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($filteredList)): ?>
-                                    <tr><td colspan="8" style="padding:18px; color:#777;">Chưa có lịch học nào.</td></tr>
-                                <?php else: ?>
-                                    <?php foreach ($filteredList as $idx => $row):
-                                        $wRow = (int)($row['week_no'] ?? 1);
-                                        $pRow = (int)$row['period_of_day'];
-                                        $exactTime = ConstraintChecker::formatCohortTime((string)$row['class_code'], $pRow);
-                                        $tietStr = ($pRow === 1) ? 'Tiết 1 - 5' : 'Tiết 6 - 10';
-                                        $buoiStr = ($pRow === 1) ? 'SÁNG' : 'CHIỀU';
-                                    ?>
-                                    <tr>
-                                        <td><?= $idx + 1 ?></td>
-                                        <td><?= h($row['subject_name']) ?></td>
-                                        <td><?= h($row['class_code']) ?></td>
-                                        <td>Thứ <?= (int)$row['day_of_week'] ?> (<?= $buoiStr ?>)</td>
-                                        <td><?= $tietStr ?> (<?= h($exactTime) ?>)</td>
-                                        <td>P.<?= h($row['room_code']) ?></td>
-                                        <td><?= h($row['teacher_name']) ?></td>
-                                        <td><?= h($weekRangeLabels[$wRow] ?? '19/10/2026 - 25/10/2026') ?></td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php endif; ?>
-            </div>
-
-            <?php if ($isScheduler): ?>
-            <!-- Bảng Điều khiển Chạy Thuật Toán & Hai Tình huống mẫu (nằm ngay dưới Bảng Thời Khóa Biểu) -->
-            <div class="card">
-                <div class="card-header">
-                    <h2>⚙️ Chạy Thuật Toán Tạo Thời Khóa Biểu & Kịch bản Mẫu (Chức năng 3)</h2>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <form method="post" action="index.php?tab=schedule" style="display:inline;">
-                            <input type="hidden" name="action" value="reset_seed">
-                            <button type="submit" class="btn btn-outline btn-sm">🔄 Tình huống 1: Khôi phục dữ liệu gốc & Chạy 2 phương án</button>
-                        </form>
-                        <form method="post" action="index.php?tab=compare" style="display:inline;">
-                            <input type="hidden" name="action" value="scenario2_quick_adjust">
-                            <button type="submit" class="btn btn-primary btn-sm">⚡ Tình huống 2: Khóa thêm BH04 + Đổi yêu cầu BH20 & So sánh</button>
-                        </form>
-                    </div>
-                </div>
-                <form method="post" action="index.php?tab=schedule">
-                    <input type="hidden" name="action" value="run_schedule">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Chọn phương pháp xếp lịch</label>
-                            <select name="algorithm_type">
-                                <option value="BOTH">⚡ Chạy đồng thời cả 2 cách xếp (Cơ bản & Cải thiện) trên cùng dữ liệu</option>
-                                <option value="BASIC">1. Cách xếp Cơ bản (Sequential First-Fit Greedy)</option>
-                                <option value="IMPROVED">2. Cách xếp Cải thiện (Dynamic MRV + Best-Fit + Swap Repair + Local Search)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Tên phương án lưu trữ (Tùy chọn)</label>
-                            <input type="text" name="version_name" placeholder="Để trống sẽ tự động đặt tên kèm thời gian...">
-                        </div>
-                        <div class="form-group" style="display:flex; align-items:flex-end;">
-                            <button type="submit" class="btn btn-primary" style="width:100%;">🚀 Thực thi xếp thời khóa biểu</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
             <?php endif; ?>
 
-            <?php if (!$isStudent): ?>
-            <!-- Danh sách các buổi chưa xếp được trong phương án đang xét (Ẩn với Sinh viên) -->
+            <!-- ==================== POPUP MODAL ĐIỀU KHIỂN CHI TIẾT BUỔI HỌC (DÙNG CHUNG CHO ADMIN / GV / SV) ==================== -->
+            <div class="tt-modal-backdrop" id="lesson_detail_modal" style="display:none;" onclick="if(event.target===this) closeLessonModal()">
+                <div class="tt-modal-dialog">
+                    <div class="tt-modal-header">
+                        <div>
+                            <div class="tt-modal-eyebrow" id="md_lesson_code">BUỔI HỌC</div>
+                            <h3 class="tt-modal-title" id="md_subject_name">Chi tiết buổi học</h3>
+                        </div>
+                        <button type="button" class="tt-modal-close" onclick="closeLessonModal()">✕</button>
+                    </div>
+                    <div class="tt-modal-body">
+                        <div class="tt-modal-meta-grid">
+                            <div class="tt-meta-box">
+                                <span class="tt-meta-label">🏫 Lớp học &amp; Sĩ số</span>
+                                <strong id="md_class_info">—</strong>
+                            </div>
+                            <div class="tt-meta-box">
+                                <span class="tt-meta-label">👨‍🏫 Giảng viên phụ trách</span>
+                                <strong id="md_teacher_info">—</strong>
+                            </div>
+                            <div class="tt-meta-box">
+                                <span class="tt-meta-label">🕒 Khung giờ hiện tại</span>
+                                <strong id="md_slot_info">—</strong>
+                            </div>
+                            <div class="tt-meta-box">
+                                <span class="tt-meta-label">📍 Phòng học &amp; Loại phòng</span>
+                                <strong id="md_room_info">—</strong>
+                            </div>
+                        </div>
+
+                        <div id="md_soft_note_box" class="alert alert-info" style="font-size:12.5px; margin:12px 0;"></div>
+
+                        <!-- Danh sách sinh viên thuộc lớp -->
+                        <div style="margin:12px 0;">
+                            <div style="font-size:12px; font-weight:700; color:#334155; margin-bottom:6px;">
+                                🎓 Tài khoản Sinh viên thuộc lớp (<span id="md_student_list_count">0</span> tài khoản):
+                            </div>
+                            <div id="md_student_chips" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+                        </div>
+
+                        <?php if ($isScheduler && $activeVersion): ?>
+                            <!-- Bảng điều khiển nhanh cho Admin ngay trong Modal -->
+                            <div class="tt-modal-action-panel">
+                                <div style="font-weight:800; font-size:13.5px; color:#1e1b4b; margin-bottom:10px;">
+                                    ⚡ Điều phối Nhanh: Đổi Phòng học / Khung giờ (Kiểm tra ràng buộc trực tiếp)
+                                </div>
+                                <form method="post" action="index.php?tab=schedule&version_id=<?= (int)$activeVersion['id'] ?>&week_no=<?= (int)$selectedWeekNo ?>">
+                                    <input type="hidden" name="action" value="apply_manual_move">
+                                    <input type="hidden" name="version_id" value="<?= (int)$activeVersion['id'] ?>">
+                                    <input type="hidden" name="lesson_id" id="md_admin_lesson_id" value="">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Khung giờ đích</label>
+                                            <select name="target_slot_id" id="md_admin_slot_select" onchange="refreshModalRoomOptions()"></select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Phòng học khả dụng (Đã lọc đúng loại &amp; sức chứa)</label>
+                                            <select name="target_room_id" id="md_admin_room_select"></select>
+                                        </div>
+                                    </div>
+                                    <div id="md_live_check_msg" style="font-size:12px; font-weight:700; margin-bottom:10px;"></div>
+                                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                                        <button type="submit" class="btn btn-primary btn-sm" id="md_admin_save_btn">💾 Áp dụng thay đổi ngay</button>
+                                        <a id="md_admin_adjust_link" href="#" class="btn btn-outline btn-sm">🔧 Mở trong Trạm Đổi lịch</a>
+                                    </div>
+                                </form>
+                            </div>
+                        <?php elseif ($isTeacher): ?>
+                            <!-- Form gửi yêu cầu xin đổi lịch ngay trong Modal cho Giảng viên -->
+                            <div class="tt-modal-action-panel">
+                                <div style="font-weight:800; font-size:13.5px; color:#0f766e; margin-bottom:10px;">
+                                    📝 Gửi đề xuất Xin đổi lịch / Dạy bù buổi học này
+                                </div>
+                                <form method="post" action="index.php?tab=schedule">
+                                    <input type="hidden" name="action" value="submit_reschedule_request">
+                                    <input type="hidden" name="version_id" value="<?= (int)($activeVersion['id'] ?? 2) ?>">
+                                    <input type="hidden" name="lesson_id" id="md_teacher_lesson_id" value="">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Khung giờ mong muốn chuyển sang</label>
+                                            <select name="target_slot_id" id="md_teacher_slot_select" onchange="refreshTeacherModalRooms()"></select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Phòng học đề xuất</label>
+                                            <select name="target_room_id" id="md_teacher_room_select"></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="margin-bottom:10px;">
+                                        <label>Lý do xin đổi ca / dạy bù</label>
+                                        <input type="text" name="reason" placeholder="VD: Bận công tác đột xuất, xin chuyển ca dạy..." required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-sm">📨 Gửi đề xuất tới Phòng Đào tạo</button>
+                                </form>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <?php
+            // Chuẩn bị dữ liệu JSON cho Engine Kéo - Thả (Drag & Drop) & Kiểm tra Ràng buộc Thời gian thực trên Trình duyệt
+            $jsLessons = [];
+            foreach ($dataset['lessons'] as $l) {
+                $jsLessons[(int)$l['id']] = [
+                    'id' => (int)$l['id'],
+                    'code' => $l['code'],
+                    'subject_name' => $l['subject_name'],
+                    'teacher_id' => (int)$l['teacher_id'],
+                    'teacher_code' => $l['teacher_code'],
+                    'teacher_name' => $l['teacher_name'],
+                    'class_id' => (int)$l['class_id'],
+                    'class_code' => $l['class_code'],
+                    'student_count' => (int)$l['student_count'],
+                    'required_room_type' => $l['required_room_type'],
+                    'is_locked' => (int)$l['is_locked'],
+                    'notes' => $l['notes'] ?? '',
+                ];
+            }
+            $jsSlots = [];
+            foreach ($dataset['slots'] as $s) {
+                $jsSlots[(int)$s['id']] = [
+                    'id' => (int)$s['id'],
+                    'code' => $s['code'],
+                    'label' => $s['label'],
+                    'week_no' => (int)($s['week_no'] ?? 1),
+                    'day_of_week' => (int)$s['day_of_week'],
+                    'period_of_day' => (int)$s['period_of_day'],
+                ];
+            }
+            $jsRooms = [];
+            foreach ($dataset['rooms'] as $r) {
+                $jsRooms[(int)$r['id']] = [
+                    'id' => (int)$r['id'],
+                    'code' => $r['code'],
+                    'name' => $r['name'],
+                    'capacity' => (int)$r['capacity'],
+                    'room_type' => $r['room_type'],
+                ];
+            }
+            $jsAssignments = [];
+            foreach ($activeAssignments as $a) {
+                $jsAssignments[(int)$a['lesson_id']] = [
+                    'lesson_id' => (int)$a['lesson_id'],
+                    'slot_id' => (int)$a['slot_id'],
+                    'room_id' => (int)$a['room_id'],
+                    'room_code' => $a['room_code'],
+                    'slot_code' => $a['slot_code'],
+                    'slot_label' => $a['slot_label'],
+                    'is_locked' => (int)$a['is_locked'],
+                    'soft_penalty' => (int)($a['soft_penalty'] ?? 0),
+                    'soft_notes' => $a['soft_notes'] ?? '',
+                ];
+            }
+            $jsHardBusy = [];
+            foreach ($dataset['unavailability'] as $u) {
+                if ($u['constraint_type'] === 'HARD_BUSY') {
+                    $jsHardBusy[(int)$u['teacher_id']][(int)$u['slot_id']] = $u['reason'];
+                }
+            }
+            $jsStudentsByClass = [];
+            foreach ($studentAccounts as $stu) {
+                $cid = (int)($stu['class_id'] ?? 0);
+                $jsStudentsByClass[$cid][] = $stu['username'] . ' (' . $stu['full_name'] . ')';
+            }
+            ?>
+            <script>
+            window.TT_STATE = {
+                lessons: <?= json_encode($jsLessons, JSON_UNESCAPED_UNICODE) ?>,
+                slots: <?= json_encode($jsSlots, JSON_UNESCAPED_UNICODE) ?>,
+                rooms: <?= json_encode($jsRooms, JSON_UNESCAPED_UNICODE) ?>,
+                assignments: <?= json_encode($jsAssignments, JSON_UNESCAPED_UNICODE) ?>,
+                hardBusy: <?= json_encode($jsHardBusy, JSON_UNESCAPED_UNICODE) ?>,
+                studentsByClass: <?= json_encode($jsStudentsByClass, JSON_UNESCAPED_UNICODE) ?>,
+                activeVersionId: <?= (int)($activeVersion['id'] ?? 0) ?>
+            };
+
+            let draggedLessonId = null;
+
+            function filterKanbanCards(query) {
+                const q = (query || '').toLowerCase().trim();
+                const cards = document.querySelectorAll('.searchable-card');
+                cards.forEach(card => {
+                    const text = (card.textContent || '').toLowerCase();
+                    card.style.display = (!q || text.includes(q)) ? '' : 'none';
+                });
+            }
+
+            /**
+             * Đánh giá tức thời 7 điều kiện bắt buộc khi đặt lessonId vào slotId.
+             * Trả về: { valid: bool, reason: string, bestRoom: object|null, compatibleFreeRooms: array }
+             */
+            function evaluateSlotForLesson(lessonId, slotId) {
+                const lesson = window.TT_STATE.lessons[lessonId];
+                const slot = window.TT_STATE.slots[slotId];
+                if (!lesson || !slot) {
+                    return { valid: false, reason: 'Không hợp lệ', bestRoom: null, compatibleFreeRooms: [] };
+                }
+                if (lesson.is_locked === 1) {
+                    return { valid: false, reason: '🔒 Buổi đã khóa cố định', bestRoom: null, compatibleFreeRooms: [] };
+                }
+                // 1. Kiểm tra lịch bận cứng của giảng viên (HC-06)
+                const busyMap = window.TT_STATE.hardBusy[lesson.teacher_id] || {};
+                if (busyMap[slotId]) {
+                    return { valid: false, reason: '⛔ GV bận cứng (' + busyMap[slotId] + ')', bestRoom: null, compatibleFreeRooms: [] };
+                }
+                // 2. Kiểm tra trùng giảng viên, trùng lớp và phòng đang bị chiếm trong slotId (HC-01, HC-02, HC-03)
+                const occupiedRooms = {};
+                for (const [otherLidStr, assign] of Object.entries(window.TT_STATE.assignments)) {
+                    const otherLid = parseInt(otherLidStr, 10);
+                    if (otherLid === lessonId) continue;
+                    if (assign.slot_id === slotId) {
+                        const otherLesson = window.TT_STATE.lessons[otherLid];
+                        if (otherLesson && otherLesson.teacher_id === lesson.teacher_id) {
+                            return { valid: false, reason: '⛔ Trùng GV (' + otherLesson.code + ')', bestRoom: null, compatibleFreeRooms: [] };
+                        }
+                        if (otherLesson && otherLesson.class_id === lesson.class_id) {
+                            return { valid: false, reason: '⛔ Trùng Lớp (' + otherLesson.code + ')', bestRoom: null, compatibleFreeRooms: [] };
+                        }
+                        occupiedRooms[assign.room_id] = otherLesson ? otherLesson.code : 'Đã có lớp';
+                    }
+                }
+                // 3. Tìm các phòng đúng loại, đủ sức chứa và còn trống trong ca này (HC-04, HC-05)
+                const freeRooms = [];
+                for (const room of Object.values(window.TT_STATE.rooms)) {
+                    if (room.room_type === lesson.required_room_type && room.capacity >= lesson.student_count) {
+                        if (!occupiedRooms[room.id]) {
+                            freeRooms.push(room);
+                        }
+                    }
+                }
+                freeRooms.sort((a, b) => a.capacity - b.capacity);
+                if (freeRooms.length === 0) {
+                    return { valid: false, reason: '⛔ Hết phòng ' + lesson.required_room_type + ' ≥ ' + lesson.student_count + ' chỗ', bestRoom: null, compatibleFreeRooms: [] };
+                }
+                const best = freeRooms[0];
+                return {
+                    valid: true,
+                    reason: '✅ Hợp lệ — Gợi ý P.' + best.code + ' (' + best.capacity + ' chỗ)',
+                    bestRoom: best,
+                    compatibleFreeRooms: freeRooms
+                };
+            }
+
+            function handleLessonDragStart(e, lessonId) {
+                const lesson = window.TT_STATE.lessons[lessonId];
+                if (!lesson || lesson.is_locked === 1) {
+                    e.preventDefault();
+                    return;
+                }
+                draggedLessonId = lessonId;
+                e.dataTransfer.setData('text/plain', String(lessonId));
+                e.currentTarget.classList.add('dragging-card');
+
+                // Đánh giá toàn bộ các ô khung giờ trên màn hình và tô màu Xanh / Đỏ trực tiếp
+                document.querySelectorAll('.kanban-session-slot[data-slot-id]').forEach(slotEl => {
+                    const sId = parseInt(slotEl.getAttribute('data-slot-id') || '0', 10);
+                    if (!sId) return;
+                    const res = evaluateSlotForLesson(lessonId, sId);
+                    const indEl = document.getElementById('slot_drop_ind_' + sId);
+                    if (res.valid) {
+                        slotEl.classList.add('slot-drop-valid');
+                        slotEl.classList.remove('slot-drop-invalid');
+                        if (indEl) {
+                            indEl.textContent = res.reason;
+                            indEl.className = 'slot-drop-indicator show-valid';
+                        }
+                    } else {
+                        slotEl.classList.add('slot-drop-invalid');
+                        slotEl.classList.remove('slot-drop-valid');
+                        if (indEl) {
+                            indEl.textContent = res.reason;
+                            indEl.className = 'slot-drop-indicator show-invalid';
+                        }
+                    }
+                });
+            }
+
+            function handleLessonDragEnd(e) {
+                e.currentTarget.classList.remove('dragging-card');
+                draggedLessonId = null;
+                document.querySelectorAll('.kanban-session-slot').forEach(slotEl => {
+                    slotEl.classList.remove('slot-drop-valid', 'slot-drop-invalid', 'slot-drag-over');
+                });
+                document.querySelectorAll('.slot-drop-indicator').forEach(indEl => {
+                    indEl.textContent = '';
+                    indEl.className = 'slot-drop-indicator';
+                });
+            }
+
+            function handleSlotDragOver(e, slotId) {
+                if (!draggedLessonId || !slotId) return;
+                const res = evaluateSlotForLesson(draggedLessonId, slotId);
+                if (res.valid) {
+                    e.preventDefault();
+                    e.currentTarget.classList.add('slot-drag-over');
+                }
+            }
+
+            function handleSlotDragLeave(e) {
+                e.currentTarget.classList.remove('slot-drag-over');
+            }
+
+            function handleSlotDrop(e, slotId) {
+                e.preventDefault();
+                e.currentTarget.classList.remove('slot-drag-over');
+                const lId = draggedLessonId || parseInt(e.dataTransfer.getData('text/plain') || '0', 10);
+                if (!lId || !slotId) return;
+                const res = evaluateSlotForLesson(lId, slotId);
+                if (!res.valid || !res.bestRoom) {
+                    alert('Không thể thả vào khung giờ này: ' + res.reason);
+                    return;
+                }
+                document.getElementById('dnd_lesson_id').value = lId;
+                document.getElementById('dnd_slot_id').value = slotId;
+                document.getElementById('dnd_room_id').value = res.bestRoom.id;
+                document.getElementById('drag_drop_move_form').submit();
+            }
+
+            // Mở Modal Chi tiết & Điều khiển nhanh Buổi học
+            function openLessonModal(lessonId) {
+                const lesson = window.TT_STATE.lessons[lessonId];
+                if (!lesson) return;
+                const assign = window.TT_STATE.assignments[lessonId] || null;
+
+                document.getElementById('md_lesson_code').textContent =
+                    lesson.code + ' • LOẠI PHÒNG YÊU CẦU: ' + lesson.required_room_type + (lesson.is_locked ? ' • 🔒 ĐÃ KHÓA CỐ ĐỊNH' : ' • XẾP TỰ ĐỘNG');
+                document.getElementById('md_subject_name').textContent = lesson.subject_name;
+                document.getElementById('md_class_info').textContent = 'Lớp ' + lesson.class_code + ' (' + lesson.student_count + ' sinh viên)';
+                document.getElementById('md_teacher_info').textContent = lesson.teacher_code + ' — ' + lesson.teacher_name;
+
+                if (assign) {
+                    document.getElementById('md_slot_info').textContent = assign.slot_code + ' (' + assign.slot_label + ')';
+                    const rObj = window.TT_STATE.rooms[assign.room_id];
+                    document.getElementById('md_room_info').textContent =
+                        'Phòng ' + assign.room_code + (rObj ? (' (' + rObj.room_type + ', Sức chứa ' + rObj.capacity + ' chỗ)') : '');
+                    document.getElementById('md_soft_note_box').innerHTML =
+                        '<strong>Trạng thái tối ưu:</strong> Điểm phạt mềm = <strong>' + assign.soft_penalty + 'đ</strong>. ' +
+                        (assign.soft_notes ? ('(' + assign.soft_notes + ')') : 'Đạt tối ưu toàn bộ ràng buộc cứng và mềm.');
+                } else {
+                    document.getElementById('md_slot_info').textContent = '⚠️ Chưa xếp được khung giờ';
+                    document.getElementById('md_room_info').textContent = '⚠️ Chưa phân phòng';
+                    document.getElementById('md_soft_note_box').innerHTML =
+                        '<strong>Trạng thái:</strong> Buổi học này hiện đang nằm trong danh sách chưa xếp. Bạn có thể chọn Khung giờ và Phòng học bên dưới để xếp ngay.';
+                }
+
+                // Danh sách sinh viên của lớp
+                const stuList = window.TT_STATE.studentsByClass[lesson.class_id] || [];
+                document.getElementById('md_student_list_count').textContent = stuList.length;
+                const chipsWrap = document.getElementById('md_student_chips');
+                chipsWrap.innerHTML = '';
+                if (stuList.length === 0) {
+                    chipsWrap.innerHTML = '<span style="font-size:12px; color:#64748b;">Lớp hiện có ' + lesson.student_count + ' sinh viên theo danh sách đào tạo.</span>';
+                } else {
+                    stuList.forEach(sText => {
+                        const sp = document.createElement('span');
+                        sp.className = 'bento-chip';
+                        sp.textContent = '🎓 ' + sText;
+                        chipsWrap.appendChild(sp);
+                    });
+                }
+
+                // Nếu là Admin
+                const adminLessonInput = document.getElementById('md_admin_lesson_id');
+                if (adminLessonInput) {
+                    adminLessonInput.value = lessonId;
+                    const slotSel = document.getElementById('md_admin_slot_select');
+                    slotSel.innerHTML = '';
+                    Object.values(window.TT_STATE.slots).forEach(s => {
+                        const evalRes = evaluateSlotForLesson(lessonId, s.id);
+                        const opt = document.createElement('option');
+                        opt.value = s.id;
+                        opt.textContent = (evalRes.valid ? '🟢 ' : '🔴 ') + s.code + ' — ' + s.label + (evalRes.valid ? '' : (' [' + evalRes.reason + ']'));
+                        if (assign && assign.slot_id === s.id) opt.selected = true;
+                        slotSel.appendChild(opt);
+                    });
+                    const adjLink = document.getElementById('md_admin_adjust_link');
+                    if (adjLink) {
+                        adjLink.href = 'index.php?tab=adjust&version_id=' + window.TT_STATE.activeVersionId + '&pick_lesson_id=' + lessonId;
+                    }
+                    refreshModalRoomOptions();
+                }
+
+                // Nếu là Giảng viên
+                const teacherLessonInput = document.getElementById('md_teacher_lesson_id');
+                if (teacherLessonInput) {
+                    teacherLessonInput.value = lessonId;
+                    const tSlotSel = document.getElementById('md_teacher_slot_select');
+                    tSlotSel.innerHTML = '';
+                    Object.values(window.TT_STATE.slots).forEach(s => {
+                        const evalRes = evaluateSlotForLesson(lessonId, s.id);
+                        const opt = document.createElement('option');
+                        opt.value = s.id;
+                        opt.textContent = (evalRes.valid ? '🟢 ' : '🔴 ') + s.code + ' — ' + s.label;
+                        if (assign && assign.slot_id === s.id) opt.selected = true;
+                        tSlotSel.appendChild(opt);
+                    });
+                    refreshTeacherModalRooms();
+                }
+
+                document.getElementById('lesson_detail_modal').style.display = 'flex';
+            }
+
+            function refreshModalRoomOptions() {
+                const lessonId = parseInt(document.getElementById('md_admin_lesson_id').value || '0', 10);
+                const slotId = parseInt(document.getElementById('md_admin_slot_select').value || '0', 10);
+                const roomSel = document.getElementById('md_admin_room_select');
+                const msgEl = document.getElementById('md_live_check_msg');
+                const saveBtn = document.getElementById('md_admin_save_btn');
+                if (!lessonId || !slotId || !roomSel) return;
+
+                const lesson = window.TT_STATE.lessons[lessonId];
+                const assign = window.TT_STATE.assignments[lessonId] || null;
+                const evalRes = evaluateSlotForLesson(lessonId, slotId);
+
+                roomSel.innerHTML = '';
+                Object.values(window.TT_STATE.rooms).forEach(r => {
+                    const isTypeOk = r.room_type === lesson.required_room_type;
+                    const isCapOk = r.capacity >= lesson.student_count;
+                    if (!isTypeOk || !isCapOk) return;
+                    const isFree = evalRes.compatibleFreeRooms.some(fr => fr.id === r.id) || (assign && assign.slot_id === slotId && assign.room_id === r.id);
+                    const opt = document.createElement('option');
+                    opt.value = r.id;
+                    opt.textContent = (isFree ? '✅ ' : '⛔ ') + r.code + ' — ' + r.name + ' (' + r.capacity + ' chỗ)' + (isFree ? ' [Trống]' : ' [Đã có lớp]');
+                    if (assign && assign.room_id === r.id) opt.selected = true;
+                    roomSel.appendChild(opt);
+                });
+
+                if (lesson.is_locked === 1) {
+                    msgEl.style.color = '#b45309';
+                    msgEl.textContent = '🔒 Buổi học đang bị khóa cố định. Hãy mở khóa nếu muốn di chuyển.';
+                    saveBtn.disabled = true;
+                } else if (evalRes.valid) {
+                    msgEl.style.color = '#059669';
+                    msgEl.textContent = evalRes.reason;
+                    saveBtn.disabled = false;
+                } else {
+                    msgEl.style.color = '#dc2626';
+                    msgEl.textContent = evalRes.reason;
+                    saveBtn.disabled = false;
+                }
+            }
+
+            function refreshTeacherModalRooms() {
+                const lessonId = parseInt(document.getElementById('md_teacher_lesson_id').value || '0', 10);
+                const roomSel = document.getElementById('md_teacher_room_select');
+                if (!lessonId || !roomSel) return;
+                const lesson = window.TT_STATE.lessons[lessonId];
+                roomSel.innerHTML = '';
+                Object.values(window.TT_STATE.rooms).forEach(r => {
+                    if (r.room_type === lesson.required_room_type && r.capacity >= lesson.student_count) {
+                        const opt = document.createElement('option');
+                        opt.value = r.id;
+                        opt.textContent = r.code + ' — ' + r.name + ' (' + r.capacity + ' chỗ)';
+                        roomSel.appendChild(opt);
+                    }
+                });
+            }
+
+            function closeLessonModal() {
+                document.getElementById('lesson_detail_modal').style.display = 'none';
+            }
+            </script>
+
+        <?php elseif ($activeTab === 'requests' && $isScheduler): ?>
+            <!-- ==================== TAB MỚI: PHÊ DUYỆT ĐỀ XUẤT ĐỔI LỊCH GIẢNG VIÊN & NHẬT KÝ HỆ THỐNG ==================== -->
+            <?php
+            $requestsList = $dataset['reschedule_requests'] ?? [];
+            $auditLogsList = $dataset['audit_logs'] ?? [];
+            $currentAssignByLesson = [];
+            foreach ($activeAssignments as $aRow) {
+                $currentAssignByLesson[(int)$aRow['lesson_id']] = $aRow;
+            }
+            ?>
             <div class="card">
                 <div class="card-header">
-                    <h2>
-                        Danh sách Buổi học Chưa xếp được trong phương án này (<?= $activeAudit['unscheduled_count'] ?> buổi)
-                    </h2>
-                    <span class="badge <?= $activeAudit['unscheduled_count'] > 0 ? 'badge-soft-avoid' : 'badge-soft-prefer' ?>">
-                        <?= $activeAudit['unscheduled_count'] > 0 ? 'Báo cáo rõ phần chưa xếp (Không kết luận vô nghiệm)' : 'Đã xếp đầy đủ 100%' ?>
-                    </span>
+                    <div>
+                        <h2>📩 Phê duyệt Yêu cầu Xin đổi lịch / Dạy bù từ Giảng viên</h2>
+                        <p style="margin:4px 0 0; font-size:13px; color:#64748b;">
+                            Hệ thống tự động kiểm toán trước 7 điều kiện bắt buộc và mức biến thiên điểm phạt mềm của từng đề xuất trên phương án đang xét (<strong><?= h($activeVersion['version_name'] ?? '') ?></strong>).
+                        </p>
+                    </div>
+                    <span class="badge badge-lt"><?= count($requestsList) ?> yêu cầu</span>
                 </div>
 
-                <?php if (empty($activeAudit['unscheduled_lessons'])): ?>
-                    <div class="alert alert-success">
-                        🎉 Tất cả <?= $activeAudit['total_lessons'] ?>/<?= $activeAudit['total_lessons'] ?> buổi học đã được xếp lịch thành công mà không vi phạm bất kỳ điều kiện bắt buộc nào!
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã YC</th>
+                            <th>Giảng viên đề xuất</th>
+                            <th>Buổi học &amp; Lớp</th>
+                            <th>Vị trí hiện tại</th>
+                            <th>Đề xuất chuyển tới</th>
+                            <th>Lý do của Giảng viên</th>
+                            <th>Kiểm tra Ràng buộc Tự động</th>
+                            <th>Trạng thái / Phê duyệt</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($requestsList)): ?>
+                            <tr><td colspan="8" style="text-align:center; padding:20px; color:#64748b;">Chưa có yêu cầu đổi lịch nào từ giảng viên.</td></tr>
+                        <?php else: ?>
+                            <?php foreach ($requestsList as $rq):
+                                $rqLid = (int)$rq['lesson_id'];
+                                $curAssign = $currentAssignByLesson[$rqLid] ?? null;
+                                $liveImpact = $engine->checkManualMoveImpact(
+                                    $rqLid,
+                                    (int)$rq['target_slot_id'],
+                                    (int)$rq['target_room_id'],
+                                    $activeAssignments,
+                                    $dataset
+                                );
+                            ?>
+                            <tr>
+                                <td><strong>#<?= (int)$rq['id'] ?></strong></td>
+                                <td>
+                                    <strong><?= h($rq['teacher_code']) ?></strong><br>
+                                    <?= h($rq['teacher_name']) ?>
+                                </td>
+                                <td>
+                                    <strong><?= h($rq['lesson_code']) ?> — <?= h($rq['subject_name']) ?></strong><br>
+                                    <span class="badge badge-lt">Lớp <?= h($rq['class_code']) ?> (<?= (int)$rq['student_count'] ?> SV • <?= h($rq['required_room_type']) ?>)</span>
+                                </td>
+                                <td>
+                                    <?php if ($curAssign): ?>
+                                        <strong><?= h($curAssign['slot_code']) ?></strong><br>
+                                        Phòng <strong><?= h($curAssign['room_code']) ?></strong>
+                                    <?php else: ?>
+                                        <span class="badge badge-soft-avoid">Chưa xếp</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <strong style="color:#4f46e5;"><?= h($rq['target_slot_code']) ?></strong> (<?= h($rq['target_slot_label']) ?>)<br>
+                                    Phòng <strong><?= h($rq['target_room_code']) ?></strong> (<?= (int)$rq['target_room_capacity'] ?> chỗ)
+                                </td>
+                                <td><?= h($rq['reason']) ?></td>
+                                <td>
+                                    <?php if ($rq['status'] !== 'PENDING'): ?>
+                                        <span style="font-size:12px; color:#64748b;"><?= h($rq['admin_note'] ?: 'Đã xử lý') ?></span>
+                                    <?php elseif ($liveImpact['can_apply']): ?>
+                                        <span class="badge badge-soft-prefer">✅ Thỏa mãn 7/7 ràng buộc cứng</span>
+                                        <div style="font-size:11.5px; color:#059669; margin-top:4px;">
+                                            Điểm phạt mềm sau đổi: <strong><?= (int)$liveImpact['after_soft_score'] ?>đ</strong>
+                                            (<?= (int)$liveImpact['soft_score_delta'] <= 0 ? (int)$liveImpact['soft_score_delta'] : ('+' . (int)$liveImpact['soft_score_delta']) ?>đ)
+                                        </div>
+                                    <?php else: ?>
+                                        <span class="badge badge-hard">⛔ Vi phạm ràng buộc cứng</span>
+                                        <div style="font-size:11.5px; color:#dc2626; margin-top:4px;">
+                                            <?= h(implode('; ', $liveImpact['hard_violations'] ?? [$liveImpact['summary']])) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+                                <td style="min-width:190px;">
+                                    <?php if ($rq['status'] === 'PENDING'): ?>
+                                        <div style="display:flex; flex-direction:column; gap:6px;">
+                                            <form method="post" action="index.php?tab=requests" style="margin:0;">
+                                                <input type="hidden" name="action" value="review_reschedule_request">
+                                                <input type="hidden" name="request_id" value="<?= (int)$rq['id'] ?>">
+                                                <input type="hidden" name="decision" value="APPROVE">
+                                                <button type="submit" class="btn btn-primary btn-sm" style="width:100%;" <?= !$liveImpact['can_apply'] ? 'disabled title="Đang xung đột ràng buộc cứng"' : '' ?>>
+                                                    ✅ Duyệt &amp; Tự động đổi lịch
+                                                </button>
+                                            </form>
+                                            <form method="post" action="index.php?tab=requests" style="margin:0;">
+                                                <input type="hidden" name="action" value="review_reschedule_request">
+                                                <input type="hidden" name="request_id" value="<?= (int)$rq['id'] ?>">
+                                                <input type="hidden" name="decision" value="REJECT">
+                                                <button type="submit" class="btn btn-outline btn-sm" style="width:100%;">
+                                                    ❌ Từ chối đề xuất
+                                                </button>
+                                            </form>
+                                        </div>
+                                    <?php elseif ($rq['status'] === 'APPROVED'): ?>
+                                        <span class="badge badge-soft-prefer">✅ ĐÃ PHÊ DUYỆT</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-hard">❌ ĐÃ TỪ CHỐI</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Nhật ký Tác động Hệ thống (System Audit Log) -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2>📜 Nhật ký Tác động &amp; Lịch sử Điều phối Hệ thống (Audit Log)</h2>
+                        <p style="margin:4px 0 0; font-size:13px; color:#64748b;">
+                            Ghi nhận tự động mọi thao tác chạy thuật toán, kéo-thả đổi lịch, gửi đề xuất của giảng viên, phê duyệt và nạp dữ liệu hàng loạt.
+                        </p>
                     </div>
-                <?php else: ?>
+                    <span class="badge badge-th"><?= count($auditLogsList) ?> bản ghi gần nhất</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Thời gian</th>
+                            <th>Người thực hiện</th>
+                            <th>Vai trò</th>
+                            <th>Mã hành động</th>
+                            <th>Nội dung tác động</th>
+                            <th>Chi tiết kỹ thuật</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($auditLogsList as $log): ?>
+                            <tr>
+                                <td style="white-space:nowrap; font-size:12px; color:#64748b;"><?= h($log['created_at']) ?></td>
+                                <td><strong><?= h($log['actor_name']) ?></strong></td>
+                                <td>
+                                    <span class="badge <?= $log['actor_role'] === 'scheduler' ? 'badge-locked' : 'badge-th' ?>">
+                                        <?= $log['actor_role'] === 'scheduler' ? '⚙️ Quản trị' : '👨‍🏫 Giảng viên' ?>
+                                    </span>
+                                </td>
+                                <td><code><?= h($log['action_code']) ?></code></td>
+                                <td><strong><?= h($log['summary']) ?></strong></td>
+                                <td style="font-size:12.5px; color:#475569;"><?= h($log['details'] ?? '') ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+        <?php elseif ($activeTab === 'analytics' && $isScheduler): ?>
+            <!-- ==================== TAB MỚI: PHÂN TÍCH CÔNG SUẤT PHÒNG & TẢI GIẢNG DẠY + BULK IMPORT CSV ==================== -->
+            <?php
+            $totalSlotsCount = max(1, count($dataset['slots']));
+            $roomStats = [];
+            foreach ($dataset['rooms'] as $r) {
+                $rid = (int)$r['id'];
+                $roomStats[$rid] = [
+                    'room' => $r,
+                    'used_slots' => 0,
+                    'total_students' => 0,
+                    'morning_count' => 0,
+                    'afternoon_count' => 0,
+                ];
+            }
+            $teacherStats = [];
+            foreach ($dataset['teachers'] as $t) {
+                $tid = (int)$t['id'];
+                $teacherStats[$tid] = [
+                    'teacher' => $t,
+                    'taught_count' => 0,
+                    'morning_count' => 0,
+                    'afternoon_count' => 0,
+                    'hard_busy_count' => 0,
+                    'soft_prefer_count' => 0,
+                    'soft_avoid_count' => 0,
+                    'soft_penalty_sum' => 0,
+                ];
+            }
+            foreach ($dataset['unavailability'] as $u) {
+                $tid = (int)$u['teacher_id'];
+                if (!isset($teacherStats[$tid])) continue;
+                if ($u['constraint_type'] === 'HARD_BUSY') {
+                    $teacherStats[$tid]['hard_busy_count']++;
+                } elseif ($u['constraint_type'] === 'SOFT_PREFER') {
+                    $teacherStats[$tid]['soft_prefer_count']++;
+                } else {
+                    $teacherStats[$tid]['soft_avoid_count']++;
+                }
+            }
+            foreach ($activeAssignments as $a) {
+                $rid = (int)$a['room_id'];
+                $tid = (int)$a['teacher_id'];
+                $pDay = (int)$a['period_of_day'];
+                if (isset($roomStats[$rid])) {
+                    $roomStats[$rid]['used_slots']++;
+                    $roomStats[$rid]['total_students'] += (int)$a['student_count'];
+                    if ($pDay === 1) $roomStats[$rid]['morning_count']++;
+                    else $roomStats[$rid]['afternoon_count']++;
+                }
+                if (isset($teacherStats[$tid])) {
+                    $teacherStats[$tid]['taught_count']++;
+                    $teacherStats[$tid]['soft_penalty_sum'] += (int)($a['soft_penalty'] ?? 0);
+                    if ($pDay === 1) $teacherStats[$tid]['morning_count']++;
+                    else $teacherStats[$tid]['afternoon_count']++;
+                }
+            }
+            ?>
+            <div class="grid-2">
+                <!-- 1. Biểu đồ Công suất Khai thác Phòng học & Hiệu suất Lấp đầy Ghế ngồi -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2>🏢 Phân tích Công suất Phòng học &amp; Hiệu suất Lấp đầy Ghế</h2>
+                            <p style="margin:4px 0 0; font-size:12.5px; color:#64748b;">
+                                Đánh giá mức độ khai thác từng phòng học và tỷ lệ lấp đầy sức chứa (Seat Fill Rate %) trên phương án hiện tại.
+                            </p>
+                        </div>
+                    </div>
                     <table>
                         <thead>
                             <tr>
-                                <th>Mã buổi</th>
-                                <th>Tên học phần</th>
-                                <th>Sĩ số & Loại phòng YC</th>
-                                <th>Chẩn đoán nguyên nhân chưa xếp được (Từ lịch thực tế)</th>
-                                <?php if ($isScheduler): ?><th>Thao tác xử lý</th><?php endif; ?>
+                                <th>Phòng học</th>
+                                <th>Loại &amp; Sức chứa</th>
+                                <th>Số ca sử dụng</th>
+                                <th>Hiệu suất lấp đầy ghế (Seat Fill %)</th>
+                                <th>Trạng thái khai thác</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($activeAudit['unscheduled_lessons'] as $uLesson): ?>
+                            <?php foreach ($roomStats as $rs):
+                                $r = $rs['room'];
+                                $used = $rs['used_slots'];
+                                $slotPct = round(($used * 100) / $totalSlotsCount, 1);
+                                $avgStudents = $used > 0 ? round($rs['total_students'] / $used, 1) : 0;
+                                $seatFillPct = ($used > 0 && (int)$r['capacity'] > 0)
+                                    ? min(100, round(($avgStudents * 100) / (int)$r['capacity'], 1))
+                                    : 0;
+                            ?>
                             <tr>
-                                <td><strong><?= h($uLesson['code']) ?></strong></td>
-                                <td><?= h($uLesson['subject_name']) ?></td>
                                 <td>
-                                    <strong><?= (int)$uLesson['student_count'] ?> SV</strong> —
-                                    <span class="badge badge-<?= strtolower(h($uLesson['required_room_type'])) ?>"><?= h($uLesson['required_room_type']) ?></span>
+                                    <strong><?= h($r['code']) ?></strong><br>
+                                    <small style="color:#64748b;"><?= h($r['name']) ?></small>
                                 </td>
-                                <td style="color:#9a3412;"><?= h($uLesson['reason']) ?></td>
-                                <?php if ($isScheduler): ?>
                                 <td>
-                                    <a href="index.php?tab=adjust&version_id=<?= (int)$activeVersion['id'] ?>&pick_lesson_id=<?= (int)$uLesson['lesson_id'] ?>" class="btn btn-primary btn-sm">
-                                        🔧 Thử xếp / Kiểm tra ảnh hưởng
-                                    </a>
+                                    <span class="badge badge-<?= strtolower(h($r['room_type'])) ?>"><?= h($r['room_type']) ?></span>
+                                    <strong><?= (int)$r['capacity'] ?> chỗ</strong>
                                 </td>
-                                <?php endif; ?>
+                                <td>
+                                    <strong><?= $used ?>/<?= $totalSlotsCount ?> ca</strong> (<?= $slotPct ?>%)<br>
+                                    <small style="color:#64748b;">☀️ <?= $rs['morning_count'] ?> sáng • 🌤️ <?= $rs['afternoon_count'] ?> chiều</small>
+                                </td>
+                                <td style="min-width:190px;">
+                                    <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px;">
+                                        <span>TB: <?= $avgStudents ?>/<?= (int)$r['capacity'] ?> SV</span>
+                                        <span style="color:#4f46e5;"><?= $seatFillPct ?>%</span>
+                                    </div>
+                                    <div class="kpi-progress-bar">
+                                        <div class="kpi-progress-fill" style="width: <?= $seatFillPct ?>%;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <?php if ($seatFillPct >= 75): ?>
+                                        <span class="badge badge-soft-prefer">⚡ Tối ưu cao (Sát sĩ số)</span>
+                                    <?php elseif ($used > 0): ?>
+                                        <span class="badge badge-lt">✅ Cân bằng</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-soft-avoid">⚪ Đang rảnh</span>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
-                <?php endif; ?>
+                </div>
+
+                <!-- 2. Biểu đồ Phân tích Tải Giảng dạy & Ràng buộc Giảng viên -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2>👨‍🏫 Phân tích Tải Giảng dạy &amp; Mức độ Đáp ứng Nguyện vọng GV</h2>
+                            <p style="margin:4px 0 0; font-size:12.5px; color:#64748b;">
+                                Thống kê khối lượng giảng dạy, mật độ lịch bận cứng và mức độ thỏa mãn nguyện vọng ưu tiên của từng giảng viên.
+                            </p>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Giảng viên</th>
+                                <th>Số ca dạy</th>
+                                <th>Mật độ Lịch bận / Ưu tiên</th>
+                                <th>Điểm phạt mềm</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($teacherStats as $ts):
+                                $t = $ts['teacher'];
+                                $freeSlots = max(0, $totalSlotsCount - $ts['hard_busy_count']);
+                                $busyPct = round(($ts['hard_busy_count'] * 100) / $totalSlotsCount, 1);
+                            ?>
+                            <tr>
+                                <td>
+                                    <strong><?= h($t['code']) ?> — <?= h($t['name']) ?></strong><br>
+                                    <small style="color:#64748b;"><?= h($t['department']) ?> (Max <?= (int)$t['max_lessons_per_day'] ?> ca/ngày)</small>
+                                </td>
+                                <td>
+                                    <strong><?= $ts['taught_count'] ?> buổi</strong><br>
+                                    <small style="color:#64748b;">☀️ <?= $ts['morning_count'] ?> sáng • 🌤️ <?= $ts['afternoon_count'] ?> chiều</small>
+                                </td>
+                                <td>
+                                    <div style="font-size:12px;">
+                                        🔴 Bận cứng: <strong><?= $ts['hard_busy_count'] ?>/<?= $totalSlotsCount ?> ca</strong> (Còn rảnh <?= $freeSlots ?> ca)
+                                    </div>
+                                    <div style="font-size:11.5px; color:#475569; margin-top:2px;">
+                                        🟢 Ưu tiên: <?= $ts['soft_prefer_count'] ?> • 🟡 Hạn chế: <?= $ts['soft_avoid_count'] ?>
+                                    </div>
+                                    <div class="kpi-progress-bar" style="margin-top:4px;">
+                                        <div class="kpi-progress-fill" style="width: <?= $busyPct ?>%; background: <?= $busyPct >= 80 ? '#ef4444' : '#3b82f6' ?>;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <?php if ($ts['soft_penalty_sum'] === 0): ?>
+                                        <span class="badge badge-soft-prefer">0đ (Tối ưu)</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-soft-avoid"><?= $ts['soft_penalty_sum'] ?>đ phạt</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <?php endif; ?>
+
+            <!-- 3. Công cụ Bulk Import CSV / Excel Paste kèm Kiểm tra Ràng buộc Hàng loạt -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2>📥 Công cụ Nạp Hàng Loạt Buổi học bằng CSV / Excel Paste (Bulk Import &amp; Batch Validation)</h2>
+                        <p style="margin:4px 0 0; font-size:13px; color:#64748b;">
+                            Hỗ trợ nhập hàng loạt học phần từ bảng tính CSV. Hệ thống tự động kiểm tra định dạng, mã giảng viên, mã lớp, sĩ số và loại phòng của từng dòng trước khi lưu vào CSDL.
+                        </p>
+                    </div>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="fillSampleCsvImport()">
+                        ⚡ Điền nhanh 3 buổi học CSV mẫu để Demo
+                    </button>
+                </div>
+
+                <form method="post" action="index.php?tab=analytics">
+                    <input type="hidden" name="action" value="bulk_import_lessons">
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label>Định dạng mỗi dòng: <code>Mã buổi, Tên học phần, Mã GV, Mã lớp, Sĩ số, Loại phòng (LT/TH), Ghi chú</code></label>
+                        <textarea name="csv_content" id="bulk_csv_textarea" rows="5"
+                                  style="width:100%; font-family:monospace; font-size:13px; padding:10px; border:1px solid #cbd5e1; border-radius:8px;"
+                                  placeholder="BH21, Phát triển ứng dụng đám mây, GV01, CNTT 18-12, 35, LT, Học vào cuối tuần hoặc trong tuần&#10;BH22, Thực hành Docker & Kubernetes, GV04, CNTT 18-09, 38, TH, Cần phòng máy LAB"></textarea>
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <button type="submit" class="btn btn-primary">📥 Kiểm tra Ràng buộc &amp; Nạp hàng loạt vào CSDL</button>
+                        <span style="font-size:12.5px; color:#64748b;">Sau khi nạp xong, bạn có thể sang tab <strong>Thời khóa biểu</strong> để chạy thuật toán xếp luôn các buổi mới!</span>
+                    </div>
+                </form>
+            </div>
+            <script>
+            function fillSampleCsvImport() {
+                document.getElementById('bulk_csv_textarea').value =
+                    "BH21, Phát triển ứng dụng Đám mây (Cloud), GV01, CNTT 18-12, 35, LT, Học phần bổ sung học kỳ 1\n" +
+                    "BH22, Thực hành Docker & Microservices, GV04, CNTT 18-09, 38, TH, Thực hành tại phòng LAB\n" +
+                    "BH23, Phân tích dữ liệu kinh doanh, GV05, KT 18-10, 60, LT, Lớp ghép 60 sinh viên";
+            }
+            </script>
 
         <?php elseif ($activeTab === 'adjust'): ?>
             <!-- ==================== TAB 4: ĐỔI LỊCH THỦ CÔNG & KIỂM TRA ẢNH HƯỞNG ==================== -->
