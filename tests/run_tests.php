@@ -1,6 +1,13 @@
 <?php
 declare(strict_types=1);
 
+if (!extension_loaded('pdo_mysql') && getenv('TT_PDO_REEXEC') !== '1') {
+    putenv('TT_PDO_REEXEC=1');
+    $cmd = escapeshellarg(PHP_BINARY) . ' -d extension=pdo_mysql -d extension=mysqli ' . escapeshellarg(__FILE__);
+    passthru($cmd, $exitCode);
+    exit($exitCode);
+}
+
 /**
  * BỘ KIỂM THỬ TỰ ĐỘNG & TÍCH HỢP (ĐỀ TÀI 18 - NHÓM 10)
  * Đối chiếu đầy đủ 5 phép thử bắt buộc tại Mục 6 của đề tài + Kiểm thử dữ liệu, an toàn & hồi quy.
@@ -52,7 +59,7 @@ echo "--- KIỂM TRA QUY MÔ DỮ LIỆU MẪU CHUẨN (MỤC 5) ---\n";
 assertTest(count($dataset['lessons']) === 20, 'Quy mô 20 buổi học', 'Thực tế: ' . count($dataset['lessons']));
 assertTest(count($dataset['teachers']) === 6, 'Quy mô 6 giảng viên', 'Thực tế: ' . count($dataset['teachers']));
 assertTest(count($dataset['rooms']) === 5, 'Quy mô 5 phòng học', 'Thực tế: ' . count($dataset['rooms']));
-assertTest(count($dataset['slots']) === 20, 'Quy mô 20 khung giờ', 'Thực tế: ' . count($dataset['slots']));
+assertTest(count($dataset['slots']) === 28, 'Quy mô 28 khung giờ (Thứ 2 -> Chủ nhật, Ca Sáng & Ca Chiều)', 'Thực tế: ' . count($dataset['slots']));
 
 // Chạy cả 2 thuật toán trên cùng dữ liệu chuẩn
 $resBasic = $engine->scheduleBasic($dataset);
