@@ -16,6 +16,127 @@ class TimetableRepository
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
+        $this->ensureWeekendSlotsExist();
+        $this->ensureWorkflowTablesExist();
+    }
+
+    /**
+     * Đảm bảo bảng Yêu cầu xin đổi lịch của Giảng viên (reschedule_requests)
+     * và Nhật ký tác động hệ thống (audit_logs) luôn có sẵn kèm dữ liệu mẫu.
+     */
+    private function ensureWorkflowTablesExist(): void
+    {
+        try {
+            $this->pdo->exec("
+                CREATE TABLE IF NOT EXISTS reschedule_requests (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    teacher_id INT NOT NULL,
+                    lesson_id INT NOT NULL,
+                    version_id INT NOT NULL DEFAULT 2,
+                    target_slot_id INT NOT NULL,
+                    target_room_id INT NOT NULL,
+                    reason VARCHAR(255) NOT NULL,
+                    status ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
+                    admin_note VARCHAR(255) DEFAULT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            ");
+
+            $this->pdo->exec("
+                CREATE TABLE IF NOT EXISTS audit_logs (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    actor_name VARCHAR(100) NOT NULL,
+                    actor_role VARCHAR(30) NOT NULL DEFAULT 'scheduler',
+                    action_code VARCHAR(50) NOT NULL,
+                    summary VARCHAR(255) NOT NULL,
+                    details TEXT DEFAULT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            ");
+
+            $reqCount = (int)$this->pdo->query("SELECT COUNT(*) FROM reschedule_requests")->fetchColumn();
+            if ($reqCount === 0) {
+                $stmtReq = $this->pdo->prepare("
+                    INSERT INTO reschedule_requests (teacher_id, lesson_id, version_id, target_slot_id, target_room_id, reason, status, admin_note)
+                    VALUES (?, ?, 2, ?, ?, ?, ?, ?)
+                ");
+                // Mẫu 1: Đang chờ duyệt (GV01 xin chuyển BH04 sang Tuần 1 - Thứ 4 - Ca Sáng, P101)
+                $stmtReq->execute([1, 4, 5, 1, 'Trùng lịch họp Hội đồng thẩm định giáo trình cấp Khoa, xin chuyển sang sáng Thứ 4', 'PENDING', null]);
+                // Mẫu 2: Đang chờ duyệt (GV04 xin dạy bù BH08 vào Thứ 7 Ca Sáng, LAB01)
+                $stmtReq->execute([4, 8, 21, 4, 'Xin dạy bù thực hành Mạng máy tính vào sáng Thứ 7 tại LAB01', 'PENDING', null]);
+                // Mẫu 3: Đã phê duyệt trước đó
+                $stmtReq->execute([5, 6, 7, 1, 'Điều chỉnh ca dạy theo đề xuất của Bộ môn', 'APPROVED', 'Đạt toàn bộ 7 điều kiện bắt buộc, đã cập nhật TKB']);
+            }
+
+            $logCount = (int)$this->pdo->query("SELECT COUNT(*) FROM audit_logs")->fetchColumn();
+            if ($logCount === 0) {
+                $stmtLog = $this->pdo->prepare("
+                    INSERT INTO audit_logs (actor_name, actor_role, action_code, summary, details)
+                    VALUES (?, ?, ?, ?, ?)
+                ");
+                $stmtLog->execute([
+                    'Hệ thống Tự động',
+                    'scheduler',
+                    'INIT_SCHEDULE',
+                    'Khởi tạo và so sánh 2 phương án xếp lịch (BASIC vs IMPROVED)',
+                    'Phương án IMPROVED (MRV + Best-Fit + Swap Repair) đạt 19/20 buổi, giảm điểm phạt mềm từ 253đ xuống 4đ.'
+                ]);
+                $stmtLog->execute([
+                    'TS. Nguyễn Văn An (GV01)',
+                    'teacher',
+                    'REQUEST_RESCHEDULE',
+                    'Gửi đề xuất đổi lịch buổi học [BH04 - Lập trình Web với PHP]',
+                    'Đề xuất chuyển sang khung giờ T1-T4-S (Tuần 1 - Thứ 4 - Ca Sáng), Phòng P101.'
+                ]);
+            }
+        } catch (\Throwable $e) {
+            // Bỏ qua nếu CSDL đang trong quá trình reset
+        }
+    }
+
+    /**
+     * Đảm bảo các khung giờ Thứ 7 (day_of_week = 7) và Chủ nhật (day_of_week = 8)
+     * Ca Sáng (1) và Ca Chiều (2) cho cả 2 tuần luôn có sẵn trong CSDL.
+     */
+    private function ensureWeekendSlotsExist(): void
+    {
+        try {
+            $cnt = (int)$this->pdo->query("SELECT COUNT(*) FROM slots WHERE day_of_week IN (7, 8)")->fetchColumn();
+            if ($cnt >= 8) {
+                return;
+            }
+            $weekendSlots = [
+                [21, 'T1-T7-S', 1, 7, 1, '07:20 / 07:10', '11:20 / 11:10', 'Tuần 1 - Thứ 7 - Ca Sáng'],
+                [22, 'T1-T7-C', 1, 7, 2, '13:20 / 13:10', '17:20 / 17:10', 'Tuần 1 - Thứ 7 - Ca Chiều'],
+                [23, 'T1-CN-S', 1, 8, 1, '07:20 / 07:10', '11:20 / 11:10', 'Tuần 1 - Chủ nhật - Ca Sáng'],
+                [24, 'T1-CN-C', 1, 8, 2, '13:20 / 13:10', '17:20 / 17:10', 'Tuần 1 - Chủ nhật - Ca Chiều'],
+                [25, 'T2-T7-S', 2, 7, 1, '07:20 / 07:10', '11:20 / 11:10', 'Tuần 2 - Thứ 7 - Ca Sáng'],
+                [26, 'T2-T7-C', 2, 7, 2, '13:20 / 13:10', '17:20 / 17:10', 'Tuần 2 - Thứ 7 - Ca Chiều'],
+                [27, 'T2-CN-S', 2, 8, 1, '07:20 / 07:10', '11:20 / 11:10', 'Tuần 2 - Chủ nhật - Ca Sáng'],
+                [28, 'T2-CN-C', 2, 8, 2, '13:20 / 13:10', '17:20 / 17:10', 'Tuần 2 - Chủ nhật - Ca Chiều'],
+            ];
+            $stmtSlot = $this->pdo->prepare(
+                "INSERT IGNORE INTO slots (id, code, week_no, day_of_week, period_of_day, start_time, end_time, label)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+            );
+            foreach ($weekendSlots as $ws) {
+                $stmtSlot->execute($ws);
+            }
+
+            // Đảm bảo lịch bận cuối tuần cho các giảng viên trong kịch bản kiểm thử nghẽn cổ chai (GV02, GV03, GV06)
+            $stmtBusy = $this->pdo->prepare(
+                "INSERT IGNORE INTO unavailability (teacher_id, slot_id, constraint_type, reason)
+                 VALUES (?, ?, 'HARD_BUSY', ?)"
+            );
+            foreach ([21, 22, 23, 24, 25, 26, 27, 28] as $sId) {
+                $stmtBusy->execute([2, $sId, 'Lịch công tác & chấm khóa luận cuối tuần']);
+                $stmtBusy->execute([3, $sId, 'Lịch nghiên cứu khoa học cuối tuần']);
+                $stmtBusy->execute([6, $sId, 'Lịch công tác doanh nghiệp cuối tuần']);
+            }
+        } catch (\Throwable $e) {
+            // Bỏ qua nếu bảng chưa được khởi tạo
+        }
     }
 
     /**
@@ -32,6 +153,8 @@ class TimetableRepository
             'unavailability' => $this->getUnavailability(),
             'lessons' => $this->getLessons(),
             'users' => $this->getUsers(),
+            'reschedule_requests' => $this->getRescheduleRequests(),
+            'audit_logs' => $this->getAuditLogs(35),
         ];
     }
 
@@ -662,6 +785,99 @@ class TimetableRepository
         } catch (\Throwable $e) {
             $this->pdo->rollBack();
             throw $e;
+        }
+    }
+
+    // ==================== LUỒNG NGHIỆP VỤ XIN ĐỔI LỊCH GIẢNG VIÊN & NHẬT KÝ HỆ THỐNG ====================
+    public function getRescheduleRequests(): array
+    {
+        try {
+            $sql = "SELECT rr.*,
+                           t.code AS teacher_code, t.name AS teacher_name,
+                           l.code AS lesson_code, l.subject_name, l.student_count, l.required_room_type,
+                           c.code AS class_code,
+                           s.code AS target_slot_code, s.label AS target_slot_label,
+                           r.code AS target_room_code, r.name AS target_room_name, r.capacity AS target_room_capacity
+                    FROM reschedule_requests rr
+                    JOIN teachers t ON rr.teacher_id = t.id
+                    JOIN lessons l ON rr.lesson_id = l.id
+                    JOIN classes c ON l.class_id = c.id
+                    JOIN slots s ON rr.target_slot_id = s.id
+                    JOIN rooms r ON rr.target_room_id = r.id
+                    ORDER BY FIELD(rr.status, 'PENDING', 'APPROVED', 'REJECTED'), rr.id DESC";
+            return $this->pdo->query($sql)->fetchAll();
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    public function getRescheduleRequestById(int $id): ?array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM reschedule_requests WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $row = $stmt->fetch();
+        return $row ?: null;
+    }
+
+    public function createRescheduleRequest(array $data): int
+    {
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO reschedule_requests (teacher_id, lesson_id, version_id, target_slot_id, target_room_id, reason, status)
+             VALUES (:teacher_id, :lesson_id, :version_id, :target_slot_id, :target_room_id, :reason, 'PENDING')"
+        );
+        $stmt->execute([
+            'teacher_id' => (int)$data['teacher_id'],
+            'lesson_id' => (int)$data['lesson_id'],
+            'version_id' => (int)($data['version_id'] ?? 2),
+            'target_slot_id' => (int)$data['target_slot_id'],
+            'target_room_id' => (int)$data['target_room_id'],
+            'reason' => trim((string)$data['reason']),
+        ]);
+        return (int)$this->pdo->lastInsertId();
+    }
+
+    public function updateRescheduleRequestStatus(int $id, string $status, string $adminNote = ''): void
+    {
+        $stmt = $this->pdo->prepare(
+            "UPDATE reschedule_requests
+             SET status = :status, admin_note = :admin_note
+             WHERE id = :id"
+        );
+        $stmt->execute([
+            'id' => $id,
+            'status' => $status,
+            'admin_note' => trim($adminNote),
+        ]);
+    }
+
+    public function getAuditLogs(int $limit = 35): array
+    {
+        try {
+            $stmt = $this->pdo->prepare("SELECT * FROM audit_logs ORDER BY id DESC LIMIT :lim");
+            $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    public function addAuditLog(string $actorName, string $actorRole, string $actionCode, string $summary, string $details = ''): void
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                "INSERT INTO audit_logs (actor_name, actor_role, action_code, summary, details)
+                 VALUES (:actor_name, :actor_role, :action_code, :summary, :details)"
+            );
+            $stmt->execute([
+                'actor_name' => $actorName,
+                'actor_role' => $actorRole,
+                'action_code' => $actionCode,
+                'summary' => $summary,
+                'details' => $details,
+            ]);
+        } catch (\Throwable $e) {
+            // Bỏ qua nếu bảng chưa sẵn sàng
         }
     }
 }
