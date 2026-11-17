@@ -273,6 +273,75 @@ class TimetableController
                     'details' => [],
                     'impact_result' => null,
                 ];
+            } elseif ($action === 'delete_unavailability') {
+                $delId = (int)($_POST['unavailability_id'] ?? 0);
+                $owned = false;
+                foreach ($dataset['unavailability'] ?? [] as $uRow) {
+                    if ((int)$uRow['id'] === $delId && (int)$uRow['teacher_id'] === $myTeacherId) {
+                        $owned = true;
+                        break;
+                    }
+                }
+                if (!$owned) {
+                    return [
+                        'type' => 'error',
+                        'message' => 'Từ chối truy cập (403 Forbidden): Bạn chỉ có thể xóa mục lịch bận của chính mình.',
+                        'details' => [],
+                        'impact_result' => null,
+                    ];
+                }
+                $this->repo->deleteUnavailability($delId);
+                return [
+                    'type' => 'success',
+                    'message' => 'Đã xóa mục lịch bận / mong muốn ưu tiên cá nhân.',
+                    'details' => [],
+                    'impact_result' => null,
+                ];
+            } elseif ($action === 'submit_reschedule_request') {
+                $lessonId = (int)($_POST['lesson_id'] ?? 0);
+                $targetSlotId = (int)($_POST['target_slot_id'] ?? 0);
+                $targetRoomId = (int)($_POST['target_room_id'] ?? 0);
+                $versionId = (int)($_POST['version_id'] ?? 2);
+                $reason = trim((string)($_POST['reason'] ?? 'Đề xuất đổi ca giảng dạy / dạy bù'));
+
+                $lesson = $this->repo->getLessonById($lessonId);
+                if (!$lesson || (int)$lesson['teacher_id'] !== $myTeacherId) {
+                    return [
+                        'type' => 'error',
+                        'message' => 'Bạn chỉ có thể gửi yêu cầu đổi lịch cho học phần do chính mình phụ trách.',
+                        'details' => [],
+                        'impact_result' => null,
+                    ];
+                }
+                if ($targetSlotId <= 0 || $targetRoomId <= 0 || $reason === '') {
+                    return [
+                        'type' => 'error',
+                        'message' => 'Vui lòng chọn đầy đủ Khung giờ mong muốn, Phòng học và nhập lý do xin đổi lịch.',
+                        'details' => [],
+                        'impact_result' => null,
+                    ];
+                }
+                $this->repo->createRescheduleRequest([
+                    'teacher_id' => $myTeacherId,
+                    'lesson_id' => $lessonId,
+                    'version_id' => $versionId,
+                    'target_slot_id' => $targetSlotId,
+                    'target_room_id' => $targetRoomId,
+                    'reason' => $reason,
+                ]);
+                $this->repo->addAuditLog(
+                    (string)($currentUser['full_name'] ?? 'Giảng viên'),
+                    'teacher',
+                    'REQUEST_RESCHEDULE',
+                    "Giảng viên gửi đề xuất đổi lịch buổi [{$lesson['code']} - {$lesson['subject_name']}]",
+                    "Lý do: {$reason}"
+                );
+                return [
+                    'type' => 'success',
+                    'message' => "Đã gửi đề xuất xin đổi lịch buổi học [{$lesson['code']}] tới Phòng Đào tạo để phê duyệt.",
+                    'details' => [],
+                    'impact_result' => null,
+                ];
             }
         }
 
@@ -792,10 +861,171 @@ class TimetableController
                                 (string)$lessonAudit['soft_notes'],
                                 $auditAfter
                             );
+                            $this->repo->addAuditLog(
+                                (string)($currentUser['full_name'] ?? 'Admin'),
+                                'scheduler',
+                                'MANUAL_MOVE',
+                                "Điều chuyển lịch buổi học #{$lessonId} sang Slot #{$targetSlotId}, Phòng #{$targetRoomId}",
+                                $impact['summary']
+                            );
                             $flash['type'] = 'success';
                             $flash['message'] = 'Đã cập nhật lịch học thành công! ' . $impact['summary'];
                         }
                     }
+                    break;
+
+                case 'review_reschedule_request':
+                    $reqId = (int)($_POST['request_id'] ?? 0);
+                    $decision = (string)($_POST['decision'] ?? 'APPROVE');
+                    $adminNote = trim((string)($_POST['admin_note'] ?? ''));
+                    $reqRow = $this->repo->getRescheduleRequestById($reqId);
+                    if (!$reqRow) {
+                        $flash['type'] = 'error';
+                        $flash['message'] = 'Không tìm thấy yêu cầu đổi lịch này.';
+                        break;
+                    }
+                    if ($decision === 'REJECT') {
+                        $this->repo->updateRescheduleRequestStatus($reqId, 'REJECTED', $adminNote ?: 'Phòng Đào tạo từ chối do không phù hợp kế hoạch tuần.');
+                        $this->repo->addAuditLog(
+                            (string)($currentUser['full_name'] ?? 'Admin'),
+                            'scheduler',
+                            'REJECT_REQUEST',
+                            "Từ chối yêu cầu đổi lịch #{$reqId} (Buổi học #{$reqRow['lesson_id']})",
+                            $adminNote
+                        );
+                        $flash['type'] = 'warning';
+                        $flash['message'] = "Đã từ chối yêu cầu xin đổi lịch #{$reqId}.";
+                        break;
+                    }
+
+                    // Nếu APPROVE: kiểm tra 7 điều kiện bắt buộc trên phương án đang kích hoạt
+                    $activeVer = $this->repo->getActiveScheduleVersion();
+                    $versionId = $activeVer ? (int)$activeVer['id'] : (int)$reqRow['version_id'];
+                    $currentAssignments = $this->repo->getAssignmentsByVersion($versionId);
+                    $lessonId = (int)$reqRow['lesson_id'];
+                    $targetSlotId = (int)$reqRow['target_slot_id'];
+                    $targetRoomId = (int)$reqRow['target_room_id'];
+
+                    $impact = $this->engine->checkManualMoveImpact(
+                        $lessonId,
+                        $targetSlotId,
+                        $targetRoomId,
+                        $currentAssignments,
+                        $dataset
+                    );
+                    if (!$impact['can_apply']) {
+                        $flash['type'] = 'error';
+                        $flash['message'] = "Không thể phê duyệt tự động yêu cầu #{$reqId} vì vi phạm điều kiện bắt buộc: " . $impact['summary'];
+                        $flash['details'] = $impact['hard_violations'] ?? [];
+                        break;
+                    }
+
+                    $indexed = [];
+                    foreach ($currentAssignments as $a) {
+                        $indexed[(int)$a['lesson_id']] = $a;
+                    }
+                    $indexed[$lessonId] = [
+                        'lesson_id' => $lessonId,
+                        'slot_id' => $targetSlotId,
+                        'room_id' => $targetRoomId,
+                        'is_locked' => 0,
+                    ];
+                    $auditAfter = $this->checker->auditScheduleAssignments($indexed, $dataset);
+                    $lessonAudit = $auditAfter['assignment_audits'][$lessonId] ?? ['soft_penalty' => 0, 'soft_notes' => ''];
+
+                    $this->repo->applyManualAssignment(
+                        $versionId,
+                        $lessonId,
+                        $targetSlotId,
+                        $targetRoomId,
+                        (int)$lessonAudit['soft_penalty'],
+                        (string)$lessonAudit['soft_notes'],
+                        $auditAfter
+                    );
+                    $this->repo->updateRescheduleRequestStatus(
+                        $reqId,
+                        'APPROVED',
+                        $adminNote ?: ('Đã phê duyệt & cập nhật tự động vào TKB. ' . $impact['summary'])
+                    );
+                    $this->repo->addAuditLog(
+                        (string)($currentUser['full_name'] ?? 'Admin'),
+                        'scheduler',
+                        'APPROVE_REQUEST',
+                        "Phê duyệt yêu cầu đổi lịch #{$reqId} và tự động cập nhật TKB (Buổi #{$lessonId})",
+                        $impact['summary']
+                    );
+                    $flash['type'] = 'success';
+                    $flash['message'] = "Đã phê duyệt yêu cầu #{$reqId} và tự động cập nhật Thời khóa biểu! " . $impact['summary'];
+                    break;
+
+                case 'bulk_import_lessons':
+                    $rawCsv = trim((string)($_POST['csv_content'] ?? ''));
+                    if ($rawCsv === '') {
+                        $flash['type'] = 'error';
+                        $flash['message'] = 'Vui lòng dán hoặc nhập dữ liệu CSV để nạp hàng loạt.';
+                        break;
+                    }
+                    $teacherByCode = [];
+                    foreach ($dataset['teachers'] as $t) {
+                        $teacherByCode[strtoupper(trim((string)$t['code']))] = (int)$t['id'];
+                    }
+                    $classByCode = [];
+                    foreach ($dataset['classes'] as $c) {
+                        $classByCode[strtoupper(trim((string)$c['code']))] = $c;
+                    }
+                    $lines = preg_split('/\r\n|\r|\n/', $rawCsv);
+                    $imported = 0;
+                    $rowErrors = [];
+                    foreach ($lines as $idx => $line) {
+                        $line = trim($line);
+                        if ($line === '' || str_starts_with($line, '#') || stripos($line, 'Mã buổi') === 0) {
+                            continue;
+                        }
+                        $parts = array_map('trim', str_getcsv($line));
+                        if (count($parts) < 6) {
+                            $rowErrors[] = 'Dòng ' . ($idx + 1) . ': Thiếu cột (Cần đủ 6 cột: Mã buổi, Tên học phần, Mã GV, Mã lớp, Sĩ số, Loại phòng LT/TH).';
+                            continue;
+                        }
+                        [$bCode, $bSubj, $tCode, $cCode, $sCount, $rType] = $parts;
+                        $tId = $teacherByCode[strtoupper($tCode)] ?? 0;
+                        $cObj = $classByCode[strtoupper($cCode)] ?? null;
+                        $cId = $cObj ? (int)$cObj['id'] : 0;
+                        $lessonPayload = [
+                            'code' => strtoupper($bCode),
+                            'subject_name' => $bSubj,
+                            'teacher_id' => $tId,
+                            'class_id' => $cId,
+                            'student_count' => (int)$sCount,
+                            'required_room_type' => strtoupper($rType),
+                            'is_locked' => 0,
+                            'locked_slot_id' => null,
+                            'locked_room_id' => null,
+                            'notes' => $parts[6] ?? 'Nạp từ công cụ Bulk Import CSV',
+                        ];
+                        $val = $this->checker->validateEntityInput('lesson', $lessonPayload, $dataset);
+                        if (!$val['valid']) {
+                            $rowErrors[] = 'Dòng ' . ($idx + 1) . " ({$bCode}): " . implode(' ', $val['errors']);
+                            continue;
+                        }
+                        try {
+                            $this->repo->createLesson($lessonPayload);
+                            $imported++;
+                        } catch (\Throwable $ex) {
+                            $rowErrors[] = 'Dòng ' . ($idx + 1) . " ({$bCode}): Mã buổi học đã tồn tại hoặc lỗi dữ liệu.";
+                        }
+                    }
+                    if ($imported > 0) {
+                        $this->repo->addAuditLog(
+                            (string)($currentUser['full_name'] ?? 'Admin'),
+                            'scheduler',
+                            'BULK_IMPORT',
+                            "Nạp hàng loạt thành công {$imported} buổi học từ CSV",
+                            !empty($rowErrors) ? ('Bỏ qua ' . count($rowErrors) . ' dòng lỗi.') : 'Toàn bộ dòng dữ liệu hợp lệ.'
+                        );
+                    }
+                    $flash['type'] = $imported > 0 ? (empty($rowErrors) ? 'success' : 'warning') : 'error';
+                    $flash['message'] = "Kết quả Bulk Import CSV: Đã nạp thành công {$imported} buổi học mới." . (!empty($rowErrors) ? (' Phát hiện ' . count($rowErrors) . ' dòng lỗi bị chặn:') : '');
+                    $flash['details'] = $rowErrors;
                     break;
 
                 case 'activate_version':
