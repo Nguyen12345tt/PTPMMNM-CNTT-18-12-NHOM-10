@@ -61,12 +61,12 @@ CREATE TABLE rooms (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 4. Bảng Khung giờ (slots) - 1 ngày chỉ có 2 Ca (Ca 1: Buổi Sáng, Ca 2: Buổi Chiều)
--- 20 khung giờ = 2 tuần học × 5 ngày (Thứ 2 -> Thứ 6) × 2 Ca/ngày (Ca Sáng & Ca Chiều)
+-- 28 khung giờ = 2 tuần học × 7 ngày (Thứ 2 -> Thứ 7 & Chủ nhật) × 2 Ca/ngày (Ca Sáng & Ca Chiều)
 CREATE TABLE slots (
     id INT AUTO_INCREMENT PRIMARY KEY,
     code VARCHAR(20) NOT NULL UNIQUE,
     week_no TINYINT NOT NULL DEFAULT 1 COMMENT '1: Tuần 1, 2: Tuần 2',
-    day_of_week TINYINT NOT NULL COMMENT '2: Thứ 2, 3: Thứ 3, 4: Thứ 4, 5: Thứ 5, 6: Thứ 6',
+    day_of_week TINYINT NOT NULL COMMENT '2: Thứ 2, 3: Thứ 3, 4: Thứ 4, 5: Thứ 5, 6: Thứ 6, 7: Thứ 7, 8: Chủ nhật',
     period_of_day TINYINT NOT NULL COMMENT '1: Ca Sáng (7h20 K18 / 7h10 K19), 2: Ca Chiều (13h20 K18 / 13h10 K19)',
     start_time VARCHAR(50) NOT NULL,
     end_time VARCHAR(50) NOT NULL,
