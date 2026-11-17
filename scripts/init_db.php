@@ -1,6 +1,13 @@
 <?php
 declare(strict_types=1);
 
+if (!extension_loaded('pdo_mysql') && getenv('TT_PDO_REEXEC') !== '1') {
+    putenv('TT_PDO_REEXEC=1');
+    $cmd = escapeshellarg(PHP_BINARY) . ' -d extension=pdo_mysql -d extension=mysqli ' . escapeshellarg(__FILE__);
+    passthru($cmd, $exitCode);
+    exit($exitCode);
+}
+
 require_once dirname(__DIR__) . '/config/database.php';
 require_once dirname(__DIR__) . '/src/Domain/ConstraintChecker.php';
 require_once dirname(__DIR__) . '/src/Domain/SchedulerEngine.php';
