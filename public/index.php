@@ -350,16 +350,6 @@ $pendingReqCount = count(array_filter(
         </nav>
 
         <div class="admin-vbanner-footer">
-            <div class="vbanner-quick-scenarios">
-                <form method="post" action="index.php?tab=schedule" style="margin:0;">
-                    <input type="hidden" name="action" value="reset_seed">
-                    <button type="submit" class="vbanner-btn" title="Khôi phục dữ liệu chuẩn & tạo lại 2 phương án">🔄 Kịch bản 1</button>
-                </form>
-                <form method="post" action="index.php?tab=compare" style="margin:0;">
-                    <input type="hidden" name="action" value="scenario2_quick_adjust">
-                    <button type="submit" class="vbanner-btn vbanner-btn-accent" title="Khóa thêm BH04, đổi sĩ số BH20 & chạy so sánh">⚡ Kịch bản 2</button>
-                </form>
-            </div>
             <div class="admin-vbanner-user">
                 <span>👤 <?= h($currentUser['full_name']) ?></span>
                 <span class="vbanner-role-tag">GIÁO VỤ</span>
