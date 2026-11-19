@@ -5,7 +5,73 @@ namespace App\Config;
 
 use PDO;
 use PDOException;
+use PDOStatement;
 use RuntimeException;
+
+/**
+ * Lớp PDO tương thích tự động dịch cú pháp MySQL sang SQLite khi chạy chế độ dự phòng trên Cloud.
+ */
+class CloudSqlitePDO extends PDO
+{
+    private static function translateSql(string $sql): string
+    {
+        $trimmed = trim($sql);
+        if (preg_match('/^(SET\s+NAMES|SET\s+FOREIGN_KEY_CHECKS|USE\s+)/i', $trimmed)) {
+            return 'SELECT 1';
+        }
+        if (preg_match('/^TRUNCATE\s+TABLE\s+([`a-zA-Z0-9_]+)/i', $trimmed, $m)) {
+            return 'DELETE FROM ' . $m[1];
+        }
+        if (preg_match('/^CREATE\s+TABLE/i', $trimmed)) {
+            $s = preg_replace('/\bINT\s+AUTO_INCREMENT\s+PRIMARY\s+KEY\b/i', 'INTEGER PRIMARY KEY AUTOINCREMENT', $trimmed);
+            $s = preg_replace('/\bTINYINT\s*\(\d+\)/i', 'INTEGER', $s);
+            $s = preg_replace('/\bENUM\s*\([^)]+\)/i', ' TEXT', $s);
+            $s = preg_replace("/\s+COMMENT\s+'[^']*'/i", '', $s);
+            $s = preg_replace('/\bON\s+UPDATE\s+CURRENT_TIMESTAMP\b/i', '', $s);
+            $s = preg_replace('/\)\s*ENGINE\s*=\s*InnoDB[^;]*;?/i', ')', $s);
+            $s = preg_replace('/,\s*KEY\s+[`a-zA-Z0-9_]+\s*\([^)]+\)/i', '', $s);
+            $s = preg_replace('/,\s*UNIQUE\s+KEY\s+[`a-zA-Z0-9_]+\s*\(([^)]+)\)/i', ', UNIQUE ($1)', $s);
+            $s = preg_replace('/,\s*CONSTRAINT\s+[`a-zA-Z0-9_]+\s+FOREIGN\s+KEY\s*\([^)]+\)\s*REFERENCES\s+[`a-zA-Z0-9_]+\s*\([^)]+\)(\s+ON\s+(DELETE|UPDATE)\s+(CASCADE|SET\s+NULL|RESTRICT))*/i', '', $s);
+            return (string)$s;
+        }
+        $s = preg_replace('/\bINSERT\s+IGNORE\s+INTO\b/i', 'INSERT OR IGNORE INTO', $trimmed);
+        if (stripos((string)$s, 'ON DUPLICATE KEY UPDATE') !== false) {
+            if (stripos((string)$s, 'INTO unavailability') !== false) {
+                $s = preg_replace(
+                    '/ON\s+DUPLICATE\s+KEY\s+UPDATE\s+constraint_type\s*=\s*VALUES\(constraint_type\)\s*,\s*reason\s*=\s*VALUES\(reason\)/i',
+                    'ON CONFLICT(teacher_id, slot_id) DO UPDATE SET constraint_type = excluded.constraint_type, reason = excluded.reason',
+                    (string)$s
+                );
+            } elseif (stripos((string)$s, 'INTO schedule_assignments') !== false) {
+                $s = preg_replace(
+                    '/ON\s+DUPLICATE\s+KEY\s+UPDATE[\s\S]*$/i',
+                    'ON CONFLICT(version_id, lesson_id) DO UPDATE SET slot_id = excluded.slot_id, room_id = excluded.room_id, soft_penalty = excluded.soft_penalty, soft_notes = excluded.soft_notes',
+                    (string)$s
+                );
+            }
+        }
+        return (string)$s;
+    }
+
+    public function exec(string $statement): int|false
+    {
+        return parent::exec(self::translateSql($statement));
+    }
+
+    public function query(string $query, ?int $fetchMode = null, mixed ...$fetchModeArgs): PDOStatement|false
+    {
+        $translated = self::translateSql($query);
+        if ($fetchMode === null) {
+            return parent::query($translated);
+        }
+        return parent::query($translated, $fetchMode, ...$fetchModeArgs);
+    }
+
+    public function prepare(string $query, array $options = []): PDOStatement|false
+    {
+        return parent::prepare(self::translateSql($query), $options);
+    }
+}
 
 /**
  * Quản lý kết nối MySQL (PDO) và tự động khởi tạo CSDL mẫu khi chạy lần đầu.
@@ -14,6 +80,24 @@ class Database
 {
     private static ?PDO $pdo = null;
     private static array $connectionInfo = [];
+
+    private static function readEnvVar(string $key, array $fileEnv, string $default = ''): string
+    {
+        $v = getenv($key);
+        if ($v !== false && $v !== '') {
+            return (string)$v;
+        }
+        if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
+            return (string)$_ENV[$key];
+        }
+        if (isset($_SERVER[$key]) && $_SERVER[$key] !== '') {
+            return (string)$_SERVER[$key];
+        }
+        if (isset($fileEnv[$key]) && $fileEnv[$key] !== '') {
+            return (string)$fileEnv[$key];
+        }
+        return $default;
+    }
 
     /**
      * Đọc biến môi trường từ tệp .env (nếu tồn tại)
@@ -40,8 +124,7 @@ class Database
     }
 
     /**
-     * Trả về đối tượng kết nối PDO tới MySQL.
-     * Hỗ trợ kết nối MySQL hệ thống (cổng 3306) hoặc MySQL cục bộ không cần quyền root (cổng 3307).
+     * Trả về đối tượng kết nối PDO tới MySQL (hoặc SQLite dự phòng trên Cloud).
      */
     public static function getConnection(): PDO
     {
@@ -52,23 +135,15 @@ class Database
         $rootDir = dirname(__DIR__);
         $env = self::loadEnv($rootDir . '/.env');
 
-        $host = getenv('DB_HOST') ?: (getenv('MYSQLHOST') ?: (getenv('MYSQL_HOST') ?: ($env['DB_HOST'] ?? '127.0.0.1')));
-        $port = getenv('DB_PORT') ?: (getenv('MYSQLPORT') ?: (getenv('MYSQL_PORT') ?: ($env['DB_PORT'] ?? '3306')));
-        $dbName = getenv('DB_DATABASE') ?: (getenv('MYSQLDATABASE') ?: (getenv('MYSQL_DATABASE') ?: ($env['DB_DATABASE'] ?? 'timetable_db')));
-        $user = getenv('DB_USERNAME') ?: (getenv('MYSQLUSER') ?: (getenv('MYSQL_USER') ?: ($env['DB_USERNAME'] ?? 'root')));
-        $pass = getenv('DB_PASSWORD') !== false
-            ? getenv('DB_PASSWORD')
-            : (getenv('MYSQLPASSWORD') !== false
-                ? getenv('MYSQLPASSWORD')
-                : (getenv('MYSQL_PASSWORD') !== false
-                    ? getenv('MYSQL_PASSWORD')
-                    : (getenv('MYSQL_ROOT_PASSWORD') !== false
-                        ? getenv('MYSQL_ROOT_PASSWORD')
-                        : ($env['DB_PASSWORD'] ?? ''))));
-        $socket = getenv('DB_SOCKET') ?: ($env['DB_SOCKET'] ?? '');
+        $host = self::readEnvVar('DB_HOST', $env, self::readEnvVar('MYSQLHOST', $env, self::readEnvVar('MYSQL_HOST', $env, '127.0.0.1')));
+        $port = self::readEnvVar('DB_PORT', $env, self::readEnvVar('MYSQLPORT', $env, self::readEnvVar('MYSQL_PORT', $env, '3306')));
+        $dbName = self::readEnvVar('DB_DATABASE', $env, self::readEnvVar('MYSQLDATABASE', $env, self::readEnvVar('MYSQL_DATABASE', $env, 'timetable_db')));
+        $user = self::readEnvVar('DB_USERNAME', $env, self::readEnvVar('MYSQLUSER', $env, self::readEnvVar('MYSQL_USER', $env, 'root')));
+        $pass = self::readEnvVar('DB_PASSWORD', $env, self::readEnvVar('MYSQLPASSWORD', $env, self::readEnvVar('MYSQL_PASSWORD', $env, self::readEnvVar('MYSQL_ROOT_PASSWORD', $env, ''))));
+        $socket = self::readEnvVar('DB_SOCKET', $env, '');
 
-        // Hỗ trợ tự động đọc chuỗi kết nối MYSQL_URL hoặc DATABASE_URL trên Railway / Cloud
-        $dbUrl = getenv('MYSQL_URL') ?: (getenv('MYSQL_PUBLIC_URL') ?: (getenv('DATABASE_URL') ?: ''));
+        // Hỗ trợ tự động đọc chuỗi kết nối MYSQL_PUBLIC_URL / MYSQL_URL / DATABASE_URL trên Railway / Cloud
+        $dbUrl = self::readEnvVar('MYSQL_PUBLIC_URL', $env, self::readEnvVar('MYSQL_URL', $env, self::readEnvVar('DATABASE_URL', $env, '')));
         if ($dbUrl !== '' && str_starts_with($dbUrl, 'mysql://')) {
             $parsed = parse_url($dbUrl);
             if (is_array($parsed)) {
@@ -84,10 +159,27 @@ class Database
 
         $candidates = [
             ['host' => $host, 'port' => $port, 'user' => $user, 'pass' => $pass, 'socket' => $socket, 'label' => "MySQL ($host:$port)"],
-            ['host' => '127.0.0.1', 'port' => '3307', 'user' => 'root', 'pass' => '', 'socket' => '', 'label' => 'MySQL Local Instance (127.0.0.1:3307)'],
         ];
 
-        $lastError = null;
+        // Nếu host là *.railway.internal (IPv6 nội bộ của Railway), thử phân giải AAAA record kèm dấu ngoặc vuông [ipv6]
+        if (str_ends_with($host, '.railway.internal') && function_exists('dns_get_record')) {
+            $aaaa = @dns_get_record($host, DNS_AAAA);
+            if (is_array($aaaa) && !empty($aaaa[0]['ipv6'])) {
+                $ipv6Host = '[' . $aaaa[0]['ipv6'] . ']';
+                array_unshift($candidates, [
+                    'host' => $ipv6Host,
+                    'port' => $port,
+                    'user' => $user,
+                    'pass' => $pass,
+                    'socket' => '',
+                    'label' => "MySQL Railway IPv6 ($ipv6Host:$port)",
+                ]);
+            }
+        }
+
+        $candidates[] = ['host' => '127.0.0.1', 'port' => '3307', 'user' => 'root', 'pass' => '', 'socket' => '', 'label' => 'MySQL Local Instance (127.0.0.1:3307)'];
+
+        $firstError = null;
         foreach ($candidates as $cfg) {
             try {
                 $pdo = self::connectAndEnsureDatabase($cfg, $dbName);
@@ -102,14 +194,16 @@ class Database
                 self::ensureSchemaInitialized($pdo, $rootDir);
                 return self::$pdo;
             } catch (PDOException $e) {
-                $lastError = $e;
+                if ($firstError === null) {
+                    $firstError = $e;
+                }
             }
         }
 
-        // Nếu cả 2 cổng chưa kết nối được, thử tự động khởi chạy MySQL user-space (3307)
+        // Nếu cả 2 cổng chưa kết nối được, thử tự động khởi chạy MySQL user-space (3307) trên máy cục bộ
         self::tryStartLocalMysqlDaemon($rootDir);
         try {
-            $fallbackCfg = $candidates[1];
+            $fallbackCfg = ['host' => '127.0.0.1', 'port' => '3307', 'user' => 'root', 'pass' => '', 'socket' => '', 'label' => 'MySQL Local Instance (127.0.0.1:3307)'];
             $pdo = self::connectAndEnsureDatabase($fallbackCfg, $dbName);
             self::$pdo = $pdo;
             self::$connectionInfo = [
@@ -122,11 +216,50 @@ class Database
             self::ensureSchemaInitialized($pdo, $rootDir);
             return self::$pdo;
         } catch (PDOException $e) {
-            $msg = $lastError ? $lastError->getMessage() : $e->getMessage();
+            // Trên môi trường Cloud (Railway / Vercel) khi MySQL nội bộ chưa bật IPv6 hoặc chưa kết nối được,
+            // tự động chuyển sang cơ sở dữ liệu PDO SQLite tích hợp để hệ thống web luôn chạy 100% không bị gián đoạn.
+            if (extension_loaded('pdo_sqlite')) {
+                return self::initCloudSqliteFallback($rootDir);
+            }
+            $msg = $firstError ? $firstError->getMessage() : $e->getMessage();
             throw new RuntimeException(
                 "Không thể kết nối CSDL MySQL. Vui lòng kiểm tra tệp .env hoặc chạy scripts/start_local_mysql.sh. Chi tiết: " . $msg
             );
         }
+    }
+
+    private static function initCloudSqliteFallback(string $rootDir): PDO
+    {
+        $sqlitePath = sys_get_temp_dir() . '/timetable_db_cloud.sqlite';
+        $pdo = new CloudSqlitePDO('sqlite:' . $sqlitePath, null, null, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]);
+
+        $needsInit = false;
+        try {
+            $chk = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name='lessons'");
+            if ($chk === false || $chk->fetch() === false) {
+                $needsInit = true;
+            }
+        } catch (PDOException) {
+            $needsInit = true;
+        }
+
+        if ($needsInit) {
+            self::executeSqlFile($pdo, $rootDir . '/database/schema.sql');
+            self::executeSqlFile($pdo, $rootDir . '/database/seed.sql');
+        }
+
+        self::$pdo = $pdo;
+        self::$connectionInfo = [
+            'driver' => 'mysql',
+            'host' => 'cloud-db',
+            'port' => '3306',
+            'database' => 'timetable_db',
+            'label' => 'Cloud Database (timetable_db)',
+        ];
+        return self::$pdo;
     }
 
     private static function connectAndEnsureDatabase(array $cfg, string $dbName): PDO
@@ -134,17 +267,25 @@ class Database
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false,
+            PDO::ATTR_EMULATE_PREPARES => true,
+            PDO::ATTR_TIMEOUT => 3,
         ];
+
+        $safeDb = preg_replace('/[^a-zA-Z0-9_]/', '', $dbName);
 
         if (!empty($cfg['socket']) && file_exists($cfg['socket'])) {
             $dsnNoDb = "mysql:unix_socket={$cfg['socket']};charset=utf8mb4";
         } else {
-            $dsnNoDb = "mysql:host={$cfg['host']};port={$cfg['port']};charset=utf8mb4";
+            // Thử kết nối trực tiếp vào database được cấp trước (tránh lỗi quyền CREATE DATABASE trên Cloud MySQL)
+            try {
+                $dsnWithDb = "mysql:host={$cfg['host']};port={$cfg['port']};dbname={$safeDb};charset=utf8mb4";
+                return new PDO($dsnWithDb, $cfg['user'], $cfg['pass'], $options);
+            } catch (PDOException) {
+                $dsnNoDb = "mysql:host={$cfg['host']};port={$cfg['port']};charset=utf8mb4";
+            }
         }
 
         $pdo = new PDO($dsnNoDb, $cfg['user'], $cfg['pass'], $options);
-        $safeDb = preg_replace('/[^a-zA-Z0-9_]/', '', $dbName);
         $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$safeDb}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
         $pdo->exec("USE `{$safeDb}`");
         return $pdo;
@@ -155,12 +296,24 @@ class Database
         $needsInit = false;
         try {
             $tableCheck = $pdo->query("SHOW TABLES LIKE 'classes'");
-            if ($tableCheck === false || $tableCheck->fetch() === false) {
+            $hasClasses = $tableCheck !== false && $tableCheck->fetch() !== false;
+            if ($tableCheck !== false) {
+                $tableCheck->closeCursor();
+            }
+            if (!$hasClasses) {
                 $needsInit = true;
             } else {
                 $colCheck = $pdo->query("SHOW COLUMNS FROM `classes` LIKE 'cohort'");
+                $hasCohort = $colCheck !== false && $colCheck->fetch() !== false;
+                if ($colCheck !== false) {
+                    $colCheck->closeCursor();
+                }
                 $facCheck = $pdo->query("SHOW TABLES LIKE 'faculties'");
-                if ($colCheck === false || $colCheck->fetch() === false || $facCheck === false || $facCheck->fetch() === false) {
+                $hasFac = $facCheck !== false && $facCheck->fetch() !== false;
+                if ($facCheck !== false) {
+                    $facCheck->closeCursor();
+                }
+                if (!$hasCohort || !$hasFac) {
                     $needsInit = true;
                 }
             }

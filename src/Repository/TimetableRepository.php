@@ -804,7 +804,7 @@ class TimetableRepository
                     JOIN classes c ON l.class_id = c.id
                     JOIN slots s ON rr.target_slot_id = s.id
                     JOIN rooms r ON rr.target_room_id = r.id
-                    ORDER BY FIELD(rr.status, 'PENDING', 'APPROVED', 'REJECTED'), rr.id DESC";
+                    ORDER BY CASE rr.status WHEN 'PENDING' THEN 1 WHEN 'APPROVED' THEN 2 ELSE 3 END, rr.id DESC";
             return $this->pdo->query($sql)->fetchAll();
         } catch (\Throwable $e) {
             return [];
