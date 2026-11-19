@@ -205,24 +205,24 @@ function h(mixed $val): string
                 <!-- Gợi ý điền nhanh tài khoản mẫu để kiểm thử -->
                 <div class="dnu-demo-hint" id="demo_hint_box">
                     <div class="demo-hint-header">
-                        <span>⚡ <strong>Tài khoản trải nghiệm nhanh</strong> (Mật khẩu: <code>123456</code>)</span>
+                        <span><strong>Tài khoản trải nghiệm nhanh</strong> (Mật khẩu: <code>123456</code>)</span>
                         <span id="forgot_pw_link" style="font-size:11px; color:#64748b;">Chạm để điền</span>
                     </div>
                     <div class="demo-chip-grid">
                         <button type="button" class="dnu-demo-chip" onclick="fillDemoLogin('scheduler', 'admin', '123456')">
-                            <span class="chip-role">⚙️ Quản trị</span>
+                            <span class="chip-role">Quản trị</span>
                             <span class="chip-code">admin</span>
                         </button>
                         <button type="button" class="dnu-demo-chip" onclick="fillDemoLogin('teacher', 'gv01', '123456')">
-                            <span class="chip-role">👨‍🏫 Giảng viên</span>
+                            <span class="chip-role">Giảng viên</span>
                             <span class="chip-code">gv01</span>
                         </button>
                         <button type="button" class="dnu-demo-chip" onclick="fillDemoLogin('student', 'sv01', '123456')">
-                            <span class="chip-role">🎓 SV 18-12</span>
+                            <span class="chip-role">SV 18-12</span>
                             <span class="chip-code">sv01</span>
                         </button>
                         <button type="button" class="dnu-demo-chip" onclick="fillDemoLogin('student', 'sv03', '123456')">
-                            <span class="chip-role">🎓 SV 19-09</span>
+                            <span class="chip-role">SV 19-09</span>
                             <span class="chip-code">sv03</span>
                         </button>
                     </div>
@@ -267,7 +267,6 @@ $pendingReqCount = count(array_filter(
     <!-- Banner dọc cố định bên trái cùng -->
     <aside class="admin-vertical-banner">
         <div class="admin-vbanner-brand">
-            <div class="admin-brand-icon">🏛️</div>
             <div>
                 <div class="admin-vbanner-logo">PHÒNG ĐÀO TẠO</div>
                 <div class="admin-vbanner-sub">HỆ THỐNG XẾP THỜI KHÓA BIỂU</div>
@@ -278,83 +277,83 @@ $pendingReqCount = count(array_filter(
             <div class="vbanner-group-label">DANH MỤC QUẢN LÝ ĐÀO TẠO</div>
             <a href="index.php?tab=schedule"
                class="admin-vbanner-item <?= $activeTab === 'schedule' ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">📅</span> Thời khóa biểu</span>
+                <span class="vbanner-item-left">Thời khóa biểu</span>
             </a>
             <a href="index.php?tab=data&sec=classes"
                class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'classes') ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">🏫</span> Lớp học</span>
+                <span class="vbanner-item-left">Lớp học</span>
                 <span class="vbanner-badge"><?= count($dataset['classes'] ?? []) ?></span>
             </a>
             <a href="index.php?tab=data&sec=siso"
                class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'siso') ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">👥</span> Sĩ số</span>
+                <span class="vbanner-item-left">Sĩ số</span>
             </a>
             <a href="index.php?tab=data&sec=faculties"
                class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'faculties') ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">🏛️</span> Khoa đào tạo</span>
+                <span class="vbanner-item-left">Khoa đào tạo</span>
                 <span class="vbanner-badge"><?= count($dataset['faculties'] ?? []) ?></span>
             </a>
             <a href="index.php?tab=data&sec=lessons"
                class="admin-vbanner-item <?= ($activeTab === 'data' && ($activeSec === 'lessons' || $activeSec === '')) ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">📚</span> Học phần / Môn học</span>
+                <span class="vbanner-item-left">Học phần / Môn học</span>
                 <span class="vbanner-badge"><?= count($dataset['lessons'] ?? []) ?></span>
             </a>
             <a href="index.php?tab=data&sec=students"
                class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'students') ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">🎓</span> Danh sách Sinh viên</span>
+                <span class="vbanner-item-left">Danh sách Sinh viên</span>
                 <span class="vbanner-badge"><?= count($allUsers) ?></span>
             </a>
             <a href="index.php?tab=data&sec=teachers"
                class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'teachers') ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">👨‍🏫</span> Giảng viên</span>
+                <span class="vbanner-item-left">Giảng viên</span>
                 <span class="vbanner-badge"><?= count($dataset['teachers'] ?? []) ?></span>
             </a>
             <a href="index.php?tab=data&sec=unavailability"
                class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'unavailability') ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">🗓️</span> Lịch bận GV</span>
+                <span class="vbanner-item-left">Lịch bận GV</span>
                 <span class="vbanner-badge"><?= count($dataset['unavailability'] ?? []) ?></span>
             </a>
             <a href="index.php?tab=data&sec=rooms"
                class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'rooms') ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">🏢</span> Phòng học</span>
+                <span class="vbanner-item-left">Phòng học</span>
                 <span class="vbanner-badge"><?= count($dataset['rooms'] ?? []) ?></span>
             </a>
             <a href="index.php?tab=data&sec=slots"
                class="admin-vbanner-item <?= ($activeTab === 'data' && $activeSec === 'slots') ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">🕒</span> Khung giờ học</span>
+                <span class="vbanner-item-left">Khung giờ học</span>
                 <span class="vbanner-badge"><?= count($dataset['slots'] ?? []) ?></span>
             </a>
 
             <div class="vbanner-group-label" style="margin-top:10px;">NGHIỆP VỤ XẾP LỊCH HỌC KỲ</div>
             <a href="index.php?tab=requests"
                class="admin-vbanner-item <?= $activeTab === 'requests' ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">📩</span> Duyệt đổi lịch GV</span>
+                <span class="vbanner-item-left">Duyệt đổi lịch GV</span>
                 <span class="vbanner-badge" style="<?= $pendingReqCount > 0 ? 'background:#c92a2a; color:#fff;' : '' ?>"><?= $pendingReqCount ?></span>
             </a>
             <a href="index.php?tab=analytics"
                class="admin-vbanner-item <?= $activeTab === 'analytics' ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">📈</span> Thống kê &amp; Nhập CSV</span>
+                <span class="vbanner-item-left">Thống kê &amp; Nhập CSV</span>
             </a>
             <a href="index.php?tab=validate"
                class="admin-vbanner-item <?= $activeTab === 'validate' ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">🛡️</span> Kiểm tra Ràng buộc</span>
+                <span class="vbanner-item-left">Kiểm tra Ràng buộc</span>
             </a>
             <a href="index.php?tab=adjust"
                class="admin-vbanner-item <?= $activeTab === 'adjust' ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">🔧</span> Điều chỉnh lịch học</span>
+                <span class="vbanner-item-left">Điều chỉnh lịch học</span>
             </a>
             <a href="index.php?tab=compare"
                class="admin-vbanner-item <?= $activeTab === 'compare' ? 'active' : '' ?>">
-                <span class="vbanner-item-left"><span class="vbanner-icon">📊</span> Đối sánh &amp; Xuất biểu</span>
+                <span class="vbanner-item-left">Đối sánh &amp; Xuất biểu</span>
             </a>
         </nav>
 
         <div class="admin-vbanner-footer">
             <div class="admin-vbanner-user">
-                <span>👤 <?= h($currentUser['full_name']) ?></span>
+                <span><?= h($currentUser['full_name']) ?></span>
                 <span class="vbanner-role-tag">GIÁO VỤ</span>
             </div>
-            <a href="index.php?action=logout" class="vbanner-btn vbanner-logout">🚪 Đăng xuất hệ thống</a>
+            <a href="index.php?action=logout" class="vbanner-btn vbanner-logout">Đăng xuất hệ thống</a>
         </div>
     </aside>
 
@@ -418,13 +417,13 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
             <?php if ($isTeacher): ?>
                 <nav class="portal-nav-pills">
                     <a href="index.php?tab=schedule" class="portal-nav-link <?= $activeTab === 'schedule' ? 'active' : '' ?>">
-                        📅 Lịch giảng dạy
+                        Lịch giảng dạy
                     </a>
                     <a href="index.php?tab=data" class="portal-nav-link <?= $activeTab === 'data' ? 'active' : '' ?>">
-                        🗓️ Đăng ký Lịch bận &amp; Nguyện vọng
+                        Đăng ký Lịch bận &amp; Nguyện vọng
                     </a>
                     <a href="index.php?tab=compare" class="portal-nav-link <?= $activeTab === 'compare' ? 'active' : '' ?>">
-                        📤 In / Xuất lịch dạy
+                        In / Xuất lịch dạy
                     </a>
                 </nav>
             <?php endif; ?>
@@ -480,16 +479,16 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 <div class="card">
                     <div class="card-header">
                         <div>
-                            <h2>🗓️ Ma trận Trạng thái 28 Khung giờ Cá nhân (Thứ 2 – Chủ nhật)</h2>
+                            <h2>Ma trận Trạng thái 28 Khung giờ Cá nhân (Thứ 2 – Chủ nhật)</h2>
                             <p style="margin:4px 0 0; font-size:12.5px; color:#64748b;">
                                 Bấm vào bất kỳ ô khung giờ nào bên dưới để chọn nhanh vào biểu mẫu đăng ký bên phải.
                             </p>
                         </div>
                         <div class="matrix-legend">
-                            <span class="legend-dot dot-teaching">📚 Đang có lịch dạy</span>
-                            <span class="legend-dot dot-busy">🔴 Bận cứng</span>
-                            <span class="legend-dot dot-prefer">🟢 Ưu tiên</span>
-                            <span class="legend-dot dot-avoid">🟡 Hạn chế</span>
+                            <span class="legend-dot dot-teaching">Đang có lịch dạy</span>
+                            <span class="legend-dot dot-busy">Bận cứng</span>
+                            <span class="legend-dot dot-prefer">Ưu tiên</span>
+                            <span class="legend-dot dot-avoid">Hạn chế</span>
                         </div>
                     </div>
 
@@ -512,7 +511,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ([1 => '☀️ Sáng', 2 => '🌤️ Chiều'] as $pNo => $pLabel): ?>
+                                    <?php foreach ([1 => 'Sáng', 2 => 'Chiều'] as $pNo => $pLabel): ?>
                                     <tr>
                                         <td style="font-weight:700; text-align:center; background:#f8fafc; width:82px;"><?= $pLabel ?></td>
                                         <?php for ($dNo = 2; $dNo <= 8; $dNo++):
@@ -521,17 +520,17 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                             $uCell = $myUnavailBySlot[$sId] ?? null;
                                             $tCell = $myTeachingBySlot[$sId] ?? null;
                                             $cellClass = 'slot-free';
-                                            $statusText = '⚪ Trống';
+                                            $statusText = 'Trống';
                                             if ($uCell) {
                                                 if ($uCell['constraint_type'] === 'HARD_BUSY') {
                                                     $cellClass = 'slot-busy';
-                                                    $statusText = '🔴 Bận cứng';
+                                                    $statusText = 'Bận cứng';
                                                 } elseif ($uCell['constraint_type'] === 'SOFT_PREFER') {
                                                     $cellClass = 'slot-prefer';
-                                                    $statusText = '🟢 Ưu tiên (-4đ)';
+                                                    $statusText = 'Ưu tiên (-4đ)';
                                                 } else {
                                                     $cellClass = 'slot-avoid';
-                                                    $statusText = '🟡 Hạn chế (+15đ)';
+                                                    $statusText = 'Hạn chế (+15đ)';
                                                 }
                                             }
                                         ?>
@@ -541,7 +540,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                             <div class="avail-slot-status"><?= $statusText ?></div>
                                             <?php if ($tCell): ?>
                                                 <div class="avail-teaching-pill">
-                                                    📚 <?= h($tCell['class_code']) ?> (P.<?= h($tCell['room_code']) ?>)
+                                                    <?= h($tCell['class_code']) ?> (P.<?= h($tCell['room_code']) ?>)
                                                 </div>
                                             <?php elseif ($uCell): ?>
                                                 <div class="avail-reason-text"><?= h($uCell['reason']) ?></div>
@@ -560,7 +559,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 <div>
                     <div class="card">
                         <div class="card-header">
-                            <h2>✍️ Đăng ký / Cập nhật Lịch bận &amp; Nguyện vọng</h2>
+                            <h2>Đăng ký / Cập nhật Lịch bận &amp; Nguyện vọng</h2>
                         </div>
                         <form method="post" action="index.php?tab=data">
                             <input type="hidden" name="action" value="save_unavailability">
@@ -576,22 +575,22 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                             <div class="form-group" style="margin-bottom:12px;">
                                 <label>2. Loại đăng ký</label>
                                 <select name="constraint_type" id="teacher_type_select">
-                                    <option value="HARD_BUSY">🔴 HARD_BUSY — Bận bắt buộc (Tuyệt đối không xếp lịch)</option>
-                                    <option value="SOFT_PREFER">🟢 SOFT_PREFER — Khung giờ mong muốn dạy (Được ưu tiên -4đ)</option>
-                                    <option value="SOFT_AVOID">🟡 SOFT_AVOID — Mong muốn hạn chế dạy (Cộng phạt mềm +15đ)</option>
+                                    <option value="HARD_BUSY">HARD_BUSY — Bận bắt buộc (Tuyệt đối không xếp lịch)</option>
+                                    <option value="SOFT_PREFER">SOFT_PREFER — Khung giờ mong muốn dạy (Được ưu tiên -4đ)</option>
+                                    <option value="SOFT_AVOID">SOFT_AVOID — Mong muốn hạn chế dạy (Cộng phạt mềm +15đ)</option>
                                 </select>
                             </div>
                             <div class="form-group" style="margin-bottom:14px;">
                                 <label>3. Lý do / Ghi chú công tác</label>
                                 <input type="text" name="reason" id="teacher_reason_input" placeholder="VD: Họp Hội đồng Khoa, Hướng dẫn NCS, Lịch cá nhân..." required>
                             </div>
-                            <button type="submit" class="btn btn-primary" style="width:100%;">💾 Lưu đăng ký vào hệ thống</button>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Lưu đăng ký vào hệ thống</button>
                         </form>
                     </div>
 
                     <div class="card">
                         <div class="card-header">
-                            <h3>📋 Danh sách đã đăng ký của tôi (<?= count($myUnavailList) ?> khung giờ)</h3>
+                            <h3>Danh sách đã đăng ký của tôi (<?= count($myUnavailList) ?> khung giờ)</h3>
                         </div>
                         <div style="max-height:330px; overflow-y:auto;">
                             <table>
@@ -607,11 +606,11 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                             <td><strong><?= h($u['slot_code']) ?></strong></td>
                                             <td>
                                                 <?php if ($u['constraint_type'] === 'HARD_BUSY'): ?>
-                                                    <span class="badge badge-hard">🔴 Bận cứng</span>
+                                                    <span class="badge badge-hard">Bận cứng</span>
                                                 <?php elseif ($u['constraint_type'] === 'SOFT_AVOID'): ?>
-                                                    <span class="badge badge-soft-avoid">🟡 Hạn chế</span>
+                                                    <span class="badge badge-soft-avoid">Hạn chế</span>
                                                 <?php else: ?>
-                                                    <span class="badge badge-soft-prefer">🟢 Ưu tiên</span>
+                                                    <span class="badge badge-soft-prefer">Ưu tiên</span>
                                                 <?php endif; ?>
                                             </td>
                                             <td><?= h($u['reason']) ?></td>
@@ -619,7 +618,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                                 <form method="post" action="index.php?tab=data" style="display:inline;">
                                                     <input type="hidden" name="action" value="delete_unavailability">
                                                     <input type="hidden" name="unavailability_id" value="<?= (int)$u['id'] ?>">
-                                                    <button type="submit" class="btn btn-outline btn-sm">✕</button>
+                                                    <button type="submit" class="btn btn-outline btn-sm"></button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -656,12 +655,12 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
             <?php if ($activeSec === '' || $activeSec === 'lessons'): ?>
             <div class="card" id="sec-lessons">
                 <div class="card-header">
-                    <h2>📚 Môn học</h2>
+                    <h2>Môn học</h2>
                 </div>
 
                 <?php if ($isScheduler): ?>
                 <details style="margin-bottom: 16px; background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1;" open>
-                    <summary style="cursor:pointer; font-weight:600; color:#1d4ed8;">➕ Thêm / Chỉnh sửa Môn học</summary>
+                    <summary style="cursor:pointer; font-weight:600; color:#1d4ed8;">Thêm / Chỉnh sửa Môn học</summary>
                     <form method="post" action="index.php?tab=data&sec=lessons" style="margin-top:12px;">
                         <input type="hidden" name="action" value="add_lesson" id="lesson_form_action">
                         <input type="hidden" name="lesson_id" value="" id="lesson_form_id">
@@ -768,7 +767,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                 <td><span class="badge badge-<?= strtolower(h($l['required_room_type'])) ?>"><?= h($l['required_room_type']) ?></span></td>
                                 <td>
                                     <?php if ((int)$l['is_locked'] === 1): ?>
-                                        <span class="badge badge-locked">🔒 Đã khóa: <?= h($l['locked_slot_code']) ?> @ <?= h($l['locked_room_code']) ?></span>
+                                        <span class="badge badge-locked">Đã khóa: <?= h($l['locked_slot_code']) ?> @ <?= h($l['locked_room_code']) ?></span>
                                     <?php else: ?>
                                         <span style="color:#64748b;">Tự động xếp</span>
                                     <?php endif; ?>
@@ -804,7 +803,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
             <!-- Quản lý Khoa -->
             <div class="card" id="sec-faculties">
                 <div class="card-header">
-                    <h2>🏛️ Khoa</h2>
+                    <h2>Khoa</h2>
                 </div>
 
                 <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
@@ -821,7 +820,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                             <form method="post" action="index.php?tab=data&sec=faculties" style="display:inline;" onsubmit="return confirm('Xóa Khoa này khỏi danh mục?');">
                                 <input type="hidden" name="action" value="delete_faculty">
                                 <input type="hidden" name="faculty_id" value="<?= (int)$f['id'] ?>">
-                                <button type="submit" class="btn btn-outline btn-sm" style="padding:2px 6px;">✕</button>
+                                <button type="submit" class="btn btn-outline btn-sm" style="padding:2px 6px;"></button>
                             </form>
                         </div>
                         <?php endif; ?>
@@ -834,7 +833,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     <input type="hidden" name="action" value="add_faculty" id="ff_action">
                     <input type="hidden" name="faculty_id" value="" id="ff_id">
                     <div style="font-size:12.5px; font-weight:700; margin-bottom:8px; color:#1e40af;" id="ff_title">
-                        ➕ Thêm / Sửa Khoa:
+                        Thêm / Sửa Khoa:
                     </div>
                     <div class="form-row" style="margin-bottom:8px;">
                         <input type="text" name="code" id="ff_code" placeholder="Mã Khoa (VD: QTKD, KT, CNTT...)" required>
@@ -846,13 +845,13 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     </div>
                     <div style="font-size:12px; color:#475569;">
                         <strong>Chọn nhanh:</strong>
-                        <span class="dnu-demo-chip" onclick="quickFillFaculty('CNTT', 'Khoa Công nghệ thông tin')">☑️ Khoa CNTT</span>
-                        <span class="dnu-demo-chip" onclick="quickFillFaculty('KT', 'Khoa Kinh tế & Quản trị kinh doanh')">☑️ Khoa Kinh tế</span>
-                        <span class="dnu-demo-chip" onclick="quickFillFaculty('TCNH', 'Khoa Tài chính - Ngân hàng')">☑️ Khoa Tài chính - Ngân hàng</span>
-                        <span class="dnu-demo-chip" onclick="quickFillFaculty('YD', 'Khoa Y - Dược')">☑️ Khoa Y - Dược</span>
-                        <span class="dnu-demo-chip" onclick="quickFillFaculty('NN', 'Khoa Ngoại ngữ')">☑️ Khoa Ngoại ngữ</span>
-                        <span class="dnu-demo-chip" onclick="quickFillFaculty('LUAT', 'Khoa Luật')">☑️ Khoa Luật</span>
-                        <span class="dnu-demo-chip" onclick="quickFillFaculty('DL', 'Khoa Du lịch')">☑️ Khoa Du lịch</span>
+                        <span class="dnu-demo-chip" onclick="quickFillFaculty('CNTT', 'Khoa Công nghệ thông tin')">Khoa CNTT</span>
+                        <span class="dnu-demo-chip" onclick="quickFillFaculty('KT', 'Khoa Kinh tế & Quản trị kinh doanh')">Khoa Kinh tế</span>
+                        <span class="dnu-demo-chip" onclick="quickFillFaculty('TCNH', 'Khoa Tài chính - Ngân hàng')">Khoa Tài chính - Ngân hàng</span>
+                        <span class="dnu-demo-chip" onclick="quickFillFaculty('YD', 'Khoa Y - Dược')">Khoa Y - Dược</span>
+                        <span class="dnu-demo-chip" onclick="quickFillFaculty('NN', 'Khoa Ngoại ngữ')">Khoa Ngoại ngữ</span>
+                        <span class="dnu-demo-chip" onclick="quickFillFaculty('LUAT', 'Khoa Luật')">Khoa Luật</span>
+                        <span class="dnu-demo-chip" onclick="quickFillFaculty('DL', 'Khoa Du lịch')">Khoa Du lịch</span>
                     </div>
                 </form>
                 <?php endif; ?>
@@ -864,7 +863,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 <!-- Bảng Lớp học & Sĩ số -->
                 <div class="card" id="sec-classes">
                     <div class="card-header">
-                        <h3><?= $activeSec === 'siso' ? '👥 Sĩ số' : '🏫 Lớp học' ?></h3>
+                        <h3><?= $activeSec === 'siso' ? 'Sĩ số' : 'Lớp học' ?></h3>
                     </div>
                     <table>
                         <thead>
@@ -881,7 +880,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                     <?= h($c['name']) ?><br>
                                     <span class="badge badge-lt" style="margin-top:2px;"><?= h($c['major']) ?></span>
                                     <div style="font-size:11px; color:#475569; margin-top:3px;">
-                                        ☀️ Sáng: <strong><?= h($morningTime) ?></strong> • 🌤️ Chiều: <strong><?= h($afternoonTime) ?></strong>
+                                        Sáng: <strong><?= h($morningTime) ?></strong> • Chiều: <strong><?= h($afternoonTime) ?></strong>
                                     </div>
                                 </td>
                                 <td><strong style="color:#1d4ed8;"><?= (int)$c['student_count'] ?> SV</strong></td>
@@ -892,7 +891,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                     <form method="post" action="index.php?tab=data&sec=<?= h($activeSec ?: 'classes') ?>" style="display:inline;" onsubmit="return confirm('Xóa lớp học này?');">
                                         <input type="hidden" name="action" value="delete_class">
                                         <input type="hidden" name="class_id" value="<?= (int)$c['id'] ?>">
-                                        <button type="submit" class="btn btn-outline btn-sm">✕</button>
+                                        <button type="submit" class="btn btn-outline btn-sm"></button>
                                     </form>
                                 </td>
                                 <?php endif; ?>
@@ -904,7 +903,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     <form method="post" action="index.php?tab=data&sec=<?= h($activeSec ?: 'classes') ?>" style="margin-top:12px; background:#f8fafc; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
                         <input type="hidden" name="action" value="add_class" id="cf_action">
                         <input type="hidden" name="class_id" value="" id="cf_id">
-                        <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#1e40af;" id="cf_title">➕ Thêm / Sửa Lớp học &amp; Sĩ số:</div>
+                        <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#1e40af;" id="cf_title">Thêm / Sửa Lớp học &amp; Sĩ số:</div>
                         <div class="form-row" style="margin-bottom:8px;">
                             <input type="text" name="code" id="cf_code" placeholder="Mã lớp (VD: 18-09, 19-09...)" required>
                             <input type="text" name="name" id="cf_name" placeholder="Tên lớp (VD: CNTT 18-09)" required>
@@ -928,7 +927,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 <!-- Bảng Phòng học -->
                 <div class="card" id="sec-rooms">
                     <div class="card-header">
-                        <h3>🏢 Phòng học</h3>
+                        <h3>Phòng học</h3>
                     </div>
                     <table>
                         <thead>
@@ -948,7 +947,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                     <form method="post" action="index.php?tab=data&sec=rooms" style="display:inline;" onsubmit="return confirm('Xóa phòng học này?');">
                                         <input type="hidden" name="action" value="delete_room">
                                         <input type="hidden" name="room_id" value="<?= (int)$r['id'] ?>">
-                                        <button type="submit" class="btn btn-outline btn-sm">✕</button>
+                                        <button type="submit" class="btn btn-outline btn-sm"></button>
                                     </form>
                                 </td>
                                 <?php endif; ?>
@@ -960,7 +959,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     <form method="post" action="index.php?tab=data&sec=rooms" style="margin-top:12px; background:#f8fafc; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
                         <input type="hidden" name="action" value="add_room" id="rf_action">
                         <input type="hidden" name="room_id" value="" id="rf_id">
-                        <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#1e40af;" id="rf_title">➕ Thêm / Sửa Phòng học:</div>
+                        <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#1e40af;" id="rf_title">Thêm / Sửa Phòng học:</div>
                         <div class="form-row" style="margin-bottom:8px;">
                             <input type="text" name="code" id="rf_code" placeholder="Mã phòng (P103)" required>
                             <input type="text" name="name" id="rf_name" placeholder="Tên phòng" required>
@@ -982,7 +981,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 <!-- Bảng Giảng viên -->
                 <div class="card" id="sec-teachers">
                     <div class="card-header">
-                        <h3>👨‍🏫 Giảng viên</h3>
+                        <h3>Giảng viên</h3>
                     </div>
                     <table>
                         <thead>
@@ -1002,7 +1001,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                     <form method="post" action="index.php?tab=data&sec=teachers" style="display:inline;" onsubmit="return confirm('Xóa giảng viên này?');">
                                         <input type="hidden" name="action" value="delete_teacher">
                                         <input type="hidden" name="teacher_id" value="<?= (int)$t['id'] ?>">
-                                        <button type="submit" class="btn btn-outline btn-sm">✕</button>
+                                        <button type="submit" class="btn btn-outline btn-sm"></button>
                                     </form>
                                 </td>
                                 <?php endif; ?>
@@ -1014,7 +1013,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     <form method="post" action="index.php?tab=data&sec=teachers" style="margin-top:12px; background:#f8fafc; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
                         <input type="hidden" name="action" value="add_teacher" id="tf_action">
                         <input type="hidden" name="teacher_id" value="" id="tf_id">
-                        <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#1e40af;" id="tf_title">➕ Thêm / Sửa Giảng viên:</div>
+                        <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#1e40af;" id="tf_title">Thêm / Sửa Giảng viên:</div>
                         <div class="form-row" style="margin-bottom:8px;">
                             <input type="text" name="code" id="tf_code" placeholder="Mã GV (VD: GV07)" required>
                             <input type="text" name="name" id="tf_name" placeholder="Họ tên GV" required>
@@ -1034,7 +1033,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 <!-- Lịch bận & Mong muốn ưu tiên -->
                 <div class="card" id="sec-unavailability">
                     <div class="card-header">
-                        <h3>🗓️ Lịch bận</h3>
+                        <h3>Lịch bận</h3>
                     </div>
                     <?php if ($isScheduler || $isTeacher): ?>
                     <form method="post" action="index.php?tab=data&sec=unavailability" style="margin-bottom:14px;">
@@ -1102,7 +1101,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                         <form method="post" action="index.php?tab=data&sec=unavailability" style="display:inline;">
                                             <input type="hidden" name="action" value="delete_unavailability">
                                             <input type="hidden" name="unavailability_id" value="<?= (int)$u['id'] ?>">
-                                            <button type="submit" class="btn btn-outline btn-sm">✕</button>
+                                            <button type="submit" class="btn btn-outline btn-sm"></button>
                                         </form>
                                     </td>
                                     <?php endif; ?>
@@ -1118,7 +1117,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 <!-- Danh sách Khung giờ -->
                 <div class="card" id="sec-slots">
                     <div class="card-header">
-                        <h3>🕒 Khung giờ</h3>
+                        <h3>Khung giờ</h3>
                     </div>
                     <div style="max-height: 430px; overflow-y: auto;">
                         <table>
@@ -1137,9 +1136,9 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                     <td><?= (int)$s['day_of_week'] === 8 ? 'Chủ nhật' : ('Thứ ' . (int)$s['day_of_week']) ?></td>
                                     <td>
                                         <?php if ($pDay === 1): ?>
-                                            <span class="badge badge-soft-prefer">☀️ Ca 1 (Buổi Sáng)</span>
+                                            <span class="badge badge-soft-prefer">Ca 1 (Buổi Sáng)</span>
                                         <?php else: ?>
-                                            <span class="badge badge-th">🌤️ Ca 2 (Buổi Chiều)</span>
+                                            <span class="badge badge-th">Ca 2 (Buổi Chiều)</span>
                                         <?php endif; ?>
                                     </td>
                                     <td>
@@ -1162,14 +1161,14 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
             <!-- Quản lý Mã Sinh viên -->
             <div class="card" id="sec-students">
                 <div class="card-header">
-                    <h2>🎓 Mã sinh viên</h2>
+                    <h2>Mã sinh viên</h2>
                 </div>
 
                 <form method="post" action="index.php?tab=data&sec=students" style="background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #cbd5e1; margin-bottom:14px;">
                     <input type="hidden" name="action" value="add_user" id="uf_action">
                     <input type="hidden" name="user_id" value="" id="uf_id">
                     <div style="font-size:13px; font-weight:700; margin-bottom:8px; color:#1d4ed8;" id="uf_title">
-                        ➕ Thêm / Sửa Mã sinh viên:
+                        Thêm / Sửa Mã sinh viên:
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -1183,9 +1182,9 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                         <div class="form-group">
                             <label>Nhóm tài khoản *</label>
                             <select name="role" id="uf_role" onchange="toggleUserRoleFields()">
-                                <option value="student">🎓 Sinh viên</option>
-                                <option value="teacher">👨‍🏫 Giảng viên</option>
-                                <option value="scheduler">⚙️ Quản trị Đào tạo</option>
+                                <option value="student">Sinh viên</option>
+                                <option value="teacher">Giảng viên</option>
+                                <option value="scheduler">Quản trị Đào tạo</option>
                             </select>
                         </div>
                         <div class="form-group" id="uf_class_wrap">
@@ -1244,11 +1243,11 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                 <td><strong><?= h($uRow['full_name']) ?></strong></td>
                                 <td>
                                     <?php if ($uRole === 'student'): ?>
-                                        <span class="badge badge-lt">🎓 Sinh viên</span>
+                                        <span class="badge badge-lt">Sinh viên</span>
                                     <?php elseif ($uRole === 'teacher'): ?>
-                                        <span class="badge badge-th">👨‍🏫 Giảng viên</span>
+                                        <span class="badge badge-th">Giảng viên</span>
                                     <?php else: ?>
-                                        <span class="badge badge-locked">⚙️ Admin</span>
+                                        <span class="badge badge-locked">Admin</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
@@ -1271,14 +1270,14 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                 <td>
                                     <?php if ($uRole === 'student' && !empty($uRow['class_id'])): ?>
                                         <a href="index.php?tab=schedule&filter_type=class&filter_id=<?= (int)$uRow['class_id'] ?>" class="btn btn-outline btn-sm">
-                                            📅 Xem TKB
+                                            Xem TKB
                                         </a>
                                     <?php elseif ($uRole === 'teacher' && !empty($uRow['teacher_id'])): ?>
                                         <a href="index.php?tab=schedule&filter_type=teacher&filter_id=<?= (int)$uRow['teacher_id'] ?>" class="btn btn-outline btn-sm">
-                                            📅 Xem TKB
+                                            Xem TKB
                                         </a>
                                     <?php else: ?>
-                                        <a href="index.php?tab=schedule" class="btn btn-outline btn-sm">📅 Xem TKB</a>
+                                        <a href="index.php?tab=schedule" class="btn btn-outline btn-sm">Xem TKB</a>
                                     <?php endif; ?>
                                 </td>
                                 <td style="white-space:nowrap;">
@@ -1343,7 +1342,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 document.getElementById('ff_id').value = f.id;
                 document.getElementById('ff_code').value = f.code;
                 document.getElementById('ff_name').value = f.name;
-                document.getElementById('ff_title').textContent = '✏️ Chỉnh sửa Khoa [' + f.code + ' - ' + f.name + ']:';
+                document.getElementById('ff_title').textContent = 'Chỉnh sửa Khoa [' + f.code + ' - ' + f.name + ']:';
                 document.getElementById('ff_submit').textContent = 'Cập nhật Khoa [' + f.code + ']';
             }
             function resetFacultyForm() {
@@ -1351,7 +1350,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 document.getElementById('ff_id').value = '';
                 document.getElementById('ff_code').value = '';
                 document.getElementById('ff_name').value = '';
-                document.getElementById('ff_title').textContent = '➕ Tự thêm Khoa đào tạo mới hoặc bấm đánh dấu nhanh:';
+                document.getElementById('ff_title').textContent = 'Tự thêm Khoa đào tạo mới hoặc bấm đánh dấu nhanh:';
                 document.getElementById('ff_submit').textContent = 'Lưu Khoa Đào tạo';
             }
             function quickFillFaculty(code, name) {
@@ -1368,7 +1367,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 document.getElementById('cf_major').value = c.major || 'Khoa Công nghệ thông tin';
                 document.getElementById('cf_count').value = c.student_count;
                 document.getElementById('cf_sync_wrap').style.display = 'block';
-                document.getElementById('cf_title').textContent = '✏️ Sửa Khoa & Sĩ số lớp [' + c.code + ']:';
+                document.getElementById('cf_title').textContent = 'Sửa Khoa & Sĩ số lớp [' + c.code + ']:';
                 document.getElementById('cf_submit').textContent = 'Cập nhật [' + c.code + ']';
             }
             function resetClassForm() {
@@ -1379,7 +1378,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 document.getElementById('cf_major').value = 'Khoa Công nghệ thông tin';
                 document.getElementById('cf_count').value = '';
                 document.getElementById('cf_sync_wrap').style.display = 'none';
-                document.getElementById('cf_title').textContent = '➕ Thêm Lớp học mới (Tự nhận giờ học theo số đầu 18-09, 19-09...):';
+                document.getElementById('cf_title').textContent = 'Thêm Lớp học mới (Tự nhận giờ học theo số đầu 18-09, 19-09...):';
                 document.getElementById('cf_submit').textContent = 'Lưu Lớp & Sĩ số';
             }
             function populateRoomForm(r) {
@@ -1389,7 +1388,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 document.getElementById('rf_name').value = r.name;
                 document.getElementById('rf_capacity').value = r.capacity;
                 document.getElementById('rf_type').value = r.room_type;
-                document.getElementById('rf_title').textContent = '✏️ Sửa sức chứa & loại phòng [' + r.code + ']:';
+                document.getElementById('rf_title').textContent = 'Sửa sức chứa & loại phòng [' + r.code + ']:';
                 document.getElementById('rf_submit').textContent = 'Cập nhật Phòng [' + r.code + ']';
             }
             function resetRoomForm() {
@@ -1399,7 +1398,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 document.getElementById('rf_name').value = '';
                 document.getElementById('rf_capacity').value = '';
                 document.getElementById('rf_type').value = 'LT';
-                document.getElementById('rf_title').textContent = '➕ Thêm / Sửa Phòng học:';
+                document.getElementById('rf_title').textContent = 'Thêm / Sửa Phòng học:';
                 document.getElementById('rf_submit').textContent = 'Lưu Phòng học';
             }
             function populateTeacherForm(t) {
@@ -1409,7 +1408,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 document.getElementById('tf_name').value = t.name;
                 document.getElementById('tf_dept').value = t.department;
                 document.getElementById('tf_max').value = t.max_lessons_per_day;
-                document.getElementById('tf_title').textContent = '✏️ Sửa thông tin Giảng viên [' + t.code + ']:';
+                document.getElementById('tf_title').textContent = 'Sửa thông tin Giảng viên [' + t.code + ']:';
                 document.getElementById('tf_submit').textContent = 'Cập nhật GV [' + t.code + ']';
             }
             function resetTeacherForm() {
@@ -1419,7 +1418,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 document.getElementById('tf_name').value = '';
                 document.getElementById('tf_dept').value = 'Công nghệ thông tin';
                 document.getElementById('tf_max').value = '2';
-                document.getElementById('tf_title').textContent = '➕ Thêm / Sửa Giảng viên:';
+                document.getElementById('tf_title').textContent = 'Thêm / Sửa Giảng viên:';
                 document.getElementById('tf_submit').textContent = 'Lưu Giảng viên';
             }
             function toggleUserRoleFields() {
@@ -1442,7 +1441,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 document.getElementById('uf_email').value = u.email || '';
                 document.getElementById('uf_password').value = '';
                 toggleUserRoleFields();
-                document.getElementById('uf_title').textContent = '✏️ Chỉnh sửa Mã SV / Tài khoản [' + u.username + ' - ' + u.full_name + ']:';
+                document.getElementById('uf_title').textContent = 'Chỉnh sửa Mã SV / Tài khoản [' + u.username + ' - ' + u.full_name + ']:';
                 document.getElementById('uf_submit').textContent = 'Cập nhật [' + u.username + ']';
                 const sec = document.getElementById('sec-students');
                 if (sec) sec.scrollIntoView({behavior: 'smooth'});
@@ -1456,7 +1455,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 document.getElementById('uf_email').value = '';
                 document.getElementById('uf_password').value = '';
                 toggleUserRoleFields();
-                document.getElementById('uf_title').textContent = '➕ Cấp mới Mã Sinh viên / Tài khoản (Mật khẩu mặc định nếu để trống: 123456):';
+                document.getElementById('uf_title').textContent = 'Cấp mới Mã Sinh viên / Tài khoản (Mật khẩu mặc định nếu để trống: 123456):';
                 document.getElementById('uf_submit').textContent = 'Lưu Mã Sinh viên / Tài khoản';
             }
             </script>
@@ -1517,7 +1516,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     <h3 style="margin-top:16px; font-size:14px;">Kết quả rà soát dữ liệu bắt buộc hiện tại:</h3>
                     <?php if (empty($validation['hard_errors'])): ?>
                         <div class="alert alert-success" style="margin-top:8px;">
-                            ✅ Toàn bộ <?= count($dataset['lessons']) ?> buổi học (gồm <?= (int)$validation['stats']['locked_lessons'] ?> buổi đã khóa) đều hợp lệ về dữ liệu gốc và không có xung đột khóa cứng.
+                            Toàn bộ <?= count($dataset['lessons']) ?> buổi học (gồm <?= (int)$validation['stats']['locked_lessons'] ?> buổi đã khóa) đều hợp lệ về dữ liệu gốc và không có xung đột khóa cứng.
                         </div>
                     <?php else: ?>
                         <div class="alert alert-error" style="margin-top:8px;">
@@ -1581,7 +1580,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                 <tr>
                                     <td><strong><?= h($l['code']) ?></strong></td>
                                     <td><?= h($l['subject_name']) ?></td>
-                                    <td><?= (int)$l['is_locked'] === 1 ? '<span class="badge badge-locked">🔒 Đã khóa</span>' : 'Tự động' ?></td>
+                                    <td><?= (int)$l['is_locked'] === 1 ? '<span class="badge badge-locked">Đã khóa</span>' : 'Tự động' ?></td>
                                     <td>
                                         <strong style="color: <?= $cnt === 0 ? '#b91c1c' : ($cnt <= 3 ? '#b45309' : '#15803d') ?>;">
                                             <?= $cnt ?> phương án khả thi
@@ -1680,31 +1679,31 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 <!-- 3 Thẻ Bento Tổng quan Sinh viên -->
                 <div class="bento-student-grid">
                     <div class="bento-card bento-accent-indigo">
-                        <div class="bento-eyebrow">🏫 LỚP HÀNH CHÍNH ĐANG THEO HỌC</div>
+                        <div class="bento-eyebrow">LỚP HÀNH CHÍNH ĐANG THEO HỌC</div>
                         <div class="bento-main-val"><?= h($selectedClassCode ?: 'CNTT 18-12') ?></div>
                         <div class="bento-sub-text">
                             <?= h($studentClassObj['major'] ?? 'Khoa Công nghệ thông tin') ?> •
                             Sĩ số: <strong><?= (int)($studentClassObj['student_count'] ?? 35) ?> sinh viên</strong>
                         </div>
                         <div class="bento-chips">
-                            <span class="bento-chip">☀️ Sáng: <?= h($studentCohortTimeS) ?></span>
-                            <span class="bento-chip">🌤️ Chiều: <?= h($studentCohortTimeC) ?></span>
+                            <span class="bento-chip">Sáng: <?= h($studentCohortTimeS) ?></span>
+                            <span class="bento-chip">Chiều: <?= h($studentCohortTimeC) ?></span>
                         </div>
                     </div>
 
                     <div class="bento-card bento-accent-emerald">
-                        <div class="bento-eyebrow">📚 TỔNG QUAN LỊCH HỌC TRONG KỲ</div>
+                        <div class="bento-eyebrow">TỔNG QUAN LỊCH HỌC TRONG KỲ</div>
                         <div class="bento-main-val"><?= count($filteredList) ?> <span style="font-size:15px; font-weight:600; color:#475569;">buổi học</span></div>
                         <div class="bento-sub-text">
                             Gồm <strong><?= $ltCount ?> buổi Lý thuyết</strong> &amp; <strong><?= $thCount ?> buổi Thực hành</strong>
                         </div>
                         <div class="bento-chips">
-                            <span class="bento-chip">📍 Phòng học: <?= !empty($roomSet) ? h(implode(', ', $roomSet)) : 'Đang cập nhật' ?></span>
+                            <span class="bento-chip">Phòng học: <?= !empty($roomSet) ? h(implode(', ', $roomSet)) : 'Đang cập nhật' ?></span>
                         </div>
                     </div>
 
                     <div class="bento-card bento-accent-violet">
-                        <div class="bento-eyebrow">⚡ TIÊU ĐIỂM HỌC PHẦN ĐẦU TUẦN</div>
+                        <div class="bento-eyebrow">TIÊU ĐIỂM HỌC PHẦN ĐẦU TUẦN</div>
                         <?php if ($firstCourse): ?>
                             <div class="bento-main-val" style="font-size:17px; line-height:1.3;">
                                 <?= h($firstCourse['subject_name']) ?>
@@ -1713,8 +1712,8 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                 GV: <strong><?= h($firstCourse['teacher_name']) ?></strong>
                             </div>
                             <div class="bento-chips">
-                                <span class="bento-chip">📍 Phòng <?= h($firstCourse['room_code']) ?></span>
-                                <span class="bento-chip">🗓️ <?= (int)$firstCourse['day_of_week'] === 8 ? 'Chủ nhật' : ('Thứ ' . (int)$firstCourse['day_of_week']) ?> (<?= (int)$firstCourse['period_of_day'] === 1 ? 'Sáng' : 'Chiều' ?>)</span>
+                                <span class="bento-chip">Phòng <?= h($firstCourse['room_code']) ?></span>
+                                <span class="bento-chip"><?= (int)$firstCourse['day_of_week'] === 8 ? 'Chủ nhật' : ('Thứ ' . (int)$firstCourse['day_of_week']) ?> (<?= (int)$firstCourse['period_of_day'] === 1 ? 'Sáng' : 'Chiều' ?>)</span>
                             </div>
                         <?php else: ?>
                             <div class="bento-main-val" style="font-size:16px;">Chưa có buổi học</div>
@@ -1728,29 +1727,29 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     <div class="week-pill-group">
                         <a href="index.php?tab=schedule&subview=<?= h($scheduleSubView) ?>&week_no=1"
                            class="week-pill <?= $selectedWeekNo === 1 ? 'active' : '' ?>">
-                            🗓️ Tuần hiện tại — Tuần 1 (19/10 – 25/10)
+                            Tuần hiện tại — Tuần 1 (19/10 – 25/10)
                         </a>
                         <a href="index.php?tab=schedule&subview=<?= h($scheduleSubView) ?>&week_no=2"
                            class="week-pill <?= $selectedWeekNo === 2 ? 'active' : '' ?>">
-                            🗓️ Tuần kế tiếp — Tuần 2 (26/10 – 01/11)
+                            Tuần kế tiếp — Tuần 2 (26/10 – 01/11)
                         </a>
                         <a href="index.php?tab=schedule&subview=<?= h($scheduleSubView) ?>&week_no=0"
                            class="week-pill <?= $selectedWeekNo === 0 ? 'active' : '' ?>">
-                            📑 Xem cả 2 tuần
+                            Xem cả 2 tuần
                         </a>
                     </div>
 
                     <div class="portal-control-right">
                         <input type="search" id="student_quick_search" class="portal-search-input"
-                               placeholder="🔍 Tìm môn học, phòng, giảng viên..." oninput="filterKanbanCards(this.value)">
+                               placeholder="Tìm môn học, phòng, giảng viên..." oninput="filterKanbanCards(this.value)">
                         <div class="dnu-subtabs">
                             <a href="index.php?tab=schedule&subview=week&week_no=<?= (int)$selectedWeekNo ?>"
                                class="dnu-subtab <?= $scheduleSubView !== 'list' ? 'active' : '' ?>">
-                                🗓️ Thời khóa biểu tuần
+                                Thời khóa biểu tuần
                             </a>
                             <a href="index.php?tab=schedule&subview=list&week_no=<?= (int)$selectedWeekNo ?>"
                                class="dnu-subtab <?= $scheduleSubView === 'list' ? 'active' : '' ?>">
-                                📋 Danh sách học phần
+                                Danh sách học phần
                             </a>
                         </div>
                     </div>
@@ -1764,7 +1763,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     ?>
                         <div class="kanban-week-section" style="margin-top: <?= $idxW > 0 ? '24px' : '0' ?>;">
                             <div class="kanban-week-banner">
-                                <span>🗓️ <strong><?= h($weekSelectLabels[$w]) ?></strong></span>
+                                <span><strong><?= h($weekSelectLabels[$w]) ?></strong></span>
                                 <span class="kanban-week-tag">Lớp <?= h($selectedClassCode) ?></span>
                             </div>
 
@@ -1777,7 +1776,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                         </div>
 
                                         <div class="kanban-day-body">
-                                            <?php foreach ([1 => '☀️ CA SÁNG (Tiết 1–5)', 2 => '🌤️ CA CHIỀU (Tiết 6–10)'] as $pNum => $pTitle):
+                                            <?php foreach ([1 => 'CA SÁNG (Tiết 1–5)', 2 => 'CA CHIỀU (Tiết 6–10)'] as $pNum => $pTitle):
                                                 $slotItems = $grid[$w][$pNum][$dNum] ?? [];
                                             ?>
                                                 <div class="kanban-session-slot">
@@ -1794,13 +1793,13 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                                                  title="Bấm để xem chi tiết học phần & danh sách sinh viên lớp">
                                                                 <div class="kcard-top">
                                                                     <span class="kcard-type-badge badge-<?= h($rType) ?>">
-                                                                        <?= $rType === 'th' ? '💻 Thực hành' : '📖 Lý thuyết' ?>
+                                                                        <?= $rType === 'th' ? 'Thực hành' : 'Lý thuyết' ?>
                                                                     </span>
-                                                                    <span class="kcard-room">📍 P.<?= h($item['room_code']) ?></span>
+                                                                    <span class="kcard-room">P.<?= h($item['room_code']) ?></span>
                                                                 </div>
                                                                 <div class="kcard-subject"><?= h($item['subject_name']) ?></div>
-                                                                <div class="kcard-time">🕒 <?= h($exactTime) ?></div>
-                                                                <div class="kcard-teacher">👨‍🏫 <?= h($item['teacher_name']) ?></div>
+                                                                <div class="kcard-time"><?= h($exactTime) ?></div>
+                                                                <div class="kcard-teacher"><?= h($item['teacher_name']) ?></div>
                                                             </div>
                                                         <?php endforeach; ?>
                                                     <?php endif; ?>
@@ -1835,7 +1834,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                 <div class="timeline-item-card searchable-card">
                                     <div class="timeline-left-badge">
                                         <div class="tl-day"><?= (int)$row['day_of_week'] === 8 ? 'Chủ nhật' : ('Thứ ' . (int)$row['day_of_week']) ?></div>
-                                        <div class="tl-session"><?= $pRow === 1 ? '☀️ Sáng' : '🌤️ Chiều' ?></div>
+                                        <div class="tl-session"><?= $pRow === 1 ? 'Sáng' : 'Chiều' ?></div>
                                         <div class="tl-week">Tuần <?= $wRow ?></div>
                                     </div>
                                     <div class="timeline-main-info">
@@ -1844,9 +1843,9 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                             <span class="badge badge-<?= h($rType) ?>"><?= h($row['room_type']) ?></span>
                                         </div>
                                         <div class="tl-meta">
-                                            <span>🕒 <strong><?= h($exactTime) ?></strong></span>
-                                            <span>📍 Phòng <strong><?= h($row['room_code']) ?></strong> (<?= h($row['room_name'] ?? '') ?>)</span>
-                                            <span>👨‍🏫 GV: <strong><?= h($row['teacher_name']) ?></strong></span>
+                                            <span><strong><?= h($exactTime) ?></strong></span>
+                                            <span>Phòng <strong><?= h($row['room_code']) ?></strong> (<?= h($row['room_name'] ?? '') ?>)</span>
+                                            <span>GV: <strong><?= h($row['teacher_name']) ?></strong></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1858,7 +1857,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 <!-- Danh mục Học phần & Giảng viên giảng dạy Lớp -->
                 <div class="card" style="margin-top:24px;">
                     <div class="card-header">
-                        <h2>📖 Danh mục Học phần &amp; Giảng viên giảng dạy lớp <?= h($selectedClassCode) ?></h2>
+                        <h2>Danh mục Học phần &amp; Giảng viên giảng dạy lớp <?= h($selectedClassCode) ?></h2>
                     </div>
                     <div class="course-directory-grid">
                         <?php foreach ($filteredList as $cItem):
@@ -1873,8 +1872,8 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                     <?= h($cItem['subject_name']) ?>
                                 </div>
                                 <div style="font-size:12.5px; color:#475569;">
-                                    <div>👨‍🏫 Giảng viên: <strong><?= h($cItem['teacher_name']) ?></strong></div>
-                                    <div style="margin-top:3px;">🗓️ Tuần <?= (int)($cItem['week_no'] ?? 1) ?> • <?= (int)$cItem['day_of_week'] === 8 ? 'Chủ nhật' : ('Thứ ' . (int)$cItem['day_of_week']) ?> (<?= h($cTime) ?>)</div>
+                                    <div>Giảng viên: <strong><?= h($cItem['teacher_name']) ?></strong></div>
+                                    <div style="margin-top:3px;">Tuần <?= (int)($cItem['week_no'] ?? 1) ?> • <?= (int)$cItem['day_of_week'] === 8 ? 'Chủ nhật' : ('Thứ ' . (int)$cItem['day_of_week']) ?> (<?= h($cTime) ?>)</div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -1922,26 +1921,26 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 <!-- 4 Thẻ KPI Giảng dạy của Giảng viên -->
                 <div class="stats-grid">
                     <div class="stat-card" style="border-top: 3px solid #0d9488;">
-                        <div class="stat-label">📚 Khối lượng giảng dạy</div>
+                        <div class="stat-label">Khối lượng giảng dạy</div>
                         <div class="stat-value"><?= count($filteredList) ?> ca</div>
-                        <div class="stat-sub">☀️ <?= $morningTeach ?> ca sáng • 🌤️ <?= $afternoonTeach ?> ca chiều</div>
+                        <div class="stat-sub"><?= $morningTeach ?> ca sáng • <?= $afternoonTeach ?> ca chiều</div>
                     </div>
                     <div class="stat-card" style="border-top: 3px solid #2563eb;">
-                        <div class="stat-label">🏫 Lớp phụ trách</div>
+                        <div class="stat-label">Lớp phụ trách</div>
                         <div class="stat-value"><?= count($taughtClasses) ?> lớp</div>
                         <div class="stat-sub"><?= !empty($taughtClasses) ? h(implode(', ', $taughtClasses)) : 'Chưa phân công' ?></div>
                     </div>
                     <div class="stat-card" style="border-top: 3px solid #e11d48;">
-                        <div class="stat-label">🔴 Lịch bận cứng đã khóa</div>
+                        <div class="stat-label">Lịch bận cứng đã khóa</div>
                         <div class="stat-value"><?= $busyCount ?> ca</div>
                         <div class="stat-sub">Được bảo vệ 100% không xếp trùng</div>
                     </div>
                     <div class="stat-card" style="border-top: 3px solid #10b981;">
-                        <div class="stat-label">✨ Đáp ứng nguyện vọng</div>
+                        <div class="stat-label">Đáp ứng nguyện vọng</div>
                         <div class="stat-value" style="color: <?= $mySoftPenalty === 0 ? '#059669' : '#d97706' ?>;">
                             <?= $mySoftPenalty === 0 ? 'Tối ưu (0đ phạt)' : ($mySoftPenalty . 'đ phạt') ?>
                         </div>
-                        <div class="stat-sub">🟢 <?= $preferCount ?> ca ưu tiên • 🟡 <?= $avoidCount ?> ca hạn chế</div>
+                        <div class="stat-sub"><?= $preferCount ?> ca ưu tiên • <?= $avoidCount ?> ca hạn chế</div>
                     </div>
                 </div>
 
@@ -1950,15 +1949,15 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     <div class="week-pill-group">
                         <a href="index.php?tab=schedule&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&week_no=1"
                            class="week-pill <?= $selectedWeekNo === 1 ? 'active' : '' ?>">
-                            🗓️ Tuần hiện tại — Tuần 1 (19/10 – 25/10)
+                            Tuần hiện tại — Tuần 1 (19/10 – 25/10)
                         </a>
                         <a href="index.php?tab=schedule&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&week_no=2"
                            class="week-pill <?= $selectedWeekNo === 2 ? 'active' : '' ?>">
-                            🗓️ Tuần kế tiếp — Tuần 2 (26/10 – 01/11)
+                            Tuần kế tiếp — Tuần 2 (26/10 – 01/11)
                         </a>
                         <a href="index.php?tab=schedule&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&week_no=0"
                            class="week-pill <?= $selectedWeekNo === 0 ? 'active' : '' ?>">
-                            📑 Xem cả 2 tuần
+                            Xem cả 2 tuần
                         </a>
                     </div>
 
@@ -1977,14 +1976,14 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                         <?php if ($activeVersion): ?>
                             <a class="btn btn-outline btn-sm" target="_blank"
                                href="index.php?action=export&format=print&version_id=<?= (int)$activeVersion['id'] ?>&filter_type=teacher&filter_id=<?= $myTid ?>">
-                               🖨️ Bản in
+                               Bản in
                             </a>
                             <a class="btn btn-outline btn-sm"
                                href="index.php?action=export&format=csv&version_id=<?= (int)$activeVersion['id'] ?>&filter_type=teacher&filter_id=<?= $myTid ?>">
-                               📥 Xuất CSV
+                               Xuất CSV
                             </a>
                         <?php endif; ?>
-                        <a href="index.php?tab=data" class="btn btn-primary btn-sm">🗓️ Cập nhật lịch bận</a>
+                        <a href="index.php?tab=data" class="btn btn-primary btn-sm">Cập nhật lịch bận</a>
                     </div>
                 </div>
 
@@ -1995,7 +1994,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 ?>
                     <div class="kanban-week-section" style="margin-top: <?= $idxW > 0 ? '24px' : '0' ?>;">
                         <div class="kanban-week-banner teacher-banner">
-                            <span>🗓️ <strong><?= h($weekSelectLabels[$w]) ?></strong> — Lịch giảng dạy &amp; Trạng thái cá nhân</span>
+                            <span><strong><?= h($weekSelectLabels[$w]) ?></strong> — Lịch giảng dạy &amp; Trạng thái cá nhân</span>
                             <span class="kanban-week-tag"><?= h($currentUser['full_name'] ?? '') ?></span>
                         </div>
 
@@ -2008,7 +2007,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                     </div>
 
                                     <div class="kanban-day-body">
-                                        <?php foreach ([1 => '☀️ CA SÁNG (Tiết 1–5)', 2 => '🌤️ CA CHIỀU (Tiết 6–10)'] as $pNum => $pTitle):
+                                        <?php foreach ([1 => 'CA SÁNG (Tiết 1–5)', 2 => 'CA CHIỀU (Tiết 6–10)'] as $pNum => $pTitle):
                                             $slotItems = $grid[$w][$pNum][$dNum] ?? [];
                                             $sObj = $slotLookup[$w][$pNum][$dNum] ?? null;
                                             $uObj = $sObj ? ($myUnavailBySlot[(int)$sObj['id']] ?? null) : null;
@@ -2028,38 +2027,38 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                                                 <span class="kcard-type-badge badge-<?= h($rType) ?>">
                                                                     Lớp <?= h($item['class_code']) ?>
                                                                 </span>
-                                                                <span class="kcard-room">📍 P.<?= h($item['room_code']) ?></span>
+                                                                <span class="kcard-room">P.<?= h($item['room_code']) ?></span>
                                                             </div>
                                                             <div class="kcard-subject"><?= h($item['subject_name']) ?></div>
-                                                            <div class="kcard-time">🕒 <?= h($exactTime) ?></div>
+                                                            <div class="kcard-time"><?= h($exactTime) ?></div>
                                                             <div class="kcard-teacher">
-                                                                👥 Sĩ số: <strong><?= (int)$item['student_count'] ?>/<?= (int)$item['room_capacity'] ?> chỗ</strong>
-                                                                <?= $isLocked ? ' • 🔒 Cố định' : '' ?>
+                                                                Sĩ số: <strong><?= (int)$item['student_count'] ?>/<?= (int)$item['room_capacity'] ?> chỗ</strong>
+                                                                <?= $isLocked ? ' • Cố định' : '' ?>
                                                             </div>
                                                             <div style="margin-top:6px; font-size:11px; font-weight:700; color:#0f766e;">
-                                                                📝 Bấm để xin đổi lịch / dạy bù
+                                                                Bấm để xin đổi lịch / dạy bù
                                                             </div>
                                                         </div>
                                                     <?php endforeach; ?>
                                                 <?php elseif ($uObj): ?>
                                                     <?php if ($uObj['constraint_type'] === 'HARD_BUSY'): ?>
                                                         <div class="kanban-status-box status-busy">
-                                                            <strong>🔴 Đã đăng ký Bận cứng</strong>
+                                                            <strong>Đã đăng ký Bận cứng</strong>
                                                             <div><?= h($uObj['reason']) ?></div>
                                                         </div>
                                                     <?php elseif ($uObj['constraint_type'] === 'SOFT_PREFER'): ?>
                                                         <div class="kanban-status-box status-prefer">
-                                                            <strong>🟢 Ca mong muốn dạy</strong>
+                                                            <strong>Ca mong muốn dạy</strong>
                                                             <div><?= h($uObj['reason']) ?></div>
                                                         </div>
                                                     <?php else: ?>
                                                         <div class="kanban-status-box status-avoid">
-                                                            <strong>🟡 Hạn chế xếp lịch</strong>
+                                                            <strong>Hạn chế xếp lịch</strong>
                                                             <div><?= h($uObj['reason']) ?></div>
                                                         </div>
                                                     <?php endif; ?>
                                                 <?php else: ?>
-                                                    <div class="kanban-empty-slot">⚪ Ca trống (Không có lịch dạy)</div>
+                                                    <div class="kanban-empty-slot">Ca trống (Không có lịch dạy)</div>
                                                 <?php endif; ?>
                                             </div>
                                         <?php endforeach; ?>
@@ -2084,7 +2083,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 <div class="grid-2" style="margin-top:22px;">
                     <div class="card">
                         <div class="card-header">
-                            <h3>📝 Gửi Đề xuất Xin đổi lịch / Dạy bù tới Phòng Đào tạo</h3>
+                            <h3>Gửi Đề xuất Xin đổi lịch / Dạy bù tới Phòng Đào tạo</h3>
                             <span class="badge badge-th">Workflow 2 chiều</span>
                         </div>
                         <form method="post" action="index.php?tab=schedule">
@@ -2124,13 +2123,13 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                     <input type="text" name="reason" placeholder="VD: Trùng lịch công tác đột xuất, xin dạy bù vào Thứ 7..." required>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-sm">📨 Gửi yêu cầu phê duyệt</button>
+                            <button type="submit" class="btn btn-primary btn-sm">Gửi yêu cầu phê duyệt</button>
                         </form>
                     </div>
 
                     <div class="card">
                         <div class="card-header">
-                            <h3>📬 Trạng thái các yêu cầu đổi lịch đã gửi (<?= count($myRequests) ?>)</h3>
+                            <h3>Trạng thái các yêu cầu đổi lịch đã gửi (<?= count($myRequests) ?>)</h3>
                         </div>
                         <div style="max-height:260px; overflow-y:auto;">
                             <table>
@@ -2145,14 +2144,14 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                             <tr>
                                                 <td><strong><?= h($mr['lesson_code']) ?></strong><br><small><?= h($mr['subject_name']) ?></small></td>
                                                 <td><strong><?= h($mr['target_slot_code']) ?></strong><br>P.<?= h($mr['target_room_code']) ?></td>
-                                                <td><?= h($mr['reason']) ?><?php if (!empty($mr['admin_note'])): ?><br><small style="color:#4f46e5;">💬 ĐT: <?= h($mr['admin_note']) ?></small><?php endif; ?></td>
+                                                <td><?= h($mr['reason']) ?><?php if (!empty($mr['admin_note'])): ?><br><small style="color:#4f46e5;">ĐT: <?= h($mr['admin_note']) ?></small><?php endif; ?></td>
                                                 <td>
                                                     <?php if ($mr['status'] === 'PENDING'): ?>
                                                         <span class="badge badge-soft-avoid">⏳ Chờ duyệt</span>
                                                     <?php elseif ($mr['status'] === 'APPROVED'): ?>
-                                                        <span class="badge badge-soft-prefer">✅ Đã duyệt</span>
+                                                        <span class="badge badge-soft-prefer">Đã duyệt</span>
                                                     <?php else: ?>
-                                                        <span class="badge badge-hard">❌ Từ chối</span>
+                                                        <span class="badge badge-hard">Từ chối</span>
                                                     <?php endif; ?>
                                                 </td>
                                             </tr>
@@ -2172,29 +2171,29 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                         <div class="week-pill-group">
                             <a href="index.php?tab=schedule&subview=<?= h($scheduleSubView) ?>&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>&week_no=1"
                                class="week-pill <?= $selectedWeekNo === 1 ? 'active' : '' ?>">
-                                🗓️ Tuần 1 (19/10 – 25/10)
+                                Tuần 1 (19/10 – 25/10)
                             </a>
                             <a href="index.php?tab=schedule&subview=<?= h($scheduleSubView) ?>&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>&week_no=2"
                                class="week-pill <?= $selectedWeekNo === 2 ? 'active' : '' ?>">
-                                🗓️ Tuần 2 (26/10 – 01/11)
+                                Tuần 2 (26/10 – 01/11)
                             </a>
                             <a href="index.php?tab=schedule&subview=<?= h($scheduleSubView) ?>&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>&week_no=0"
                                class="week-pill <?= $selectedWeekNo === 0 ? 'active' : '' ?>">
-                                📑 Cả 2 tuần
+                                Cả 2 tuần
                             </a>
                         </div>
 
                         <div class="portal-control-right">
                             <input type="search" class="portal-search-input"
-                                   placeholder="🔍 Lọc nhanh môn, lớp, GV, phòng..." oninput="filterKanbanCards(this.value)">
+                                   placeholder="Lọc nhanh môn, lớp, GV, phòng..." oninput="filterKanbanCards(this.value)">
                             <div class="dnu-subtabs">
                                 <a href="index.php?tab=schedule&subview=week&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>&week_no=<?= (int)$selectedWeekNo ?>"
                                    class="dnu-subtab <?= $scheduleSubView !== 'list' ? 'active' : '' ?>">
-                                    🗓️ Lưới TKB 7 Ngày (Thứ 2 – CN)
+                                    Lưới TKB 7 Ngày (Thứ 2 – CN)
                                 </a>
                                 <a href="index.php?tab=schedule&subview=list&version_id=<?= (int)($activeVersion['id'] ?? 0) ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>&week_no=<?= (int)$selectedWeekNo ?>"
                                    class="dnu-subtab <?= $scheduleSubView === 'list' ? 'active' : '' ?>">
-                                    📋 Danh sách chi tiết (<?= count($filteredList) ?>)
+                                    Danh sách chi tiết (<?= count($filteredList) ?>)
                                 </a>
                             </div>
                         </div>
@@ -2205,8 +2204,8 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                         <div>
                             <strong>Hướng dẫn Điều phối Trực tiếp trên Lưới TKB:</strong>
                             Giữ chuột <strong>Kéo - Thả</strong> học phần sang ô Thứ/Ca khác để hệ thống kiểm tra tự động 7 ràng buộc cứng và đánh dấu
-                            <span class="guide-pill-valid">🟢 Hợp lệ (Gợi ý phòng trống)</span> hoặc
-                            <span class="guide-pill-invalid">🔴 Trùng lịch / Vi phạm cứng</span>.
+                            <span class="guide-pill-valid">Hợp lệ (Gợi ý phòng trống)</span> hoặc
+                            <span class="guide-pill-invalid">Trùng lịch / Vi phạm cứng</span>.
                             Nhấn vào ô học phần bất kỳ để xem chi tiết hoặc đổi phòng nhanh.
                         </div>
                     </div>
@@ -2227,7 +2226,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                         ?>
                             <div class="kanban-week-section" style="margin-top: <?= $idxW > 0 ? '24px' : '0' ?>;">
                                 <div class="kanban-week-banner">
-                                    <span>🗓️ <strong><?= h($weekSelectLabels[$w]) ?></strong> — Phương án: <?= h($activeVersion['version_name'] ?? '') ?></span>
+                                    <span><strong><?= h($weekSelectLabels[$w]) ?></strong> — Phương án: <?= h($activeVersion['version_name'] ?? '') ?></span>
                                     <span class="kanban-week-tag"><?= count($filteredList) ?> buổi hiển thị</span>
                                 </div>
 
@@ -2240,7 +2239,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                             </div>
 
                                             <div class="kanban-day-body">
-                                                <?php foreach ([1 => '☀️ CA SÁNG (Tiết 1–5)', 2 => '🌤️ CA CHIỀU (Tiết 6–10)'] as $pNum => $pTitle):
+                                                <?php foreach ([1 => 'CA SÁNG (Tiết 1–5)', 2 => 'CA CHIỀU (Tiết 6–10)'] as $pNum => $pTitle):
                                                     $slotItems = $grid[$w][$pNum][$dNum] ?? [];
                                                     $slotCellObj = $slotLookup[$w][$pNum][$dNum] ?? null;
                                                     $slotCellId = $slotCellObj ? (int)$slotCellObj['id'] : 0;
@@ -2275,17 +2274,17 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                                                         <span class="kcard-type-badge badge-<?= h($rTypeClass) ?>">
                                                                             <?= h($item['lesson_code']) ?> • <?= h($item['class_code']) ?>
                                                                         </span>
-                                                                        <span class="kcard-room">📍 P.<?= h($item['room_code']) ?></span>
+                                                                        <span class="kcard-room">P.<?= h($item['room_code']) ?></span>
                                                                     </div>
                                                                     <div class="kcard-subject"><?= h($item['subject_name']) ?></div>
-                                                                    <div class="kcard-time">🕒 <?= h($exactCohortTime) ?></div>
+                                                                    <div class="kcard-time"><?= h($exactCohortTime) ?></div>
                                                                     <div class="kcard-teacher">
-                                                                        👨‍🏫 <?= h($item['teacher_name']) ?><br>
-                                                                        👥 Sĩ số: <strong><?= (int)$item['student_count'] ?>/<?= (int)$item['room_capacity'] ?> chỗ</strong>
+                                                                        <?= h($item['teacher_name']) ?><br>
+                                                                        Sĩ số: <strong><?= (int)$item['student_count'] ?>/<?= (int)$item['room_capacity'] ?> chỗ</strong>
                                                                         <?php if ($isLocked): ?>
-                                                                            <span class="locked-mini-tag">🔒 Đã khóa</span>
+                                                                            <span class="locked-mini-tag">Đã khóa</span>
                                                                         <?php else: ?>
-                                                                            <span class="drag-mini-tag">✥ Kéo thả / Chi tiết</span>
+                                                                            <span class="drag-mini-tag">Kéo thả / Chi tiết</span>
                                                                         <?php endif; ?>
                                                                     </div>
                                                                     <?php if (!$isLocked): ?>
@@ -2295,7 +2294,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                                                                 <input type="hidden" name="lesson_id" value="<?= (int)$item['lesson_id'] ?>">
                                                                                 <input type="hidden" name="slot_id" value="<?= (int)$item['slot_id'] ?>">
                                                                                 <input type="hidden" name="room_id" value="<?= (int)$item['room_id'] ?>">
-                                                                                <button type="submit" class="btn btn-outline btn-sm event-lock-btn">🔒 Ghim cố định</button>
+                                                                                <button type="submit" class="btn btn-outline btn-sm event-lock-btn">Ghim cố định</button>
                                                                             </form>
                                                                         </div>
                                                                     <?php endif; ?>
@@ -2334,7 +2333,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                                 $wRow = (int)($row['week_no'] ?? 1);
                                                 $pRow = (int)$row['period_of_day'];
                                                 $exactTime = ConstraintChecker::formatCohortTime((string)$row['class_code'], $pRow);
-                                                $buoiStr = ($pRow === 1) ? '☀️ Sáng' : '🌤️ Chiều';
+                                                $buoiStr = ($pRow === 1) ? 'Sáng' : 'Chiều';
                                                 $isLocked = (int)$row['is_locked'] === 1 || (int)$row['current_lesson_locked'] === 1;
                                             ?>
                                             <tr class="searchable-card" style="cursor:pointer;" onclick="openLessonModal(<?= (int)$row['lesson_id'] ?>)">
@@ -2345,7 +2344,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                                 <td><strong><?= h($exactTime) ?></strong></td>
                                                 <td><strong>P.<?= h($row['room_code']) ?></strong> (<?= (int)$row['room_capacity'] ?> chỗ)</td>
                                                 <td><?= h($row['teacher_name']) ?></td>
-                                                <td><?= $isLocked ? '<span class="badge badge-locked">🔒 Đã khóa</span>' : '<span class="badge badge-soft-prefer">Tự động</span>' ?></td>
+                                                <td><?= $isLocked ? '<span class="badge badge-locked">Đã khóa</span>' : '<span class="badge badge-soft-prefer">Tự động</span>' ?></td>
                                             </tr>
                                             <?php endforeach; ?>
                                         <?php endif; ?>
@@ -2383,7 +2382,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                             <?= (int)$activeAudit['hard_violations'] ?> vi phạm
                         </div>
                         <div class="kpi-tile-foot">
-                            🔒 Đã ghim cố định <?= (int)($validation['stats']['locked_lessons'] ?? 3) ?> buổi khóa
+                            Đã ghim cố định <?= (int)($validation['stats']['locked_lessons'] ?? 3) ?> buổi khóa
                         </div>
                     </div>
 
@@ -2394,8 +2393,8 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                         </div>
                         <div class="kpi-tile-foot">
                             <?= (int)$activeAudit['unscheduled_count'] > 0
-                                ? ('⚠️ Còn ' . (int)$activeAudit['unscheduled_count'] . ' buổi chưa xếp')
-                                : '✅ Đã xếp kín 100% số buổi' ?>
+                                ? ('Còn ' . (int)$activeAudit['unscheduled_count'] . ' buổi chưa xếp')
+                                : 'Đã xếp kín 100% số buổi' ?>
                         </div>
                     </div>
                 </div>
@@ -2404,7 +2403,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     <!-- Khối 1: Chạy Thuật toán -->
                     <div class="studio-side-card">
                         <div class="studio-side-header">
-                            <span>🚀 Chạy Thuật toán Xếp lịch</span>
+                            <span>Chạy Thuật toán Xếp lịch</span>
                             <span class="badge badge-lt">Chức năng 3</span>
                         </div>
                         <form method="post" action="index.php?tab=schedule">
@@ -2412,7 +2411,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                             <div class="form-group" style="margin-bottom:10px;">
                                 <label>Phương pháp xếp lịch</label>
                                 <select name="algorithm_type">
-                                    <option value="BOTH">⚡ Chạy đồng thời cả 2 cách xếp</option>
+                                    <option value="BOTH">Chạy đồng thời cả 2 cách xếp</option>
                                     <option value="IMPROVED">2. Cách xếp Cải thiện (MRV + Best-Fit)</option>
                                     <option value="BASIC">1. Cách xếp Cơ bản (First-Fit)</option>
                                 </select>
@@ -2421,14 +2420,14 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                 <label>Đặt tên phương án (Tùy chọn)</label>
                                 <input type="text" name="version_name" placeholder="Tự động đặt tên nếu để trống...">
                             </div>
-                            <button type="submit" class="btn btn-primary" style="width:100%;">🚀 Thực thi xếp thời khóa biểu</button>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Thực thi xếp thời khóa biểu</button>
                         </form>
                     </div>
 
                     <!-- Khối 2: Chọn Phương án & Bộ lọc đa chiều -->
                     <div class="studio-side-card">
                         <div class="studio-side-header">
-                            <span>🎛️ Bộ lọc &amp; Phương án</span>
+                            <span>Bộ lọc &amp; Phương án</span>
                         </div>
                         <form method="get" action="index.php">
                             <input type="hidden" name="tab" value="schedule">
@@ -2448,10 +2447,10 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                             <div class="form-group" style="margin-bottom:10px;">
                                 <label>Phạm vi lọc đối tượng</label>
                                 <select name="filter_type" onchange="this.form.submit()">
-                                    <option value="all" <?= $viewFilterType === 'all' ? 'selected' : '' ?>>🌐 Toàn trường (Tất cả các lớp)</option>
-                                    <option value="class" <?= $viewFilterType === 'class' ? 'selected' : '' ?>>🏫 Lọc theo Lớp học</option>
-                                    <option value="teacher" <?= $viewFilterType === 'teacher' ? 'selected' : '' ?>>👨‍🏫 Lọc theo Giảng viên</option>
-                                    <option value="room" <?= $viewFilterType === 'room' ? 'selected' : '' ?>>🏢 Lọc theo Phòng học</option>
+                                    <option value="all" <?= $viewFilterType === 'all' ? 'selected' : '' ?>>Toàn trường (Tất cả các lớp)</option>
+                                    <option value="class" <?= $viewFilterType === 'class' ? 'selected' : '' ?>>Lọc theo Lớp học</option>
+                                    <option value="teacher" <?= $viewFilterType === 'teacher' ? 'selected' : '' ?>>Lọc theo Giảng viên</option>
+                                    <option value="room" <?= $viewFilterType === 'room' ? 'selected' : '' ?>>Lọc theo Phòng học</option>
                                 </select>
                             </div>
 
@@ -2491,11 +2490,11 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;">
                                     <a class="btn btn-outline btn-sm" target="_blank"
                                        href="index.php?action=export&format=print&version_id=<?= (int)$activeVersion['id'] ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>">
-                                       🖨️ Bản in PDF
+                                       Bản in PDF
                                     </a>
                                     <a class="btn btn-outline btn-sm"
                                        href="index.php?action=export&format=csv&version_id=<?= (int)$activeVersion['id'] ?>&filter_type=<?= h($viewFilterType) ?>&filter_id=<?= (int)$viewFilterId ?>">
-                                       📥 Xuất CSV
+                                       Xuất CSV
                                     </a>
                                 </div>
                             <?php endif; ?>
@@ -2505,14 +2504,14 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     <!-- Khối 3: Danh sách Học phần chưa xếp được lịch (Có thể Kéo - Thả trực tiếp lên bảng TKB) -->
                     <div class="studio-side-card">
                         <div class="studio-side-header">
-                            <span>⚠️ Học phần chưa xếp được lịch (Kéo thả lên TKB)</span>
+                            <span>Học phần chưa xếp được lịch (Kéo thả lên TKB)</span>
                             <span class="badge <?= $activeAudit['unscheduled_count'] > 0 ? 'badge-soft-avoid' : 'badge-soft-prefer' ?>">
                                 <?= (int)$activeAudit['unscheduled_count'] ?> buổi
                             </span>
                         </div>
                         <?php if (empty($activeAudit['unscheduled_lessons'])): ?>
                             <div class="alert alert-success" style="margin:0; font-size:12.5px;">
-                                🎉 Đã xếp kín 100% (<?= $activeAudit['total_lessons'] ?>/<?= $activeAudit['total_lessons'] ?> buổi). Không có buổi học nào bị kẹt!
+                                Đã xếp kín 100% (<?= $activeAudit['total_lessons'] ?>/<?= $activeAudit['total_lessons'] ?> buổi). Không có buổi học nào bị kẹt!
                             </div>
                         <?php else: ?>
                             <div class="radar-unscheduled-list">
@@ -2533,11 +2532,11 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                         <div style="display:flex; gap:6px; margin-top:6px;" onclick="event.stopPropagation();">
                                             <button type="button" class="btn btn-outline btn-sm" style="flex:1;"
                                                     onclick="openLessonModal(<?= (int)$uLesson['lesson_id'] ?>)">
-                                                🔍 Kiểm tra &amp; Xếp nhanh
+                                                Kiểm tra &amp; Xếp nhanh
                                             </button>
                                             <a href="index.php?tab=adjust&version_id=<?= (int)$activeVersion['id'] ?>&pick_lesson_id=<?= (int)$uLesson['lesson_id'] ?>"
                                                class="btn btn-primary btn-sm" style="flex:1;">
-                                                🔧 Trạm Đổi lịch
+                                                Trạm Đổi lịch
                                             </a>
                                         </div>
                                     </div>
@@ -2556,24 +2555,24 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                             <div class="tt-modal-eyebrow" id="md_lesson_code">BUỔI HỌC</div>
                             <h3 class="tt-modal-title" id="md_subject_name">Chi tiết buổi học</h3>
                         </div>
-                        <button type="button" class="tt-modal-close" onclick="closeLessonModal()">✕</button>
+                        <button type="button" class="tt-modal-close" onclick="closeLessonModal()"></button>
                     </div>
                     <div class="tt-modal-body">
                         <div class="tt-modal-meta-grid">
                             <div class="tt-meta-box">
-                                <span class="tt-meta-label">🏫 Lớp học &amp; Sĩ số</span>
+                                <span class="tt-meta-label">Lớp học &amp; Sĩ số</span>
                                 <strong id="md_class_info">—</strong>
                             </div>
                             <div class="tt-meta-box">
-                                <span class="tt-meta-label">👨‍🏫 Giảng viên phụ trách</span>
+                                <span class="tt-meta-label">Giảng viên phụ trách</span>
                                 <strong id="md_teacher_info">—</strong>
                             </div>
                             <div class="tt-meta-box">
-                                <span class="tt-meta-label">🕒 Khung giờ hiện tại</span>
+                                <span class="tt-meta-label">Khung giờ hiện tại</span>
                                 <strong id="md_slot_info">—</strong>
                             </div>
                             <div class="tt-meta-box">
-                                <span class="tt-meta-label">📍 Phòng học &amp; Loại phòng</span>
+                                <span class="tt-meta-label">Phòng học &amp; Loại phòng</span>
                                 <strong id="md_room_info">—</strong>
                             </div>
                         </div>
@@ -2583,7 +2582,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                         <!-- Danh sách sinh viên thuộc lớp -->
                         <div style="margin:12px 0;">
                             <div style="font-size:12px; font-weight:700; color:#334155; margin-bottom:6px;">
-                                🎓 Tài khoản Sinh viên thuộc lớp (<span id="md_student_list_count">0</span> tài khoản):
+                                Tài khoản Sinh viên thuộc lớp (<span id="md_student_list_count">0</span> tài khoản):
                             </div>
                             <div id="md_student_chips" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
                         </div>
@@ -2592,7 +2591,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                             <!-- Bảng điều khiển nhanh cho Admin ngay trong Modal -->
                             <div class="tt-modal-action-panel">
                                 <div style="font-weight:800; font-size:13.5px; color:#1e1b4b; margin-bottom:10px;">
-                                    ⚡ Điều phối Nhanh: Đổi Phòng học / Khung giờ (Kiểm tra ràng buộc trực tiếp)
+                                    Điều phối Nhanh: Đổi Phòng học / Khung giờ (Kiểm tra ràng buộc trực tiếp)
                                 </div>
                                 <form method="post" action="index.php?tab=schedule&version_id=<?= (int)$activeVersion['id'] ?>&week_no=<?= (int)$selectedWeekNo ?>">
                                     <input type="hidden" name="action" value="apply_manual_move">
@@ -2610,8 +2609,8 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                     </div>
                                     <div id="md_live_check_msg" style="font-size:12px; font-weight:700; margin-bottom:10px;"></div>
                                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                                        <button type="submit" class="btn btn-primary btn-sm" id="md_admin_save_btn">💾 Áp dụng thay đổi ngay</button>
-                                        <a id="md_admin_adjust_link" href="#" class="btn btn-outline btn-sm">🔧 Mở trong Trạm Đổi lịch</a>
+                                        <button type="submit" class="btn btn-primary btn-sm" id="md_admin_save_btn">Áp dụng thay đổi ngay</button>
+                                        <a id="md_admin_adjust_link" href="#" class="btn btn-outline btn-sm">Mở trong Trạm Đổi lịch</a>
                                     </div>
                                 </form>
                             </div>
@@ -2619,7 +2618,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                             <!-- Form gửi yêu cầu xin đổi lịch ngay trong Modal cho Giảng viên -->
                             <div class="tt-modal-action-panel">
                                 <div style="font-weight:800; font-size:13.5px; color:#0f766e; margin-bottom:10px;">
-                                    📝 Gửi đề xuất Xin đổi lịch / Dạy bù buổi học này
+                                    Gửi đề xuất Xin đổi lịch / Dạy bù buổi học này
                                 </div>
                                 <form method="post" action="index.php?tab=schedule">
                                     <input type="hidden" name="action" value="submit_reschedule_request">
@@ -2639,7 +2638,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                         <label>Lý do xin đổi ca / dạy bù</label>
                                         <input type="text" name="reason" placeholder="VD: Bận công tác đột xuất, xin chuyển ca dạy..." required>
                                     </div>
-                                    <button type="submit" class="btn btn-primary btn-sm">📨 Gửi đề xuất tới Phòng Đào tạo</button>
+                                    <button type="submit" class="btn btn-primary btn-sm">Gửi đề xuất tới Phòng Đào tạo</button>
                                 </form>
                             </div>
                         <?php endif; ?>
@@ -2746,12 +2745,12 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     return { valid: false, reason: 'Không hợp lệ', bestRoom: null, compatibleFreeRooms: [] };
                 }
                 if (lesson.is_locked === 1) {
-                    return { valid: false, reason: '🔒 Buổi đã khóa cố định', bestRoom: null, compatibleFreeRooms: [] };
+                    return { valid: false, reason: 'Buổi đã khóa cố định', bestRoom: null, compatibleFreeRooms: [] };
                 }
                 // 1. Kiểm tra lịch bận cứng của giảng viên (HC-06)
                 const busyMap = window.TT_STATE.hardBusy[lesson.teacher_id] || {};
                 if (busyMap[slotId]) {
-                    return { valid: false, reason: '⛔ GV bận cứng (' + busyMap[slotId] + ')', bestRoom: null, compatibleFreeRooms: [] };
+                    return { valid: false, reason: 'GV bận cứng (' + busyMap[slotId] + ')', bestRoom: null, compatibleFreeRooms: [] };
                 }
                 // 2. Kiểm tra trùng giảng viên, trùng lớp và phòng đang bị chiếm trong slotId (HC-01, HC-02, HC-03)
                 const occupiedRooms = {};
@@ -2761,10 +2760,10 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     if (assign.slot_id === slotId) {
                         const otherLesson = window.TT_STATE.lessons[otherLid];
                         if (otherLesson && otherLesson.teacher_id === lesson.teacher_id) {
-                            return { valid: false, reason: '⛔ Trùng GV (' + otherLesson.code + ')', bestRoom: null, compatibleFreeRooms: [] };
+                            return { valid: false, reason: 'Trùng GV (' + otherLesson.code + ')', bestRoom: null, compatibleFreeRooms: [] };
                         }
                         if (otherLesson && otherLesson.class_id === lesson.class_id) {
-                            return { valid: false, reason: '⛔ Trùng Lớp (' + otherLesson.code + ')', bestRoom: null, compatibleFreeRooms: [] };
+                            return { valid: false, reason: 'Trùng Lớp (' + otherLesson.code + ')', bestRoom: null, compatibleFreeRooms: [] };
                         }
                         occupiedRooms[assign.room_id] = otherLesson ? otherLesson.code : 'Đã có lớp';
                     }
@@ -2780,12 +2779,12 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 }
                 freeRooms.sort((a, b) => a.capacity - b.capacity);
                 if (freeRooms.length === 0) {
-                    return { valid: false, reason: '⛔ Hết phòng ' + lesson.required_room_type + ' ≥ ' + lesson.student_count + ' chỗ', bestRoom: null, compatibleFreeRooms: [] };
+                    return { valid: false, reason: 'Hết phòng ' + lesson.required_room_type + ' ≥ ' + lesson.student_count + ' chỗ', bestRoom: null, compatibleFreeRooms: [] };
                 }
                 const best = freeRooms[0];
                 return {
                     valid: true,
-                    reason: '✅ Hợp lệ — Gợi ý P.' + best.code + ' (' + best.capacity + ' chỗ)',
+                    reason: 'Hợp lệ — Gợi ý P.' + best.code + ' (' + best.capacity + ' chỗ)',
                     bestRoom: best,
                     compatibleFreeRooms: freeRooms
                 };
@@ -2873,7 +2872,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 const assign = window.TT_STATE.assignments[lessonId] || null;
 
                 document.getElementById('md_lesson_code').textContent =
-                    lesson.code + ' • LOẠI PHÒNG YÊU CẦU: ' + lesson.required_room_type + (lesson.is_locked ? ' • 🔒 ĐÃ KHÓA CỐ ĐỊNH' : ' • XẾP TỰ ĐỘNG');
+                    lesson.code + ' • LOẠI PHÒNG YÊU CẦU: ' + lesson.required_room_type + (lesson.is_locked ? ' • ĐÃ KHÓA CỐ ĐỊNH' : ' • XẾP TỰ ĐỘNG');
                 document.getElementById('md_subject_name').textContent = lesson.subject_name;
                 document.getElementById('md_class_info').textContent = 'Lớp ' + lesson.class_code + ' (' + lesson.student_count + ' sinh viên)';
                 document.getElementById('md_teacher_info').textContent = lesson.teacher_code + ' — ' + lesson.teacher_name;
@@ -2887,8 +2886,8 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                         '<strong>Trạng thái tối ưu:</strong> Điểm phạt mềm = <strong>' + assign.soft_penalty + 'đ</strong>. ' +
                         (assign.soft_notes ? ('(' + assign.soft_notes + ')') : 'Đạt tối ưu toàn bộ ràng buộc cứng và mềm.');
                 } else {
-                    document.getElementById('md_slot_info').textContent = '⚠️ Chưa xếp được khung giờ';
-                    document.getElementById('md_room_info').textContent = '⚠️ Chưa phân phòng';
+                    document.getElementById('md_slot_info').textContent = 'Chưa xếp được khung giờ';
+                    document.getElementById('md_room_info').textContent = 'Chưa phân phòng';
                     document.getElementById('md_soft_note_box').innerHTML =
                         '<strong>Trạng thái:</strong> Buổi học này hiện đang nằm trong danh sách chưa xếp. Bạn có thể chọn Khung giờ và Phòng học bên dưới để xếp ngay.';
                 }
@@ -2904,7 +2903,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     stuList.forEach(sText => {
                         const sp = document.createElement('span');
                         sp.className = 'bento-chip';
-                        sp.textContent = '🎓 ' + sText;
+                        sp.textContent = '' + sText;
                         chipsWrap.appendChild(sp);
                     });
                 }
@@ -2919,7 +2918,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                         const evalRes = evaluateSlotForLesson(lessonId, s.id);
                         const opt = document.createElement('option');
                         opt.value = s.id;
-                        opt.textContent = (evalRes.valid ? '🟢 ' : '🔴 ') + s.code + ' — ' + s.label + (evalRes.valid ? '' : (' [' + evalRes.reason + ']'));
+                        opt.textContent = (evalRes.valid ? '' : '') + s.code + ' — ' + s.label + (evalRes.valid ? '' : (' [' + evalRes.reason + ']'));
                         if (assign && assign.slot_id === s.id) opt.selected = true;
                         slotSel.appendChild(opt);
                     });
@@ -2940,7 +2939,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                         const evalRes = evaluateSlotForLesson(lessonId, s.id);
                         const opt = document.createElement('option');
                         opt.value = s.id;
-                        opt.textContent = (evalRes.valid ? '🟢 ' : '🔴 ') + s.code + ' — ' + s.label;
+                        opt.textContent = (evalRes.valid ? '' : '') + s.code + ' — ' + s.label;
                         if (assign && assign.slot_id === s.id) opt.selected = true;
                         tSlotSel.appendChild(opt);
                     });
@@ -2970,14 +2969,14 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                     const isFree = evalRes.compatibleFreeRooms.some(fr => fr.id === r.id) || (assign && assign.slot_id === slotId && assign.room_id === r.id);
                     const opt = document.createElement('option');
                     opt.value = r.id;
-                    opt.textContent = (isFree ? '✅ ' : '⛔ ') + r.code + ' — ' + r.name + ' (' + r.capacity + ' chỗ)' + (isFree ? ' [Trống]' : ' [Đã có lớp]');
+                    opt.textContent = (isFree ? '' : '') + r.code + ' — ' + r.name + ' (' + r.capacity + ' chỗ)' + (isFree ? ' [Trống]' : ' [Đã có lớp]');
                     if (assign && assign.room_id === r.id) opt.selected = true;
                     roomSel.appendChild(opt);
                 });
 
                 if (lesson.is_locked === 1) {
                     msgEl.style.color = '#b45309';
-                    msgEl.textContent = '🔒 Buổi học đang bị khóa cố định. Hãy mở khóa nếu muốn di chuyển.';
+                    msgEl.textContent = 'Buổi học đang bị khóa cố định. Hãy mở khóa nếu muốn di chuyển.';
                     saveBtn.disabled = true;
                 } else if (evalRes.valid) {
                     msgEl.style.color = '#059669';
@@ -3024,7 +3023,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
             <div class="card">
                 <div class="card-header">
                     <div>
-                        <h2>📩 Phê duyệt Yêu cầu Xin đổi lịch / Dạy bù từ Giảng viên</h2>
+                        <h2>Phê duyệt Yêu cầu Xin đổi lịch / Dạy bù từ Giảng viên</h2>
                         <p style="margin:4px 0 0; font-size:13px; color:#64748b;">
                             Hệ thống tự động kiểm toán trước 7 điều kiện bắt buộc và mức biến thiên điểm phạt mềm của từng đề xuất trên phương án đang xét (<strong><?= h($activeVersion['version_name'] ?? '') ?></strong>).
                         </p>
@@ -3087,13 +3086,13 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                     <?php if ($rq['status'] !== 'PENDING'): ?>
                                         <span style="font-size:12px; color:#64748b;"><?= h($rq['admin_note'] ?: 'Đã xử lý') ?></span>
                                     <?php elseif ($liveImpact['can_apply']): ?>
-                                        <span class="badge badge-soft-prefer">✅ Thỏa mãn 7/7 ràng buộc cứng</span>
+                                        <span class="badge badge-soft-prefer">Thỏa mãn 7/7 ràng buộc cứng</span>
                                         <div style="font-size:11.5px; color:#059669; margin-top:4px;">
                                             Điểm phạt mềm sau đổi: <strong><?= (int)$liveImpact['after_soft_score'] ?>đ</strong>
                                             (<?= (int)$liveImpact['soft_score_delta'] <= 0 ? (int)$liveImpact['soft_score_delta'] : ('+' . (int)$liveImpact['soft_score_delta']) ?>đ)
                                         </div>
                                     <?php else: ?>
-                                        <span class="badge badge-hard">⛔ Vi phạm ràng buộc cứng</span>
+                                        <span class="badge badge-hard">Vi phạm ràng buộc cứng</span>
                                         <div style="font-size:11.5px; color:#dc2626; margin-top:4px;">
                                             <?= h(implode('; ', $liveImpact['hard_violations'] ?? [$liveImpact['summary']])) ?>
                                         </div>
@@ -3107,7 +3106,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                                 <input type="hidden" name="request_id" value="<?= (int)$rq['id'] ?>">
                                                 <input type="hidden" name="decision" value="APPROVE">
                                                 <button type="submit" class="btn btn-primary btn-sm" style="width:100%;" <?= !$liveImpact['can_apply'] ? 'disabled title="Đang xung đột ràng buộc cứng"' : '' ?>>
-                                                    ✅ Duyệt &amp; Tự động đổi lịch
+                                                    Duyệt &amp; Tự động đổi lịch
                                                 </button>
                                             </form>
                                             <form method="post" action="index.php?tab=requests" style="margin:0;">
@@ -3115,14 +3114,14 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                                 <input type="hidden" name="request_id" value="<?= (int)$rq['id'] ?>">
                                                 <input type="hidden" name="decision" value="REJECT">
                                                 <button type="submit" class="btn btn-outline btn-sm" style="width:100%;">
-                                                    ❌ Từ chối đề xuất
+                                                    Từ chối đề xuất
                                                 </button>
                                             </form>
                                         </div>
                                     <?php elseif ($rq['status'] === 'APPROVED'): ?>
-                                        <span class="badge badge-soft-prefer">✅ ĐÃ PHÊ DUYỆT</span>
+                                        <span class="badge badge-soft-prefer">ĐÃ PHÊ DUYỆT</span>
                                     <?php else: ?>
-                                        <span class="badge badge-hard">❌ ĐÃ TỪ CHỐI</span>
+                                        <span class="badge badge-hard">ĐÃ TỪ CHỐI</span>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -3136,7 +3135,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
             <div class="card">
                 <div class="card-header">
                     <div>
-                        <h2>📜 Nhật ký Tác động &amp; Lịch sử Điều phối Hệ thống (Audit Log)</h2>
+                        <h2>Nhật ký Tác động &amp; Lịch sử Điều phối Hệ thống (Audit Log)</h2>
                         <p style="margin:4px 0 0; font-size:13px; color:#64748b;">
                             Ghi nhận tự động mọi thao tác chạy thuật toán, kéo-thả đổi lịch, gửi đề xuất của giảng viên, phê duyệt và nạp dữ liệu hàng loạt.
                         </p>
@@ -3161,7 +3160,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                 <td><strong><?= h($log['actor_name']) ?></strong></td>
                                 <td>
                                     <span class="badge <?= $log['actor_role'] === 'scheduler' ? 'badge-locked' : 'badge-th' ?>">
-                                        <?= $log['actor_role'] === 'scheduler' ? '⚙️ Quản trị' : '👨‍🏫 Giảng viên' ?>
+                                        <?= $log['actor_role'] === 'scheduler' ? 'Quản trị' : 'Giảng viên' ?>
                                     </span>
                                 </td>
                                 <td><code><?= h($log['action_code']) ?></code></td>
@@ -3236,7 +3235,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 <div class="card">
                     <div class="card-header">
                         <div>
-                            <h2>🏢 Phân tích Công suất Phòng học &amp; Hiệu suất Lấp đầy Ghế</h2>
+                            <h2>Phân tích Công suất Phòng học &amp; Hiệu suất Lấp đầy Ghế</h2>
                             <p style="margin:4px 0 0; font-size:12.5px; color:#64748b;">
                                 Đánh giá mức độ khai thác từng phòng học và tỷ lệ lấp đầy sức chứa (Seat Fill Rate %) trên phương án hiện tại.
                             </p>
@@ -3273,7 +3272,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                 </td>
                                 <td>
                                     <strong><?= $used ?>/<?= $totalSlotsCount ?> ca</strong> (<?= $slotPct ?>%)<br>
-                                    <small style="color:#64748b;">☀️ <?= $rs['morning_count'] ?> sáng • 🌤️ <?= $rs['afternoon_count'] ?> chiều</small>
+                                    <small style="color:#64748b;"><?= $rs['morning_count'] ?> sáng • <?= $rs['afternoon_count'] ?> chiều</small>
                                 </td>
                                 <td style="min-width:190px;">
                                     <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px;">
@@ -3286,11 +3285,11 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                 </td>
                                 <td>
                                     <?php if ($seatFillPct >= 75): ?>
-                                        <span class="badge badge-soft-prefer">⚡ Tối ưu cao (Sát sĩ số)</span>
+                                        <span class="badge badge-soft-prefer">Tối ưu cao (Sát sĩ số)</span>
                                     <?php elseif ($used > 0): ?>
-                                        <span class="badge badge-lt">✅ Cân bằng</span>
+                                        <span class="badge badge-lt">Cân bằng</span>
                                     <?php else: ?>
-                                        <span class="badge badge-soft-avoid">⚪ Đang rảnh</span>
+                                        <span class="badge badge-soft-avoid">Đang rảnh</span>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -3303,7 +3302,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 <div class="card">
                     <div class="card-header">
                         <div>
-                            <h2>👨‍🏫 Phân tích Tải Giảng dạy &amp; Mức độ Đáp ứng Nguyện vọng GV</h2>
+                            <h2>Phân tích Tải Giảng dạy &amp; Mức độ Đáp ứng Nguyện vọng GV</h2>
                             <p style="margin:4px 0 0; font-size:12.5px; color:#64748b;">
                                 Thống kê khối lượng giảng dạy, mật độ lịch bận cứng và mức độ thỏa mãn nguyện vọng ưu tiên của từng giảng viên.
                             </p>
@@ -3331,14 +3330,14 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                 </td>
                                 <td>
                                     <strong><?= $ts['taught_count'] ?> buổi</strong><br>
-                                    <small style="color:#64748b;">☀️ <?= $ts['morning_count'] ?> sáng • 🌤️ <?= $ts['afternoon_count'] ?> chiều</small>
+                                    <small style="color:#64748b;"><?= $ts['morning_count'] ?> sáng • <?= $ts['afternoon_count'] ?> chiều</small>
                                 </td>
                                 <td>
                                     <div style="font-size:12px;">
-                                        🔴 Bận cứng: <strong><?= $ts['hard_busy_count'] ?>/<?= $totalSlotsCount ?> ca</strong> (Còn rảnh <?= $freeSlots ?> ca)
+                                        Bận cứng: <strong><?= $ts['hard_busy_count'] ?>/<?= $totalSlotsCount ?> ca</strong> (Còn rảnh <?= $freeSlots ?> ca)
                                     </div>
                                     <div style="font-size:11.5px; color:#475569; margin-top:2px;">
-                                        🟢 Ưu tiên: <?= $ts['soft_prefer_count'] ?> • 🟡 Hạn chế: <?= $ts['soft_avoid_count'] ?>
+                                        Ưu tiên: <?= $ts['soft_prefer_count'] ?> • Hạn chế: <?= $ts['soft_avoid_count'] ?>
                                     </div>
                                     <div class="kpi-progress-bar" style="margin-top:4px;">
                                         <div class="kpi-progress-fill" style="width: <?= $busyPct ?>%; background: <?= $busyPct >= 80 ? '#ef4444' : '#3b82f6' ?>;"></div>
@@ -3362,13 +3361,13 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
             <div class="card">
                 <div class="card-header">
                     <div>
-                        <h2>📥 Công cụ Nạp Hàng Loạt Buổi học bằng CSV / Excel Paste (Bulk Import &amp; Batch Validation)</h2>
+                        <h2>Công cụ Nạp Hàng Loạt Buổi học bằng CSV / Excel Paste (Bulk Import &amp; Batch Validation)</h2>
                         <p style="margin:4px 0 0; font-size:13px; color:#64748b;">
                             Hỗ trợ nhập hàng loạt học phần từ bảng tính CSV. Hệ thống tự động kiểm tra định dạng, mã giảng viên, mã lớp, sĩ số và loại phòng của từng dòng trước khi lưu vào CSDL.
                         </p>
                     </div>
                     <button type="button" class="btn btn-outline btn-sm" onclick="fillSampleCsvImport()">
-                        ⚡ Điền nhanh 3 buổi học CSV mẫu để Demo
+                        Điền nhanh 3 buổi học CSV mẫu để Demo
                     </button>
                 </div>
 
@@ -3381,7 +3380,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                   placeholder="BH21, Phát triển ứng dụng đám mây, GV01, CNTT 18-12, 35, LT, Học vào cuối tuần hoặc trong tuần&#10;BH22, Thực hành Docker & Kubernetes, GV04, CNTT 18-09, 38, TH, Cần phòng máy LAB"></textarea>
                     </div>
                     <div style="display:flex; gap:10px; align-items:center;">
-                        <button type="submit" class="btn btn-primary">📥 Kiểm tra Ràng buộc &amp; Nạp hàng loạt vào CSDL</button>
+                        <button type="submit" class="btn btn-primary">Kiểm tra Ràng buộc &amp; Nạp hàng loạt vào CSDL</button>
                         <span style="font-size:12.5px; color:#64748b;">Sau khi nạp xong, bạn có thể sang tab <strong>Thời khóa biểu</strong> để chạy thuật toán xếp luôn các buổi mới!</span>
                     </div>
                 </form>
@@ -3430,7 +3429,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                     $cur = $assignedMap[$lId] ?? null;
                                     $curTag = $cur ? "Đang ở {$cur['slot_code']} @ {$cur['room_code']}" : "CHƯA XẾP ĐƯỢC";
                                     if ((int)$l['is_locked'] === 1) {
-                                        $curTag .= " [🔒 ĐÃ KHÓA]";
+                                        $curTag .= " [ĐÃ KHÓA]";
                                     }
                                 ?>
                                     <option value="<?= $lId ?>" <?= $pickedLessonId === $lId ? 'selected' : '' ?>>
@@ -3465,10 +3464,10 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
 
                         <div style="display:flex; gap:10px; margin-top:8px;">
                             <button type="submit" name="action" value="check_manual_move" class="btn btn-outline">
-                                🔍 Kiểm tra ảnh hưởng (Chưa lưu)
+                                Kiểm tra ảnh hưởng (Chưa lưu)
                             </button>
                             <button type="submit" name="action" value="apply_manual_move" class="btn btn-primary">
-                                ✅ Áp dụng đổi lịch (Nếu hợp lệ)
+                                Áp dụng đổi lịch (Nếu hợp lệ)
                             </button>
                         </div>
                     </form>
@@ -3641,9 +3640,9 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                 <div class="alert <?= $comparison['same_dataset'] ? 'alert-success' : 'alert-warning' ?>">
                     <strong>Đánh giá tự động từ lịch thực tế:</strong> <?= h($comparison['recommendation']) ?><br>
                     • Đối chiếu mã băm bộ dữ liệu (Dataset Hash):
-                    <strong><?= $comparison['same_dataset'] ? '✅ Cùng một bộ dữ liệu và điều kiện ràng buộc' : '⚠️ Khác phiên bản dữ liệu đầu vào' ?></strong>
+                    <strong><?= $comparison['same_dataset'] ? 'Cùng một bộ dữ liệu và điều kiện ràng buộc' : 'Khác phiên bản dữ liệu đầu vào' ?></strong>
                     • Kiểm chứng bảo toàn buổi học đã khóa:
-                    <strong><?= $comparison['locked_preserved_all'] ? '✅ Giữ nguyên 100% các buổi đã khóa' : '❌ Có thay đổi buổi khóa' ?></strong>
+                    <strong><?= $comparison['locked_preserved_all'] ? 'Giữ nguyên 100% các buổi đã khóa' : 'Có thay đổi buổi khóa' ?></strong>
                 </div>
 
                 <table>
@@ -3712,7 +3711,7 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                             <tr>
                                 <td>
                                     <strong><?= h($row['code']) ?></strong>
-                                    <?= $row['is_locked'] ? '<span class="badge badge-locked">🔒 Khóa</span>' : '' ?>
+                                    <?= $row['is_locked'] ? '<span class="badge badge-locked">Khóa</span>' : '' ?>
                                 </td>
                                 <td><?= h($row['subject_name']) ?></td>
                                 <td><?= h($row['teacher_name']) ?> • <strong><?= h($row['class_code']) ?></strong> (<?= (int)$row['student_count'] ?> SV)</td>
@@ -3727,9 +3726,9 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                                 </td>
                                 <td>
                                     <?php if ($row['is_locked']): ?>
-                                        <span class="badge badge-locked">🔒 Cố định như nhau</span>
+                                        <span class="badge badge-locked">Cố định như nhau</span>
                                     <?php elseif ($row['status_badge'] === 'GAINED_IN_B'): ?>
-                                        <span class="badge badge-soft-prefer">✨ B xếp thêm được</span>
+                                        <span class="badge badge-soft-prefer">B xếp thêm được</span>
                                     <?php elseif ($row['status_badge'] === 'LOST_IN_B'): ?>
                                         <span class="badge badge-hard">B chưa xếp</span>
                                     <?php elseif ($row['status_badge'] === 'SAME'): ?>
@@ -3790,13 +3789,13 @@ $avatarInitial = mb_strtoupper(mb_substr(trim((string)($currentUser['full_name']
                         <div class="form-group">
                             <label>Định dạng xuất</label>
                             <select name="format">
-                                <option value="print">🖨️ Bản in Thời khóa biểu (HTML / PDF)</option>
-                                <option value="csv">📥 Tệp bảng tính Excel (.CSV UTF-8)</option>
-                                <option value="json">📄 Dữ liệu tích hợp (.JSON)</option>
+                                <option value="print">Bản in Thời khóa biểu (HTML / PDF)</option>
+                                <option value="csv">Tệp bảng tính Excel (.CSV UTF-8)</option>
+                                <option value="json">Dữ liệu tích hợp (.JSON)</option>
                             </select>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">📤 Xuất Thời Khóa Biểu</button>
+                    <button type="submit" class="btn btn-primary">Xuất Thời Khóa Biểu</button>
                 </form>
             </div>
 
