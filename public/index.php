@@ -15,15 +15,27 @@ use App\Domain\ConstraintChecker;
 use App\Domain\SchedulerEngine;
 use App\Repository\TimetableRepository;
 
-$pdo = Database::getConnection();
-$connInfo = Database::getConnectionInfo();
-$repo = new TimetableRepository($pdo);
-$checker = new ConstraintChecker();
-$engine = new SchedulerEngine($checker);
-$controller = new TimetableController($repo, $checker, $engine);
+try {
+    $pdo = Database::getConnection();
+    $connInfo = Database::getConnectionInfo();
+    $repo = new TimetableRepository($pdo);
+    $checker = new ConstraintChecker();
+    $engine = new SchedulerEngine($checker);
+    $controller = new TimetableController($repo, $checker, $engine);
 
-$controller->ensureInitialVersionsExist();
-$flash = $controller->handleRequest();
+    $controller->ensureInitialVersionsExist();
+    $flash = $controller->handleRequest();
+} catch (\Throwable $e) {
+    http_response_code(200);
+    echo '<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Chẩn đoán cấu hình hệ thống</title></head>';
+    echo '<body style="font-family:sans-serif; background:#f2f5f8; padding:40px;"><div style="max-width:720px; margin:0 auto; background:#fff; border:1px solid #cbd5e1; border-top:4px solid #b91c1c; padding:24px; border-radius:4px;">';
+    echo '<h2 style="margin-top:0; color:#b91c1c;">Thông báo chẩn đoán kết nối máy chủ</h2>';
+    echo '<p><strong>Chi tiết lỗi:</strong> ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . '</p>';
+    echo '<p><strong>Tệp:</strong> ' . htmlspecialchars($e->getFile() . ':' . $e->getLine(), ENT_QUOTES, 'UTF-8') . '</p>';
+    echo '<p><strong>Extensions đã nạp:</strong> ' . htmlspecialchars(implode(', ', get_loaded_extensions()), ENT_QUOTES, 'UTF-8') . '</p>';
+    echo '</div></body></html>';
+    exit;
+}
 
 $currentUser = $controller->getCurrentUser();
 $isAuthenticated = $controller->isAuthenticated();
@@ -77,6 +89,7 @@ function h(mixed $val): string
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= !$isAuthenticated ? 'Đăng nhập hệ thống' : 'Đề tài 18 - Hệ thống Xếp Thời Khóa Biểu Theo Ràng Buộc (Nhóm 10)' ?></title>
     <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="public/assets/style.css">
 </head>
 <body class="<?= !$isAuthenticated ? 'login-page-body' : '' ?>">
 

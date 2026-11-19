@@ -1,0 +1,5 @@
+[phases.setup]
+nixPkgs = ["php84", "php84Extensions.pdo", "php84Extensions.pdo_mysql", "php84Extensions.mysqli", "php84Extensions.mbstring"]
+
+[start]
+cmd = "php -S 0.0.0.0:${PORT:-8080} -t public"

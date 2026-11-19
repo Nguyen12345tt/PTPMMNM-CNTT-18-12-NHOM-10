@@ -1,0 +1,13 @@
+{
+    "name": "nhom10/he-thong-xep-thoi-khoa-bieu",
+    "description": "Đề tài 18: Hệ thống xếp thời khóa biểu theo ràng buộc giảng viên, phòng học và lớp học",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.0",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-mysqli": "*",
+        "ext-mbstring": "*"
+    }
+}

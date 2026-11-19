@@ -52,12 +52,35 @@ class Database
         $rootDir = dirname(__DIR__);
         $env = self::loadEnv($rootDir . '/.env');
 
-        $host = getenv('DB_HOST') ?: ($env['DB_HOST'] ?? '127.0.0.1');
-        $port = getenv('DB_PORT') ?: ($env['DB_PORT'] ?? '3306');
-        $dbName = getenv('DB_DATABASE') ?: ($env['DB_DATABASE'] ?? 'timetable_db');
-        $user = getenv('DB_USERNAME') ?: ($env['DB_USERNAME'] ?? 'root');
-        $pass = getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : ($env['DB_PASSWORD'] ?? '');
+        $host = getenv('DB_HOST') ?: (getenv('MYSQLHOST') ?: (getenv('MYSQL_HOST') ?: ($env['DB_HOST'] ?? '127.0.0.1')));
+        $port = getenv('DB_PORT') ?: (getenv('MYSQLPORT') ?: (getenv('MYSQL_PORT') ?: ($env['DB_PORT'] ?? '3306')));
+        $dbName = getenv('DB_DATABASE') ?: (getenv('MYSQLDATABASE') ?: (getenv('MYSQL_DATABASE') ?: ($env['DB_DATABASE'] ?? 'timetable_db')));
+        $user = getenv('DB_USERNAME') ?: (getenv('MYSQLUSER') ?: (getenv('MYSQL_USER') ?: ($env['DB_USERNAME'] ?? 'root')));
+        $pass = getenv('DB_PASSWORD') !== false
+            ? getenv('DB_PASSWORD')
+            : (getenv('MYSQLPASSWORD') !== false
+                ? getenv('MYSQLPASSWORD')
+                : (getenv('MYSQL_PASSWORD') !== false
+                    ? getenv('MYSQL_PASSWORD')
+                    : (getenv('MYSQL_ROOT_PASSWORD') !== false
+                        ? getenv('MYSQL_ROOT_PASSWORD')
+                        : ($env['DB_PASSWORD'] ?? ''))));
         $socket = getenv('DB_SOCKET') ?: ($env['DB_SOCKET'] ?? '');
+
+        // Hỗ trợ tự động đọc chuỗi kết nối MYSQL_URL hoặc DATABASE_URL trên Railway / Cloud
+        $dbUrl = getenv('MYSQL_URL') ?: (getenv('MYSQL_PUBLIC_URL') ?: (getenv('DATABASE_URL') ?: ''));
+        if ($dbUrl !== '' && str_starts_with($dbUrl, 'mysql://')) {
+            $parsed = parse_url($dbUrl);
+            if (is_array($parsed)) {
+                $host = $parsed['host'] ?? $host;
+                $port = (string)($parsed['port'] ?? $port);
+                $user = isset($parsed['user']) ? rawurldecode($parsed['user']) : $user;
+                $pass = isset($parsed['pass']) ? rawurldecode($parsed['pass']) : $pass;
+                if (!empty($parsed['path'])) {
+                    $dbName = ltrim($parsed['path'], '/');
+                }
+            }
+        }
 
         $candidates = [
             ['host' => $host, 'port' => $port, 'user' => $user, 'pass' => $pass, 'socket' => $socket, 'label' => "MySQL ($host:$port)"],
